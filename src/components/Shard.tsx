@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { PageData } from "../data/pages";
 import {
+  BLOCKED_PULSE,
   COLOR_DRIFT,
   DENIM,
   DWELL_MS,
@@ -9,12 +10,13 @@ import {
   GLOW,
   HOVER,
   INTRO,
+  RIPPLE,
   SHARD,
   type ShardPlacement,
 } from "../config/home";
 import { shiftLightness } from "../lib/color";
+import { NEW_TAB, openInNewTab } from "../lib/tabs";
 import { ShardPreview } from "./ShardPreview";
-import { useShardTransition } from "./ShardTransition";
 
 type Props = {
   page: PageData;
@@ -25,22 +27,31 @@ type Props = {
   index: number;
   active: boolean;
   dimmed: boolean;
-  /** False until the pointer has really moved on this page; stops a resting pointer from re-entering after Back. */
+  /** False until the pointer has really moved on this page; stops a resting pointer from dwelling on load. */
   armed: boolean;
+  /** Changes whenever this tab loses focus (a page tab opened); drops the dwell. */
+  resetKey: number;
   onEnter: (id: number) => void;
   onLeave: (id: number) => void;
 };
+
+// dwelling: ring drawing · opened: page opened, ring back at 0 until the pointer leaves ·
+// blocked: dwell done but the pop-up was blocked, ring stays full until the pointer leaves.
+type Phase = "idle" | "dwelling" | "opened" | "blocked";
 
 // Spread a 0–1 value per shard so the four loops never line up.
 const spread = (index: number, salt: number) => ((index * 0.618 + salt) % 1 + 1) % 1;
 const viewBox = `0 0 100 ${100 * SHARD.aspect}`;
 
-export function Shard({ page, placement, width, index, active, dimmed, armed, onEnter, onLeave }: Props) {
+export function Shard({ page, placement, width, index, active, dimmed, armed, resetKey, onEnter, onLeave }: Props) {
   const reduce = useReducedMotion();
-  const startTransition = useShardTransition();
-  const polygonRef = useRef<SVGPolygonElement>(null);
-  const [hovering, setHovering] = useState(false);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [ripples, setRipples] = useState(0);
   const [introDone, setIntroDone] = useState(false);
+  const pointerInside = useRef(false);
+  // After a reset with the pointer still resting here, wait for a fresh enter before dwelling again.
+  const waitForLeave = useRef(false);
+  const ringFull = phase === "dwelling" || phase === "blocked";
   const side = placement.cx < 50 ? "left" : "right";
   const previewId = `shard-preview-${page.id}`;
 
@@ -49,28 +60,41 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, on
     return () => clearTimeout(t);
   }, [index]);
 
-  const open = useCallback(() => {
-    const polygon = polygonRef.current;
-    const matrix = polygon?.getScreenCTM();
-    if (!polygon || !matrix) return;
-    const points = Array.from(polygon.points, (p) => {
-      const screen = new DOMPoint(p.x, p.y).matrixTransform(matrix);
-      return { x: screen.x, y: screen.y };
-    });
-    startTransition({ color: page.color, path: page.path, points });
-  }, [page, startTransition]);
-
-  // Dwell: hovering for DWELL_MS enters the page. Keyboard focus never auto-navigates.
   useEffect(() => {
-    if (!hovering) return;
-    const t = setTimeout(open, DWELL_MS);
+    if (resetKey === 0) return;
+    waitForLeave.current = pointerInside.current;
+    setPhase("idle");
+  }, [resetKey]);
+
+  // The page has opened in a new tab; this tab only pulses the shard.
+  const opened = useCallback(() => {
+    setPhase((cur) => (cur === "idle" ? cur : "opened"));
+    setRipples((n) => n + 1);
+  }, []);
+
+  // Dwell: hovering for DWELL_MS opens the page. Keyboard focus never auto-opens.
+  // A pop-up without a click is usually blocked; then the shard asks for a click instead.
+  useEffect(() => {
+    if (phase !== "dwelling") return;
+    const t = setTimeout(() => {
+      if (openInNewTab(page.path)) opened();
+      else setPhase("blocked");
+    }, DWELL_MS);
     return () => clearTimeout(t);
-  }, [hovering, open]);
+  }, [phase, page.path, opened]);
 
   const startHover = () => {
-    if (hovering || !armed) return;
-    setHovering(true);
+    pointerInside.current = true;
+    if (phase !== "idle" || !armed || waitForLeave.current) return;
+    setPhase("dwelling");
     onEnter(page.id);
+  };
+
+  const endHover = () => {
+    pointerInside.current = false;
+    waitForLeave.current = false;
+    setPhase("idle");
+    onLeave(page.id);
   };
 
   const vars = {
@@ -109,9 +133,11 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, on
     >
       <motion.a
         href={page.path}
-        aria-label={`Open Page ${page.id}`}
+        {...NEW_TAB}
+        aria-label={`Open Page ${page.id} in a new tab`}
         aria-describedby={active ? previewId : undefined}
         data-active={active}
+        data-phase={phase}
         className="pointer-events-none relative z-10 block h-full w-full rounded-lg outline-none focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-ink"
         style={{ rotate: placement.rotate, ...vars }}
         initial={{ opacity: 0, y: reduce ? 0 : INTRO.slidePx }}
@@ -125,18 +151,11 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, on
         }}
         onPointerEnter={(e) => e.pointerType !== "touch" && startHover()}
         onPointerMove={(e) => e.pointerType !== "touch" && startHover()}
-        onPointerLeave={(e) => {
-          if (e.pointerType === "touch") return;
-          setHovering(false);
-          onLeave(page.id);
-        }}
+        onPointerLeave={(e) => e.pointerType !== "touch" && endHover()}
         onFocus={() => onEnter(page.id)}
         onBlur={() => onLeave(page.id)}
-        onClick={(e) => {
-          // Click, tap and Enter skip the dwell.
-          e.preventDefault();
-          open();
-        }}
+        // Click, tap and Enter skip the dwell; the link itself opens the new tab.
+        onClick={opened}
       >
         <div className="shard-float relative h-full w-full">
           {/* Ambient glow breathes; it pauses and hands over to the brighter glow while active. */}
@@ -159,7 +178,6 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, on
 
           <svg viewBox={viewBox} aria-hidden="true" className="relative h-full w-full overflow-visible">
             <polygon
-              ref={polygonRef}
               points={SHARD.points}
               className="shard-drift shard-main"
               // Transparent stroke widens the hit area beyond the painted edge.
@@ -177,17 +195,41 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, on
               strokeLinejoin="round"
               pathLength={1}
               strokeDasharray={reduce ? undefined : "1 2"}
+              className="shard-ring"
               style={{ pointerEvents: "none" }}
               initial={reduce ? { opacity: 0 } : { strokeDashoffset: 1 }}
-              animate={reduce ? { opacity: hovering ? 1 : 0 } : { strokeDashoffset: hovering ? 0 : 1 }}
+              animate={
+                phase === "blocked"
+                  ? { strokeDashoffset: 0, opacity: reduce ? 1 : [1, BLOCKED_PULSE.minOpacity, 1] }
+                  : reduce
+                    ? { opacity: ringFull ? 1 : 0 }
+                    : { strokeDashoffset: ringFull ? 0 : 1, opacity: 1 }
+              }
               transition={
-                reduce
-                  ? { duration: 0.3 }
-                  : hovering
-                    ? { duration: DWELL_MS / 1000, ease: "linear" }
-                    : { duration: HOVER.rewindMs / 1000, ease: "easeOut" }
+                phase === "blocked"
+                  ? { duration: BLOCKED_PULSE.seconds, ease: "easeInOut", repeat: Infinity }
+                  : reduce
+                    ? { duration: 0.3 }
+                    : ringFull
+                      ? { duration: DWELL_MS / 1000, ease: "linear" }
+                      : { duration: HOVER.rewindMs / 1000, ease: "easeOut" }
               }
             />
+            {/* Opened: a short pulse on the shard instead of covering the screen. */}
+            {ripples > 0 && !reduce && (
+              <motion.polygon
+                key={ripples}
+                points={SHARD.points}
+                fill="var(--c-tint)"
+                stroke={page.color}
+                strokeWidth={2}
+                strokeLinejoin="round"
+                style={{ pointerEvents: "none", transformBox: "fill-box", transformOrigin: "center" }}
+                initial={{ scale: 1, opacity: 0.55 }}
+                animate={{ scale: RIPPLE.scale, opacity: 0 }}
+                transition={{ duration: RIPPLE.ms / 1000, ease: [0.22, 1, 0.36, 1] }}
+              />
+            )}
           </svg>
         </div>
       </motion.a>
@@ -198,8 +240,16 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, on
             id={previewId}
             page={page}
             side={side}
-            hint={hovering ? "Hold to enter · click to go" : "Press Enter to open"}
-            onOpen={open}
+            hint={
+              phase === "blocked"
+                ? "Click to open"
+                : phase === "opened"
+                  ? "Opened in a new tab"
+                  : phase === "idle"
+                    ? "Press Enter to open in a new tab"
+                    : "Hold to open · click to go"
+            }
+            onOpen={() => openInNewTab(page.path) && opened()}
           />
         )}
       </AnimatePresence>

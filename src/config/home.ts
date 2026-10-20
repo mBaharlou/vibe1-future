@@ -112,8 +112,42 @@ export const HOVER = { scale: 1.08, dimOpacity: 0.45, previewMs: 300, rewindMs: 
 /** The pointer must travel this far on the home page before hover-to-enter arms. */
 export const DWELL_ARM_PX = 12;
 
-/** Hover this long to enter a page. */
+/** Hover this long to open a page in a new tab. */
 export const DWELL_MS = 1200;
+
+/** Pulse on the shard itself when its page opens (the home tab stays put). */
+export const RIPPLE = { ms: 400, scale: 1.22 };
+
+/** Dwell finished but the browser blocked the pop-up: the full ring pulses until hover ends. */
+export const BLOCKED_PULSE = { seconds: 1.4, minOpacity: 0.4 };
+
+// ── Header and menu ──────────────────────────────────────────────────
+export const HEADER = {
+  /** Top bar padding above the label and menu button. */
+  topPx: 10,
+  /** How far "CLAUDE" + subtitle move down (CSS length). */
+  shift: "clamp(24px, calc(2.5vw + 16px), 56px)",
+  /** The shift shrinks so the subtitle keeps at least this much room above the cat. */
+  catClearancePx: 12,
+};
+
+export const MENU = {
+  buttonPx: 40,
+  widthPx: 320,
+  /** Panel height as a CSS length. */
+  height: "50vh",
+  /** Gap between the button and the panel. */
+  gapPx: 8,
+  openMs: 350,
+  closeMs: 300,
+  /** Pointer has left both button and panel for this long before it closes. */
+  closeDelayMs: 200,
+  itemStaggerMs: 40,
+  ease: [0.22, 1, 0.36, 1] as const,
+};
+
+/** After window.close(), give the tab this long to go before falling back to "/". */
+export const CLOSE_FALLBACK_MS = 150;
 
 // ── Haze and smoke ───────────────────────────────────────────────────
 export const HAZE = {
