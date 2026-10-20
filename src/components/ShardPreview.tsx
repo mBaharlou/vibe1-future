@@ -1,20 +1,21 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { PageData } from "../data/pages";
+import { HOVER } from "../config/home";
 
 type Props = {
   id: string;
   page: PageData;
   /** Which half of the poster the shard sits in; the panel opens toward the centre. */
   side: "left" | "right";
-  touch: boolean;
+  hint: string;
   onOpen: () => void;
 };
 
-export function ShardPreview({ id, page, side, touch, onOpen }: Props) {
+export function ShardPreview({ id, page, side, hint, onOpen }: Props) {
   const reduce = useReducedMotion();
   const hidden = reduce
     ? { opacity: 0 }
-    : { opacity: 0, scale: 0.55, x: side === "left" ? -18 : 18, y: 18 };
+    : { opacity: 0, scale: 0.92, x: side === "left" ? -10 : 10, y: 10 };
 
   return (
     <motion.div
@@ -30,13 +31,13 @@ export function ShardPreview({ id, page, side, touch, onOpen }: Props) {
       initial={hidden}
       animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
       exit={{ ...hidden, transition: { duration: 0.18, ease: "easeIn" } }}
-      transition={reduce ? { duration: 0.2 } : { type: "spring", stiffness: 420, damping: 28 }}
+      transition={{ duration: HOVER.previewMs / 1000, ease: "easeOut" }}
     >
       <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-400">Preview</p>
       <h3 className="mt-1 text-lg font-black tracking-tight text-ink">{page.title}</h3>
       <p className="mt-1 text-sm leading-snug text-neutral-600">{page.description}</p>
       <p className="mt-3 text-xs font-medium" style={{ color: page.color }}>
-        {touch ? "Tap again to open →" : "Click to open →"}
+        {hint} →
       </p>
     </motion.div>
   );

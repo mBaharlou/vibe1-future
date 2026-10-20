@@ -20,3 +20,60 @@ textarea,
 select {
   font: inherit;
 }
+
+/* ── Home ambient motion. Timings and values arrive as CSS variables from src/config/home.ts. ── */
+
+.shard-float {
+  animation: shard-float var(--float-s) ease-in-out var(--float-delay) infinite alternate;
+}
+
+@keyframes shard-float {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(var(--float-px) * -1)); }
+}
+
+.shard-breathe {
+  opacity: var(--glow-min);
+  animation: shard-breathe var(--breathe-s) ease-in-out var(--breathe-delay) infinite;
+}
+
+.shard-breathe[data-paused="true"] {
+  animation-play-state: paused;
+}
+
+@keyframes shard-breathe {
+  0%, 100% { opacity: var(--glow-min); transform: scale(1); }
+  50% { opacity: var(--glow-max); transform: scale(var(--glow-scale)); }
+}
+
+.shard-drift {
+  fill: var(--c);
+  animation: shard-drift var(--drift-s) ease-in-out var(--drift-delay) infinite;
+}
+
+@keyframes shard-drift {
+  0%, 100% { fill: var(--c); }
+  33% { fill: var(--c-light); }
+  66% { fill: var(--c-dark); }
+}
+
+.haze-drift {
+  animation: haze-drift var(--haze-s) ease-in-out infinite alternate;
+}
+
+@keyframes haze-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(var(--haze-dx)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shard-float,
+  .shard-drift,
+  .haze-drift {
+    animation: none;
+  }
+  .shard-breathe {
+    animation: none;
+    opacity: var(--glow-static);
+  }
+}
