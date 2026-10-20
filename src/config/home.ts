@@ -14,47 +14,51 @@ export const CAT = {
 /** Where smoke comes from, as % of the cat frame. Tied to CAT.zoom / CAT.focus. */
 export const MOUTH_ORIGIN = { x: 40.8, y: 54.6 };
 
-// ── Shard layouts ────────────────────────────────────────────────────
-export type ShardGeometry = {
-  /** Position and size as % of the hero frame (width sets both sides of a square box). */
-  left: number;
-  top: number;
-  width: number;
-  rotate: number;
-  /** Polygon points in a 0–100 box. */
-  points: string;
+// ── Shards ───────────────────────────────────────────────────────────
+/** Denim blue sampled from the photo's sky (median of its blue pixels), plus ±8% lightness. */
+export const DENIM = {
+  base: "#2D6280",
+  /** Lightness offsets (percentage points) for the tint and shade. */
+  tint: 8,
+  shade: -8,
 };
+
+/** One shared outline for all four shards, drawn in a 100 × (100·aspect) box. */
+export const SHARD = {
+  /** Height / width. */
+  aspect: 1.3,
+  points: "34,0 90,16 100,74 62,130 8,110 0,44",
+};
+
+/** Placement as % of the hero frame. `cx` is the centre; size comes from the layout. */
+export type ShardPlacement = { cx: number; top: number; rotate: number };
 
 export type Layout = {
   /** Frame width / height. */
   ratio: number;
-  /** Cat frame height as % of the hero frame. */
-  cat: number;
+  /** Cat frame height and distance from the frame bottom, as % of the frame height. */
+  cat: { height: number; bottom: number };
+  /** Every shard's width as % of the frame width. */
+  shardWidth: number;
   /** Sorted left → right, so index 0 is Page 1. */
-  shards: ShardGeometry[];
+  shards: ShardPlacement[];
   sparkles: { left: number; top: number; width: number }[];
 };
 
-const leftToRight = (shards: ShardGeometry[]) =>
-  [...shards].sort((a, b) => a.left + a.width / 2 - (b.left + b.width / 2));
+const leftToRight = (shards: ShardPlacement[]) => [...shards].sort((a, b) => a.cx - b.cx);
 
-// Same four outlines in both layouts so they read as one set.
-const OUTLINES = {
-  upperLeft: "2,22 34,2 62,30 98,70 80,98 30,64",
-  lowerLeft: "0,58 26,20 70,8 100,30 86,64 30,96",
-  upperRight: "96,18 62,0 34,34 4,74 26,100 74,60",
-  lowerRight: "100,52 70,14 26,4 0,36 18,70 76,96",
-};
-
+// The shards fan out from under the cat's bottom edge in an even arc:
+// equal spacing, outer pair a little higher and more tilted.
 export const LAYOUTS: Record<"wide" | "tall", Layout> = {
   wide: {
     ratio: 1.25,
-    cat: 82,
+    cat: { height: 70, bottom: 24 },
+    shardWidth: 13,
     shards: leftToRight([
-      { left: 18, top: 3, width: 27, rotate: -6, points: OUTLINES.upperLeft },
-      { left: 10, top: 35, width: 27, rotate: 10, points: OUTLINES.lowerLeft },
-      { left: 55, top: 1, width: 27, rotate: 8, points: OUTLINES.upperRight },
-      { left: 63, top: 33, width: 27, rotate: -11, points: OUTLINES.lowerRight },
+      { cx: 27, top: 64, rotate: 22 },
+      { cx: 42.3, top: 70, rotate: 8 },
+      { cx: 57.7, top: 70, rotate: -8 },
+      { cx: 73, top: 64, rotate: -22 },
     ]),
     sparkles: [
       { left: 2, top: 50, width: 6 },
@@ -63,16 +67,17 @@ export const LAYOUTS: Record<"wide" | "tall", Layout> = {
   },
   tall: {
     ratio: 0.8,
-    cat: 62,
+    cat: { height: 64, bottom: 26 },
+    shardWidth: 20,
     shards: leftToRight([
-      { left: 8, top: 17, width: 36, rotate: -6, points: OUTLINES.upperLeft },
-      { left: 0, top: 43, width: 36, rotate: 10, points: OUTLINES.lowerLeft },
-      { left: 56, top: 14, width: 36, rotate: 8, points: OUTLINES.upperRight },
-      { left: 64, top: 41, width: 36, rotate: -11, points: OUTLINES.lowerRight },
+      { cx: 14, top: 66, rotate: 22 },
+      { cx: 38, top: 70, rotate: 8 },
+      { cx: 62, top: 70, rotate: -8 },
+      { cx: 86, top: 66, rotate: -22 },
     ]),
     sparkles: [
-      { left: 4, top: 76, width: 9 },
-      { left: 86, top: 72, width: 8 },
+      { left: 4, top: 34, width: 9 },
+      { left: 86, top: 30, width: 8 },
     ],
   },
 };
@@ -81,7 +86,8 @@ export const LAYOUTS: Record<"wide" | "tall", Layout> = {
 export const TALL_BELOW = 0.95;
 
 // ── Shard motion ─────────────────────────────────────────────────────
-export const INTRO = { fadeMs: 800, staggerMs: 100 };
+/** Load: fade + slide up out from under the cat. */
+export const INTRO = { fadeMs: 800, staggerMs: 100, slidePx: 10 };
 
 export const FLOAT = { px: 2.5, minS: 6, maxS: 8 };
 
@@ -98,10 +104,13 @@ export const GLOW = {
   active: 0.5,
 };
 
-/** Fill and glow drift between ±lightness (percentage points) of each page color. */
+/** Fill and glow drift between ±lightness (percentage points) of the base blue. */
 export const COLOR_DRIFT = { lightness: 4, seconds: 12 };
 
-export const HOVER = { scale: 1.12, dimOpacity: 0.45, previewMs: 300, rewindMs: 350 };
+export const HOVER = { scale: 1.08, dimOpacity: 0.45, previewMs: 300, rewindMs: 350 };
+
+/** The pointer must travel this far on the home page before hover-to-enter arms. */
+export const DWELL_ARM_PX = 12;
 
 /** Hover this long to enter a page. */
 export const DWELL_MS = 1200;

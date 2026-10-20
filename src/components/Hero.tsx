@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { pages } from "../data/pages";
-import { LAYOUTS, TALL_BELOW } from "../config/home";
+import { DENIM, DWELL_ARM_PX, LAYOUTS, TALL_BELOW } from "../config/home";
+import { HOME_TITLE } from "../data/pages";
 import { Cat } from "./Cat";
 import { Haze } from "./Haze";
 import { Shard } from "./Shard";
@@ -12,6 +13,7 @@ export function Hero() {
   const [active, setActive] = useState<number | null>(null);
   const [catHover, setCatHover] = useState(false);
   const [burstAt, setBurstAt] = useState(0);
+  const [armed, setArmed] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
   const catRef = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState({ width: 0, height: 0, kind: "wide" as keyof typeof LAYOUTS });
@@ -33,9 +35,34 @@ export function Hero() {
   }, []);
 
   useEffect(() => {
+    document.title = HOME_TITLE;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setActive(null);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Hover-to-enter arms only after the pointer really moves here. Without this, coming
+  // Back to this page with the pointer resting on a shard re-starts the dwell and throws
+  // you forward again. Also reset when the page is restored from the back/forward cache.
+  useEffect(() => {
+    let origin: { x: number; y: number } | null = null;
+    const onMove = (e: PointerEvent) => {
+      if (!origin) origin = { x: e.clientX, y: e.clientY };
+      else if (Math.hypot(e.clientX - origin.x, e.clientY - origin.y) > DWELL_ARM_PX) setArmed(true);
+    };
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (!e.persisted) return;
+      origin = null;
+      setArmed(false);
+      setActive(null);
+      setCatHover(false);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pageshow", onPageShow);
+    };
   }, []);
 
   return (
@@ -50,8 +77,11 @@ export function Hero() {
         1/10
       </span>
 
-      <header className="relative px-4 pt-10 text-center sm:pt-12">
-        <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-neutral-800 sm:text-xs">
+      <header className="relative px-4 pt-10 text-center sm:pt-12" style={{ paddingBottom: "clamp(16px, 2.2vw, 24px)" }}>
+        <p
+          className="inline-block rounded-full text-[10px] font-medium uppercase tracking-[0.35em] text-neutral-800 sm:text-xs"
+          style={{ padding: "6px 14px", background: `${DENIM.base}0f` }}
+        >
           Graphic design prompts for
         </p>
         <h1
@@ -74,14 +104,16 @@ export function Hero() {
           style={{ width: frame.width, height: frame.height, transform: "translateX(-50%)" }}
         >
           {/* layout.shards is sorted left → right, so shard i opens pages[i]. Tab order follows. */}
-          {layout.shards.map((shape, i) => {
+          {layout.shards.map((placement, i) => {
             const page = pages[i];
             return (
               <Shard
                 key={page.id}
                 page={page}
-                shape={shape}
+                placement={placement}
+                width={layout.shardWidth}
                 index={i}
+                armed={armed}
                 active={active === page.id}
                 dimmed={active !== null && active !== page.id}
                 onEnter={setActive}
@@ -101,7 +133,7 @@ export function Hero() {
 
           <Cat
             ref={catRef}
-            height={layout.cat}
+            placement={layout.cat}
             onHoverChange={setCatHover}
             onTap={() => setBurstAt(Date.now())}
           />

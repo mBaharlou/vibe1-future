@@ -1,32 +1,47 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { PageData } from "../data/pages";
-import { COLOR_DRIFT, DWELL_MS, FLOAT, GLOW, HOVER, INTRO, type ShardGeometry } from "../config/home";
+import {
+  COLOR_DRIFT,
+  DENIM,
+  DWELL_MS,
+  FLOAT,
+  GLOW,
+  HOVER,
+  INTRO,
+  SHARD,
+  type ShardPlacement,
+} from "../config/home";
 import { shiftLightness } from "../lib/color";
 import { ShardPreview } from "./ShardPreview";
 import { useShardTransition } from "./ShardTransition";
 
 type Props = {
   page: PageData;
-  shape: ShardGeometry;
+  placement: ShardPlacement;
+  /** Shared width as % of the hero frame. */
+  width: number;
   /** Position in the left → right order; used to offset ambient loops. */
   index: number;
   active: boolean;
   dimmed: boolean;
+  /** False until the pointer has really moved on this page; stops a resting pointer from re-entering after Back. */
+  armed: boolean;
   onEnter: (id: number) => void;
   onLeave: (id: number) => void;
 };
 
 // Spread a 0–1 value per shard so the four loops never line up.
 const spread = (index: number, salt: number) => ((index * 0.618 + salt) % 1 + 1) % 1;
+const viewBox = `0 0 100 ${100 * SHARD.aspect}`;
 
-export function Shard({ page, shape, index, active, dimmed, onEnter, onLeave }: Props) {
+export function Shard({ page, placement, width, index, active, dimmed, armed, onEnter, onLeave }: Props) {
   const reduce = useReducedMotion();
   const startTransition = useShardTransition();
   const polygonRef = useRef<SVGPolygonElement>(null);
   const [hovering, setHovering] = useState(false);
   const [introDone, setIntroDone] = useState(false);
-  const side = shape.left + shape.width / 2 < 50 ? "left" : "right";
+  const side = placement.cx < 50 ? "left" : "right";
   const previewId = `shard-preview-${page.id}`;
 
   useEffect(() => {
@@ -52,10 +67,17 @@ export function Shard({ page, shape, index, active, dimmed, onEnter, onLeave }: 
     return () => clearTimeout(t);
   }, [hovering, open]);
 
+  const startHover = () => {
+    if (hovering || !armed) return;
+    setHovering(true);
+    onEnter(page.id);
+  };
+
   const vars = {
     "--c": page.color,
     "--c-light": shiftLightness(page.color, COLOR_DRIFT.lightness),
     "--c-dark": shiftLightness(page.color, -COLOR_DRIFT.lightness),
+    "--c-tint": shiftLightness(page.color, DENIM.tint),
     "--drift-s": `${COLOR_DRIFT.seconds}s`,
     "--drift-delay": `${-spread(index, 0.1) * COLOR_DRIFT.seconds}s`,
     "--float-px": `${FLOAT.px}px`,
@@ -70,35 +92,39 @@ export function Shard({ page, shape, index, active, dimmed, onEnter, onLeave }: 
   } as CSSProperties;
 
   const glow = (
-    <svg viewBox="0 0 100 100" className="h-full w-full overflow-visible" style={{ filter: `blur(${GLOW.blurPx}px)` }}>
-      <polygon points={shape.points} className="shard-drift" />
+    <svg viewBox={viewBox} className="h-full w-full overflow-visible" style={{ filter: `blur(${GLOW.blurPx}px)` }}>
+      <polygon points={SHARD.points} className="shard-drift" />
     </svg>
   );
 
   return (
     <div
-      className="pointer-events-none absolute aspect-square"
-      style={{ left: `${shape.left}%`, top: `${shape.top}%`, width: `${shape.width}%` }}
+      className="pointer-events-none absolute"
+      style={{
+        left: `${placement.cx - width / 2}%`,
+        top: `${placement.top}%`,
+        width: `${width}%`,
+        aspectRatio: 1 / SHARD.aspect,
+      }}
     >
       <motion.a
         href={page.path}
         aria-label={`Open Page ${page.id}`}
         aria-describedby={active ? previewId : undefined}
+        data-active={active}
         className="pointer-events-none relative z-10 block h-full w-full rounded-lg outline-none focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-ink"
-        style={{ rotate: shape.rotate, ...vars }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: dimmed ? HOVER.dimOpacity : 1, scale: active && !reduce ? HOVER.scale : 1 }}
+        style={{ rotate: placement.rotate, ...vars }}
+        initial={{ opacity: 0, y: reduce ? 0 : INTRO.slidePx }}
+        animate={{ opacity: dimmed ? HOVER.dimOpacity : 1, y: 0, scale: active && !reduce ? HOVER.scale : 1 }}
         transition={{
           opacity: introDone
             ? { duration: 0.3, ease: "easeOut" }
             : { duration: INTRO.fadeMs / 1000, ease: "easeOut", delay: (index * INTRO.staggerMs) / 1000 },
+          y: { duration: INTRO.fadeMs / 1000, ease: "easeOut", delay: (index * INTRO.staggerMs) / 1000 },
           scale: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
         }}
-        onPointerEnter={(e) => {
-          if (e.pointerType === "touch") return;
-          setHovering(true);
-          onEnter(page.id);
-        }}
+        onPointerEnter={(e) => e.pointerType !== "touch" && startHover()}
+        onPointerMove={(e) => e.pointerType !== "touch" && startHover()}
         onPointerLeave={(e) => {
           if (e.pointerType === "touch") return;
           setHovering(false);
@@ -131,11 +157,11 @@ export function Shard({ page, shape, index, active, dimmed, onEnter, onLeave }: 
             {glow}
           </div>
 
-          <svg viewBox="0 0 100 100" aria-hidden="true" className="relative h-full w-full overflow-visible">
+          <svg viewBox={viewBox} aria-hidden="true" className="relative h-full w-full overflow-visible">
             <polygon
               ref={polygonRef}
-              points={shape.points}
-              className="shard-drift"
+              points={SHARD.points}
+              className="shard-drift shard-main"
               // Transparent stroke widens the hit area beyond the painted edge.
               stroke="transparent"
               strokeWidth={16}
@@ -144,10 +170,10 @@ export function Shard({ page, shape, index, active, dimmed, onEnter, onLeave }: 
             />
             {/* Dwell progress: draws around the outline, rewinds if the pointer leaves early. */}
             <motion.polygon
-              points={shape.points}
+              points={SHARD.points}
               fill="none"
-              stroke="#1f1f1f"
-              strokeWidth={2.2}
+              stroke={shiftLightness(page.color, DENIM.shade)}
+              strokeWidth={3}
               strokeLinejoin="round"
               pathLength={1}
               strokeDasharray={reduce ? undefined : "1 2"}
@@ -172,7 +198,7 @@ export function Shard({ page, shape, index, active, dimmed, onEnter, onLeave }: 
             id={previewId}
             page={page}
             side={side}
-            hint={hovering ? "Keep hovering to enter, or click" : "Press Enter to open"}
+            hint={hovering ? "Hold to enter · click to go" : "Press Enter to open"}
             onOpen={open}
           />
         )}

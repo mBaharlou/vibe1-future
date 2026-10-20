@@ -1,6 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 type Point = { x: number; y: number };
 type Start = { color: string; path: string; points: Point[] };
@@ -41,8 +41,18 @@ function grow(points: Point[]): Point[] {
 
 export function ShardTransitionProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const reduce = useReducedMotion();
   const [active, setActive] = useState<(Start & { key: number }) | null>(null);
+
+  // Any route change (including browser Back/Forward mid-transition) or a back/forward-cache
+  // restore drops the overlay, so it can never cover the page or navigate late.
+  useEffect(() => setActive(null), [location.key]);
+  useEffect(() => {
+    const onPageShow = (e: PageTransitionEvent) => e.persisted && setActive(null);
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   const start = useCallback(
     (next: Start) => setActive((cur) => cur ?? { ...next, key: Date.now() }),

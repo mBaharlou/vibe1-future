@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import type { PageData } from "../data/pages";
+import { SHARD } from "../config/home";
+import { pageTitle, type PageData } from "../data/pages";
 
 const lorem = [
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
@@ -11,12 +12,10 @@ const lorem = [
 
 /** Shared shell for /page-1 … /page-4. Real content comes from src/data/pages.ts later. */
 export function PageLayout({ page }: { page: PageData }) {
+  const navigate = useNavigate();
+
   useEffect(() => {
-    window.scrollTo(0, 0);
-    document.title = `${page.title} · Claude Prompts`;
-    return () => {
-      document.title = "Claude Prompts";
-    };
+    document.title = pageTitle(page.title);
   }, [page]);
 
   return (
@@ -30,15 +29,22 @@ export function PageLayout({ page }: { page: PageData }) {
       <div aria-hidden="true" className="absolute inset-y-0 left-0 w-2 sm:w-3" style={{ background: page.color }} />
       <svg
         aria-hidden="true"
-        viewBox="0 0 100 100"
-        className="absolute -right-10 -top-8 w-[min(42vw,340px)] rotate-12"
+        viewBox={`0 0 100 ${100 * SHARD.aspect}`}
+        className="absolute -right-10 -top-8 w-[min(34vw,260px)] rotate-12"
       >
-        <polygon points="8,32 50,4 96,20 90,68 42,96 4,66" fill={page.color} />
+        <polygon points={SHARD.points} fill={page.color} />
       </svg>
 
       <div className="relative mx-auto max-w-3xl px-6 py-8 sm:px-10 sm:py-14">
         <Link
           to="/"
+          onClick={(e) => {
+            // Go back through real history when we arrived from inside the app; otherwise to home.
+            if ((window.history.state?.idx ?? 0) > 0) {
+              e.preventDefault();
+              navigate(-1);
+            }
+          }}
           className="inline-flex min-h-11 items-center gap-2 rounded text-sm font-medium text-neutral-600 hover:text-ink focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-ink"
         >
           ← Back

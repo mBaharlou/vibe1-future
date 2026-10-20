@@ -57,6 +57,12 @@ select {
   66% { fill: var(--c-dark); }
 }
 
+/* Hovered/focused shard: hold the lighter tint instead of drifting. */
+[data-active="true"] .shard-main {
+  animation: none;
+  fill: var(--c-tint);
+}
+
 .haze-drift {
   animation: haze-drift var(--haze-s) ease-in-out infinite alternate;
 }
