@@ -28,6 +28,7 @@ export function TopBar({ home = false }: { home?: boolean }) {
     <>
       <style>{barCss}</style>
       <div
+        data-topbar=""
         className="fixed inset-x-0 top-0 z-[60] grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-1.5 sm:px-5"
         style={{
           height: "var(--bar-h)",
@@ -85,6 +86,7 @@ function HomeButton() {
         e.preventDefault();
         goHome(navigate);
       }}
+      data-eyes-avoid=""
       className="fixed start-3 z-[55] inline-flex h-10 items-center gap-2 rounded-full bg-white/55 px-4 text-sm font-medium text-neutral-700 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.05)] backdrop-blur-md hover:text-ink focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink sm:start-6"
       style={{ top: "calc(var(--bar-h) + 12px)" }}
     >

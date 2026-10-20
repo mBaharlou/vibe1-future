@@ -1,17 +1,22 @@
-import { setMuted, useMuted } from "../lib/sound";
+import { setMuted, useAudioUnlocked, useMuted } from "../lib/sound";
 import { useLocale } from "../i18n";
 
-/** Speaker toggle for the joint sound; remembered in localStorage across tabs and visits. */
+/** Speaker toggle for the joint sound; remembered in localStorage across tabs and visits.
+ *  Pulses until the first click/tap/key press, which is when browsers allow sound. */
 export function MuteToggle() {
   const { t } = useLocale();
   const muted = useMuted();
+  const unlocked = useAudioUnlocked();
+  const waiting = !unlocked && !muted;
   return (
     <button
       type="button"
+      title={waiting ? t("sound.enable") : undefined}
+      data-waiting={waiting}
       aria-pressed={muted}
       aria-label={muted ? t("sound.unmute") : t("sound.mute")}
       onClick={() => setMuted(!muted)}
-      className="pointer-events-auto grid size-9 place-items-center rounded-full text-ink sm:size-11 focus-visible:outline-[3px] focus-visible:-outline-offset-4 focus-visible:outline-ink"
+      className="sound-toggle pointer-events-auto relative grid size-9 place-items-center rounded-full text-ink sm:size-11 focus-visible:outline-[3px] focus-visible:-outline-offset-4 focus-visible:outline-ink"
     >
       <svg aria-hidden="true" viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" fillOpacity="0.12" />

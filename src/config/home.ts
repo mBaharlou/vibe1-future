@@ -63,28 +63,48 @@ export const JOINT = {
   intro: { ms: 900, staggerMs: 120, slidePct: 45, ease: [0.22, 1, 0.36, 1] as const },
   /** Idle sway around the filter end. */
   sway: { deg: 1.5, minS: 7, maxS: 9 },
-  hover: { scale: 1.06, dimOpacity: 0.72 },
-  /** Ember at the lit tip. */
-  ember: { color: "255, 150, 60", pulseS: 3.2 },
+  hover: { scale: 1.05, dimOpacity: 0.72 },
+  /** Ember at the tip once lit. */
+  ember: { color: "255, 150, 60" },
 };
 
-/** Thin wisps rising from each lit tip (one shared canvas). Matches the cat smoke, much lighter. */
+/** Lighting a joint: a lighter flame at the tip, flint sparks, then it catches and smokes. */
+export const LIGHT = {
+  /** Hover / keyboard focus. */
+  ms: 2000,
+  /** Click / tap / Enter: the same sequence, faster. */
+  clickMs: 700,
+  /** After catching on hover: let the ember and first puff show before the transition. */
+  holdAfterLightMs: 450,
+  /** Click path: the transition starts this soon after catching (stays inside the click's
+   *  activation window for window.open). */
+  clickHoldMs: 120,
+  /** Flame height, as a multiple of the joint's thickness. */
+  flameScale: 2.4,
+  /** The pointer must travel this far on the page before hover can light a joint. */
+  armPx: 12,
+  /** Sparks per flint click. */
+  sparks: 7,
+  /** The tip glows up over the lighting time, to this opacity. */
+  preGlow: 0.55,
+};
+
+/** Smoke from a lit joint (one shared canvas). Matches the cat smoke, much lighter. */
 export const JOINT_SMOKE = {
-  /** Emission interval per joint; hovering a joint thickens its smoke. */
-  emitMs: 300,
-  hoverEmitMs: 140,
+  emitMs: 150,
   lifeMs: [2600, 3800] as const,
   /** Puff radius in px at the start and end of its life. */
   radius: [3, 14] as const,
   rise: [60, 110] as const,
   curl: 9,
-  startOpacity: 0.25,
-  hoverOpacity: 0.34,
+  opacity: 0.32,
+  /** The first thick puff when a joint catches. */
+  firstPuffs: 7,
   maxParticles: 90,
   colors: ["#f5f2ee", "#e8e5e1", "#d9d6d2"],
 };
 
-/** Selecting a joint: the ember flares, a big soft puff swells over the page, then the page opens. */
+/** Going to the page: the ember flares, a big soft puff swells over the page, then the page opens. */
 export const SELECT = {
   flareMs: 260,
   burstMs: 900,
@@ -92,39 +112,76 @@ export const SELECT = {
   /** Largest puff radius, as a share of the larger viewport side. */
   burstRadius: 0.55,
   burstOpacity: 0.7,
-  /** window.open runs this long after the click, well inside the click's activation window. */
-  openAfterMs: 520,
-  /** New tab: the haze clears off the page. */
+  /** The page opens this long after the transition starts. */
+  openAfterMs: 380,
+  /** New tab / page: the haze clears off it. */
   revealMs: 700,
 };
 
-/** Synthesized inhale + exhale (Web Audio). */
+/** Synthesized lighter (Web Audio). public/sounds/lighter.mp3, if present, is used instead. */
 export const SOUND = {
   volume: 0.35,
-  inhaleMs: 560,
-  pauseMs: 90,
-  exhaleMs: 620,
-  /** Paper crackle bursts during the inhale. */
-  crackles: 7,
+  /** Mix inside the lighter. */
+  flint: 0.9,
+  hiss: 0.16,
+  flame: 0.55,
+  /** Flint strikes before it catches (random in this range). */
+  strikes: [1, 3] as const,
+  /** Short, quiet exhale under the final smoke burst. */
+  exhale: 0.18,
+  exhaleMs: 520,
+  /** Fade when a lighting is cancelled. */
+  cancelFadeMs: 120,
   storageKey: "muted",
+  overrideSrc: "/sounds/lighter.mp3",
 };
 
-// ── Wandering eyes ───────────────────────────────────────────────────
+// ── Eyes (every page) ────────────────────────────────────────────────
 export const EYES = {
-  /** Eye width in px (mobile, desktop). */
-  sizePx: [30, 44] as const,
-  /** Seconds for the drift to roughly cross its region. */
+  count: 6,
+  /** Under 640px wide: fewer, a bit smaller. */
+  mobileCount: 5,
+  mobileScale: 0.82,
+  /** Width variants in px, cycled through the eyes. */
+  sizes: [36, 44, 54] as const,
+  /** Iris tints, cycled; all warm browns within the palette. */
+  irises: ["#3b2f26", "#4a3524", "#2e3a3f", "#55402c", "#3a2d33", "#40382a"],
+  /** Wander: seconds for the drift to roughly cross its region; WANDER_SPEED scales it. */
   crossS: [15, 25] as const,
-  /** Gentle tilt, degrees. */
+  wanderSpeed: 1,
+  /** Spring pulling an eye toward its wander point (1/s²). */
+  spring: 5,
+  /** Repulsion from the cursor: within `repelRadius` px, ∝ 1/d², capped at `repelCap`×. */
+  repelRadius: 180,
+  repelStrength: 2600,
+  repelCap: 6,
+  /** Sideways dodge from a fast-approaching cursor, per px/s of its speed. */
+  dodge: 2.2,
+  /** Velocity kept per frame at 60fps, and a speed cap (px/s). */
+  damping: 0.88,
+  maxSpeed: 900,
+  /** Eyes keep this many of their own widths apart. */
+  separation: 1.25,
+  separationStrength: 1800,
+  /** Scared: wider eye, smaller pupil. */
+  fleeScale: 1.1,
+  fleePupil: 0.62,
   tiltDeg: 8,
   /** How far the iris can move, as a share of the eye's half width. */
   irisTravel: 0.42,
   blinkMs: 120,
   blinkEveryS: [3, 7] as const,
-  /** An eye this close (px) to a hovered joint's tip looks at it instead of the cursor. */
-  lookAtJointPx: 420,
-  /** Extra room kept around the keep-out areas (wordmark, subtitle, cat, top bar). */
+  /** Extra room kept around [data-eyes-avoid] areas. */
   keepOutPadPx: 10,
+};
+
+// ── "JOINT" wordmark fill ─────────────────────────────────────────────
+/** Rainbow + flower-power pattern clipped to the letters. Pattern scale is in em (follows the
+ *  font size, so the look is the same at every screen size). */
+export const WORDMARK = {
+  patternScale: 1.35,
+  driftS: 50,
+  hueS: 26,
 };
 
 // ── Top bar, menu and language switcher ─────────────────────────────

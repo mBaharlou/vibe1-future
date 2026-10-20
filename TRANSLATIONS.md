@@ -40,9 +40,9 @@ language (English, Türkçe, فارسی).
 | `page.body2` | Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra. | Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra. | <span dir="rtl">کتاب‌های زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می‌طلبد تا با نرم‌افزارها شناخت بیشتری را برای طراحان رایانه‌ای علی‌الخصوص طراحان خلاقی فراهم کند.</span> |
 | `page.body3` | Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. | Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. | <span dir="rtl">در این صورت می‌توان امید داشت که تمام و دشواری موجود در ارائهٔ راهکارها و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی مورد استفاده قرار گیرد.</span> |
 | `joint.ariaLabel` | Open {{title}} | {{title}} sayfasını aç | <span dir="rtl">باز کردن {{title}}</span> |
-| `joint.hintBlocked` | Click to open | Açmak için tıkla | <span dir="rtl">برای باز کردن کلیک کنید</span> |
 | `sound.mute` | Mute sound | Sesi kapat | <span dir="rtl">قطع صدا</span> |
 | `sound.unmute` | Turn sound on | Sesi aç | <span dir="rtl">وصل صدا</span> |
+| `sound.enable` | Tap to enable sound | Sesi açmak için dokun | <span dir="rtl">برای فعال کردن صدا ضربه بزنید</span> |
 | `menu.open` | Open menu | Menüyü aç | <span dir="rtl">باز کردن منو</span> |
 | `menu.close` | Close menu | Menüyü kapat | <span dir="rtl">بستن منو</span> |
 | `menu.navLabel` | Pages | Sayfalar | <span dir="rtl">صفحه‌ها</span> |

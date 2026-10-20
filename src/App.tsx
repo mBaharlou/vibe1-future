@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { pages } from "./data/pages";
+import { Eyes } from "./components/Eyes";
 import { Hero } from "./components/Hero";
 import { NotFound } from "./components/NotFound";
 import { PageLayout } from "./components/PageLayout";
@@ -22,6 +23,8 @@ export default function App() {
         ))}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      {/* Outside the routes, so the eyes carry on across in-tab navigation. */}
+      <Eyes />
     </>
   );
 }

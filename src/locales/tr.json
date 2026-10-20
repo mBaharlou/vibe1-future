@@ -23,12 +23,12 @@
     "body3": "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis."
   },
   "joint": {
-    "ariaLabel": "{{title}} sayfasını aç",
-    "hintBlocked": "Açmak için tıkla"
+    "ariaLabel": "{{title}} sayfasını aç"
   },
   "sound": {
     "mute": "Sesi kapat",
-    "unmute": "Sesi aç"
+    "unmute": "Sesi aç",
+    "enable": "Sesi açmak için dokun"
   },
   "menu": {
     "open": "Menüyü aç",

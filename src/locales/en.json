@@ -23,12 +23,12 @@
     "body3": "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis."
   },
   "joint": {
-    "ariaLabel": "Open {{title}}",
-    "hintBlocked": "Click to open"
+    "ariaLabel": "Open {{title}}"
   },
   "sound": {
     "mute": "Mute sound",
-    "unmute": "Turn sound on"
+    "unmute": "Turn sound on",
+    "enable": "Tap to enable sound"
   },
   "menu": {
     "open": "Open menu",

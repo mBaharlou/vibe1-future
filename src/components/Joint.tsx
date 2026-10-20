@@ -1,33 +1,40 @@
 import type { CSSProperties, MouseEvent, Ref } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { HEAD_ORIGIN, JOINT, type JointPlacement } from "../config/home";
+import { HEAD_ORIGIN, JOINT, LIGHT, type JointPlacement } from "../config/home";
 import type { PageData } from "../data/pages";
 import { useLocale } from "../i18n";
 import { NEW_TAB } from "../lib/tabs";
+
+/** unlit: at rest · lighting: the lighter is going (flame once it catches) · lit: burning, smoking. */
+export type JointStage = "unlit" | "lighting" | "lit";
 
 type Props = {
   page: PageData;
   placement: JointPlacement;
   /** Left → right position; offsets the load stagger and the sway loop. */
   order: number;
-  hovered: boolean;
+  stage: JointStage;
+  /** The lighter's flame is showing (it has caught, not yet lit the joint). */
+  flame: boolean;
+  /** How long this lighting takes, so the tip's glow-up matches it. */
+  lightMs: number;
   dimmed: boolean;
-  /** Ember flares while the joint is being "smoked" (just selected). */
+  /** Ember flares on the way to the page. */
   flaring: boolean;
-  /** The pop-up was blocked: the next click lets the link open the tab itself. */
-  blocked: boolean;
   emberRef: Ref<HTMLSpanElement>;
-  onHover: (hovering: boolean) => void;
+  /** Hover or keyboard focus. */
+  onLight: () => void;
+  onCancel: () => void;
   onSelect: (e: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 const spread = (i: number, salt: number) => ((i * 0.618 + salt) % 1 + 1) % 1;
 
 /**
- * A joint coming out of the cat's head: filter end behind the head, lit tip pointing out.
+ * A joint coming out of the cat's head: filter end behind the head, tip pointing out.
  * Placed in % of the cat frame, so it scales with the cat. Never mirrored in RTL.
  */
-export function Joint({ page, placement, order, hovered, dimmed, flaring, blocked, emberRef, onHover, onSelect }: Props) {
+export function Joint({ page, placement, order, stage, flame, lightMs, dimmed, flaring, emberRef, onLight, onCancel, onSelect }: Props) {
   const { t } = useLocale();
   const reduce = useReducedMotion();
   const title = t(`pages.${page.key}.title`);
@@ -39,6 +46,7 @@ export function Joint({ page, placement, order, hovered, dimmed, flaring, blocke
     "--sway-delay": `${-spread(order, 0.7) * JOINT.sway.maxS}s`,
   } as CSSProperties;
   const intro = JOINT.intro;
+  const active = stage !== "unlit";
 
   return (
     <a
@@ -46,7 +54,8 @@ export function Joint({ page, placement, order, hovered, dimmed, flaring, blocke
       {...NEW_TAB}
       aria-label={t("joint.ariaLabel", { title })}
       data-joint={page.key}
-      data-blocked={blocked}
+      data-stage={stage}
+      data-eyes-avoid=""
       className="joint absolute block rounded-full outline-none focus-visible:outline-[3px] focus-visible:outline-offset-4 focus-visible:outline-ink"
       style={{
         left: `${HEAD_ORIGIN.x}%`,
@@ -56,10 +65,11 @@ export function Joint({ page, placement, order, hovered, dimmed, flaring, blocke
         transformOrigin: "0 50%",
         transform: `translateY(-50%) rotate(${placement.angle}deg) translateX(${offset}%)`,
       }}
-      onPointerEnter={(e) => e.pointerType !== "touch" && onHover(true)}
-      onPointerLeave={(e) => e.pointerType !== "touch" && onHover(false)}
-      onFocus={() => onHover(true)}
-      onBlur={() => onHover(false)}
+      onPointerEnter={(e) => e.pointerType !== "touch" && onLight()}
+      onPointerLeave={(e) => e.pointerType !== "touch" && onCancel()}
+      // Keyboard focus lights it like hover; a tap's focus doesn't (the tap itself does).
+      onFocus={(e) => e.currentTarget.matches(":focus-visible") && onLight()}
+      onBlur={onCancel}
       onClick={onSelect}
     >
       <span className="joint-sway block h-full w-full" style={sway}>
@@ -67,7 +77,7 @@ export function Joint({ page, placement, order, hovered, dimmed, flaring, blocke
           className="relative block h-full w-full"
           style={{ transformOrigin: "50% 50%" }}
           initial={reduce ? { opacity: 0 } : { opacity: 0, x: `-${intro.slidePct}%` }}
-          animate={{ opacity: dimmed ? JOINT.hover.dimOpacity : 1, x: "0%", scale: hovered && !reduce ? JOINT.hover.scale : 1 }}
+          animate={{ opacity: dimmed ? JOINT.hover.dimOpacity : 1, x: "0%", scale: active && !reduce ? JOINT.hover.scale : 1 }}
           transition={{
             opacity: { duration: 0.4, ease: "easeOut", delay: 0 },
             x: { duration: intro.ms / 1000, ease: intro.ease, delay: (order * intro.staggerMs) / 1000 },
@@ -85,27 +95,43 @@ export function Joint({ page, placement, order, hovered, dimmed, flaring, blocke
               <img src={JOINT.fallbackSrc} alt="" draggable={false} className="block h-full w-full select-none" />
             </picture>
           </motion.span>
-          {/* Ember at the lit tip; also where this joint's smoke rises from. */}
+          {/* The tip: dark at rest, glows up while lighting, a bright ember once lit. Smoke and
+              sparks come from here. */}
           <span
             ref={emberRef}
             aria-hidden="true"
             className="joint-ember"
-            data-hot={hovered}
+            data-stage={stage}
             data-flare={flaring}
-            style={{ "--ember": JOINT.ember.color, "--ember-s": `${JOINT.ember.pulseS}s` } as CSSProperties}
+            style={
+              {
+                "--ember": JOINT.ember.color,
+                "--light-ms": `${lightMs}ms`,
+                "--pre-glow": LIGHT.preGlow,
+              } as CSSProperties
+            }
           />
+          {/* Lighter flame, kept upright whatever the joint's angle. */}
+          {flame && !reduce && (
+            <span className="joint-flame-anchor" style={{ transform: `rotate(${-placement.angle}deg)` }}>
+              <span className="joint-flame" style={{ height: `${LIGHT.flameScale * 100}%` }}>
+                <svg viewBox="0 0 20 34" aria-hidden="true">
+                  <defs>
+                    <radialGradient id={`flame-${page.key}`} cx="50%" cy="72%" r="62%">
+                      <stop offset="0%" stopColor="#fffbe6" />
+                      <stop offset="28%" stopColor="#ffe27a" />
+                      <stop offset="62%" stopColor="#ffa233" />
+                      <stop offset="100%" stopColor="#ff6a1a" stopOpacity="0" />
+                    </radialGradient>
+                  </defs>
+                  <path d="M10 1 C 14 9, 19 15, 18 23 C 17.4 29.5, 13.8 33, 10 33 C 6.2 33, 2.6 29.5, 2 23 C 1 15, 6 9, 10 1 Z" fill={`url(#flame-${page.key})`} />
+                  <path d="M10 16 C 12 20, 13.4 23, 13 26.5 C 12.7 29.5, 11.4 31, 10 31 C 8.6 31, 7.3 29.5, 7 26.5 C 6.6 23, 8 20, 10 16 Z" fill="#6fb6ff" fillOpacity="0.55" />
+                </svg>
+              </span>
+            </span>
+          )}
         </motion.span>
       </span>
-      {blocked && (
-        <span
-          className="joint-hint"
-          role="status"
-          // Sits above the tip, upright whatever the joint's angle.
-          style={{ transform: `translate(-50%, -50%) rotate(${-placement.angle}deg) translateY(-190%)` }}
-        >
-          {t("joint.hintBlocked")}
-        </span>
-      )}
     </a>
   );
 }

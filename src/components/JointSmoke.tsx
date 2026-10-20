@@ -1,21 +1,26 @@
 import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
 import { useReducedMotion } from "framer-motion";
-import { JOINT_SMOKE, SELECT } from "../config/home";
+import { JOINT_SMOKE, LIGHT, SELECT } from "../config/home";
 
 export type JointSmokeHandle = {
   /** A big soft puff that swells out from (x, y) over much of the screen, then clears. */
   burst: (x: number, y: number) => void;
+  /** The first thick puff when a joint catches. */
+  firstPuff: (x: number, y: number) => void;
+  /** A tiny wisp when a flame goes out (lighting cancelled). */
+  wisp: (x: number, y: number) => void;
+  /** Flint sparks flying off the lighter. */
+  sparks: (x: number, y: number) => void;
 };
 
 type Props = {
   ref: Ref<JointSmokeHandle>;
-  /** Lit-tip positions in client coordinates, in joint order (null while a tip isn't laid out). */
-  getTips: () => ({ x: number; y: number } | null)[];
-  /** Index into getTips() of the hovered joint; its smoke is a little thicker. */
-  hovered: number | null;
+  /** Tips of the lit joints, in client coordinates (null for an unlit joint). */
+  getLitTips: () => ({ x: number; y: number } | null)[];
 };
 
-type Puff = {
+type Particle = {
+  kind: "wisp" | "burst" | "spark";
   x0: number;
   y0: number;
   age: number;
@@ -24,8 +29,6 @@ type Puff = {
   r1: number;
   alpha: number;
   sprite: number;
-  /** Wisp: rise + curl. Burst: move outward by (dx, dy). */
-  kind: "wisp" | "burst";
   rise: number;
   phase: number;
   dx: number;
@@ -34,6 +37,7 @@ type Puff = {
 
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 const easeOut = (t: number) => 1 - (1 - t) ** 3;
+const SPARK_SPRITE = -1;
 
 // Same soft round puff as the cat smoke, made here so that code stays untouched.
 function makeSprite(color: string) {
@@ -51,16 +55,34 @@ function makeSprite(color: string) {
 }
 
 /**
- * One full-viewport canvas for all four joints: a thin wisp from every lit tip, and the burst
- * when a joint is chosen. The loop pauses while the tab is hidden. Reduced motion: no particles
- * (the joints show a faint static haze instead).
+ * One full-viewport canvas for the joints: smoke from every lit tip, the first puff, the
+ * cancel wisp, lighter sparks and the page-transition burst. The loop pauses while the tab is
+ * hidden. Reduced motion: no particles.
  */
-export function JointSmoke({ ref, getTips, hovered }: Props) {
+export function JointSmoke({ ref, getLitTips }: Props) {
   const reduce = useReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const live = useRef({ getTips, hovered, puffs: [] as Puff[] });
-  live.current.getTips = getTips;
-  live.current.hovered = hovered;
+  const live = useRef({ getLitTips, particles: [] as Particle[] });
+  live.current.getLitTips = getLitTips;
+
+  const wisp = (x: number, y: number, scale = 1, alpha = JOINT_SMOKE.opacity): Particle => {
+    const [r0, r1] = JOINT_SMOKE.radius;
+    return {
+      kind: "wisp",
+      x0: x + rand(-1.5, 1.5),
+      y0: y + rand(-1.5, 1.5),
+      age: 0,
+      life: rand(...JOINT_SMOKE.lifeMs),
+      r0: r0 * rand(0.8, 1.2) * scale,
+      r1: r1 * rand(0.7, 1.1) * scale,
+      alpha,
+      sprite: Math.floor(Math.random() * JOINT_SMOKE.colors.length),
+      rise: rand(...JOINT_SMOKE.rise),
+      phase: rand(0, Math.PI * 2),
+      dx: rand(-10, 10),
+      dy: 0,
+    };
+  };
 
   useImperativeHandle(ref, () => ({
     burst(x, y) {
@@ -68,7 +90,7 @@ export function JointSmoke({ ref, getTips, hovered }: Props) {
       for (let i = 0; i < SELECT.burstPuffs; i++) {
         const angle = rand(0, Math.PI * 2);
         const reach = side * rand(0.05, 0.35);
-        live.current.puffs.push({
+        live.current.particles.push({
           kind: "burst",
           x0: x,
           y0: y,
@@ -80,6 +102,43 @@ export function JointSmoke({ ref, getTips, hovered }: Props) {
           r1: side * SELECT.burstRadius * rand(0.45, 1),
           alpha: SELECT.burstOpacity * rand(0.6, 1),
           sprite: i % JOINT_SMOKE.colors.length,
+          rise: 0,
+          phase: 0,
+        });
+      }
+    },
+    firstPuff(x, y) {
+      for (let i = 0; i < JOINT_SMOKE.firstPuffs; i++) {
+        const p = wisp(x, y, rand(1.6, 2.6), Math.min(0.6, JOINT_SMOKE.opacity * 1.8));
+        p.age = -i * 45;
+        p.rise *= 1.3;
+        live.current.particles.push(p);
+      }
+    },
+    wisp(x, y) {
+      for (let i = 0; i < 3; i++) {
+        const p = wisp(x, y, 0.7, JOINT_SMOKE.opacity * 0.8);
+        p.age = -i * 60;
+        p.life *= 0.6;
+        live.current.particles.push(p);
+      }
+    },
+    sparks(x, y) {
+      for (let i = 0; i < LIGHT.sparks; i++) {
+        const angle = rand(-Math.PI * 0.95, -Math.PI * 0.05);
+        const speed = rand(40, 120);
+        live.current.particles.push({
+          kind: "spark",
+          x0: x,
+          y0: y,
+          dx: Math.cos(angle) * speed,
+          dy: Math.sin(angle) * speed,
+          age: 0,
+          life: rand(180, 380),
+          r0: rand(0.8, 1.6),
+          r1: 0.4,
+          alpha: 1,
+          sprite: SPARK_SPRITE,
           rise: 0,
           phase: 0,
         });
@@ -109,36 +168,30 @@ export function JointSmoke({ ref, getTips, hovered }: Props) {
       const dt = last ? Math.min(now - last, 64) : 16;
       last = now;
       const state = live.current;
-      const wisps = state.puffs.filter((p) => p.kind === "wisp").length;
-
-      state.getTips().forEach((tip, i) => {
-        if (!tip) return;
-        const hot = state.hovered === i;
-        if ((nextEmit[i] ?? 0) > now || wisps >= JOINT_SMOKE.maxParticles) return;
-        nextEmit[i] = now + (hot ? JOINT_SMOKE.hoverEmitMs : JOINT_SMOKE.emitMs) * rand(0.7, 1.3);
-        const [r0, r1] = JOINT_SMOKE.radius;
-        state.puffs.push({
-          kind: "wisp",
-          x0: tip.x + rand(-1.5, 1.5),
-          y0: tip.y + rand(-1.5, 1.5),
-          age: 0,
-          life: rand(...JOINT_SMOKE.lifeMs),
-          r0: r0 * rand(0.8, 1.2),
-          r1: r1 * rand(0.7, 1.1) * (hot ? 1.2 : 1),
-          alpha: hot ? JOINT_SMOKE.hoverOpacity : JOINT_SMOKE.startOpacity,
-          sprite: Math.floor(Math.random() * sprites.length),
-          rise: rand(...JOINT_SMOKE.rise),
-          phase: rand(0, Math.PI * 2),
-          dx: rand(-10, 10),
-          dy: 0,
-        });
+      const wisps = state.particles.filter((p) => p.kind === "wisp").length;
+      state.getLitTips().forEach((tip, i) => {
+        if (!tip || (nextEmit[i] ?? 0) > now || wisps >= JOINT_SMOKE.maxParticles) return;
+        nextEmit[i] = now + JOINT_SMOKE.emitMs * rand(0.7, 1.3);
+        state.particles.push(wisp(tip.x, tip.y));
       });
 
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      state.puffs = state.puffs.filter((p) => (p.age += dt) < p.life);
-      for (const p of state.puffs) {
+      state.particles = state.particles.filter((p) => (p.age += dt) < p.life);
+      for (const p of state.particles) {
         if (p.age < 0) continue;
         const t = p.age / p.life;
+        if (p.kind === "spark") {
+          // Bright speck flung off the flint, falling and fading.
+          const s = p.age / 1000;
+          const x = p.x0 + p.dx * s;
+          const y = p.y0 + p.dy * s + 260 * s * s;
+          ctx.globalAlpha = 1 - t;
+          ctx.fillStyle = t < 0.4 ? "#fff3c4" : "#ffb347";
+          ctx.beginPath();
+          ctx.arc(x, y, p.r0 + (p.r1 - p.r0) * t, 0, Math.PI * 2);
+          ctx.fill();
+          continue;
+        }
         let x: number, y: number, a: number;
         if (p.kind === "wisp") {
           // Slow rise with a soft curl that widens as it goes; fades in fast, out slowly.

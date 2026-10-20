@@ -16,7 +16,9 @@ npm run build    # production build in dist/
 - `public/photo/main-cat.jpg`: the hero cat. Crop, mouth position and every animation value live in `src/config/home.ts`.
 - `src/locales/en.json`, `tr.json`, `fa.json`: every piece of text on the site (same keys in each; `TRANSLATIONS.md` lists them side by side).
 - `src/data/pages.ts`: routes for the 4 sub-pages (`/me`, `/products`, `/vapes`, `/contact`); the old `/page-1…4` redirect.
-- `src/components/Hero.tsx`: the home poster. The joints' head origin, angles and size, the smoke, the sound and the eyes are all tuned in `src/config/home.ts`.
+- `src/components/Hero.tsx`: the home poster and the joint lighting. Head origin, angles, lighting times, smoke, sound and the wordmark fill are tuned in `src/config/home.ts`.
+- `src/components/Eyes.tsx`: the eyes on every page. Anything marked `data-eyes-avoid` is kept clear; physics values are in `EYES` in `src/config/home.ts`.
+- `src/assets/joint-pattern.svg`: the flower-power tile inside the "JOINT" letters.
 - `scripts/cutout-joint.mjs`: rebuilds `public/photo/joint-cutout.webp/.png` from `photos/joint1.jpg` (`node scripts/cutout-joint.mjs`).
-- `src/components/TopBar.tsx`: the top bar with the language switcher, label and menu.
-- `src/components/PageLayout.tsx`: the shared layout for `/page-1` … `/page-4`.
+- `src/components/TopBar.tsx`: the top bar: sound toggle, language switcher, name/GitHub link and menu.
+- `src/components/PageLayout.tsx`: the shared layout for `/me`, `/products`, `/vapes` and `/contact`.
