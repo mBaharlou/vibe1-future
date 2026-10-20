@@ -1,96 +1,164 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { pages } from "../data/pages";
-import { DWELL_ARM_PX, HEADER, LAYOUTS, TALL_BELOW } from "../config/home";
+import { CAT, HEAD_ORIGIN, HEADER, JOINT, SELECT, type JointPlacement } from "../config/home";
 import { useLocale } from "../i18n";
+import { playDrag } from "../lib/sound";
+import { openInNewTab } from "../lib/tabs";
 import { Cat } from "./Cat";
 import { Haze } from "./Haze";
-import { Shard } from "./Shard";
+import { Joint } from "./Joint";
+import { JointSmoke, type JointSmokeHandle } from "./JointSmoke";
 import { SmokeCanvas } from "./SmokeCanvas";
-import { Sparkle } from "./Sparkle";
 import { TopBar } from "./TopBar";
+import { WanderingEyes } from "./WanderingEyes";
+
+type Fan = keyof typeof JOINT.fans;
+
+// Extent of the cat frame plus its fan of joints, in units of the cat frame's width, with the
+// frame's bottom centre at (0, 0) and y pointing down (so the top is negative).
+function fanBounds(fan: JointPlacement[]) {
+  const catH = 1 / CAT.aspect;
+  const origin = { x: HEAD_ORIGIN.x / 100 - 0.5, y: -catH + (HEAD_ORIGIN.y / 100) * catH };
+  const len = JOINT.length / 100;
+  const half = (len * JOINT.aspect) / 2 + len * 0.04; // + a little for the ember glow
+  let minX = -0.5, maxX = 0.5, minY = -catH;
+  for (const { angle, dist } of fan) {
+    const a = (angle * Math.PI) / 180;
+    const d = { x: Math.cos(a), y: Math.sin(a) };
+    const n = { x: -d.y, y: d.x };
+    for (const along of [dist / 100, dist / 100 + len]) {
+      for (const side of [-half, half]) {
+        const x = origin.x + d.x * along + n.x * side;
+        const y = origin.y + d.y * along + n.y * side;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y);
+      }
+    }
+  }
+  return { halfWidth: Math.max(-minX, maxX), height: -minY };
+}
+
+/** Joints sorted left → right by where their tips point. */
+const leftToRight = (fan: JointPlacement[]) =>
+  [...fan].sort((a, b) => Math.cos((a.angle * Math.PI) / 180) - Math.cos((b.angle * Math.PI) / 180));
 
 export function Hero() {
   const { t, dir } = useLocale();
-  const [active, setActive] = useState<number | null>(null);
+  const reduce = useReducedMotion();
   const [catHover, setCatHover] = useState(false);
   const [burstAt, setBurstAt] = useState(0);
-  const [armed, setArmed] = useState(false);
-  const [resetKey, setResetKey] = useState(0);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [flaring, setFlaring] = useState<number | null>(null);
+  const [blocked, setBlocked] = useState<Set<number>>(new Set());
+  const [fade, setFade] = useState(0);
   const [shiftCap, setShiftCap] = useState<number | null>(null);
+  const [fit, setFit] = useState({ catWidth: 0, fan: "wide" as Fan, fanTop: 0 });
   const stageRef = useRef<HTMLDivElement>(null);
   const catRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
-  const [frame, setFrame] = useState({ width: 0, height: 0, kind: "wide" as keyof typeof LAYOUTS });
-  const layout = LAYOUTS[frame.kind];
+  const wordmarkRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const smokeRef = useRef<JointSmokeHandle>(null);
+  const emberRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const hoveredRef = useRef<number | null>(null);
+  hoveredRef.current = hovered;
+  const fan = leftToRight(JOINT.fans[fit.fan]);
 
-  // Pick the composition that suits the stage, then fit the largest frame of that ratio.
+  // Size the cat so it, and the joints fanning out of its head, fit the stage without scrolling.
   useLayoutEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
     const observer = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-      const kind = width / height < TALL_BELOW ? "tall" : "wide";
-      const { ratio } = LAYOUTS[kind];
-      const w = Math.min(width, height * ratio);
-      setFrame({ width: w, height: w / ratio, kind });
+      const kind: Fan = width / height < JOINT.tallBelow ? "tall" : "wide";
+      const b = fanBounds(JOINT.fans[kind]);
+      const m = JOINT.marginPx;
+      const catWidth = Math.max(
+        0,
+        Math.min((width - 2 * m) / (2 * b.halfWidth), (height - m) / b.height, height * JOINT.catMaxHeight * CAT.aspect),
+      );
+      setFit({ catWidth, fan: kind, fanTop: entry.target.getBoundingClientRect().bottom - catWidth * b.height });
     });
     observer.observe(stage);
     return () => observer.disconnect();
   }, []);
 
-  // "CLAUDE" + subtitle slide down by HEADER.shift, but never closer to the cat than catClearancePx.
-  // The shift is a transform, so header height and with it the cat and shards stay exactly in place.
+  // "JOINT" + subtitle slide down by HEADER.shift, but stay catClearancePx clear of the cat and its
+  // joints. The shift is a transform, so it never changes the layout (or the cat's size).
   useLayoutEffect(() => {
     const title = titleRef.current;
-    const cat = catRef.current;
-    if (!title || !cat || !frame.height) return;
-    const room = cat.getBoundingClientRect().top - title.getBoundingClientRect().bottom - HEADER.catClearancePx;
+    if (!title || !fit.catWidth) return;
+    const room = fit.fanTop - title.getBoundingClientRect().bottom - HEADER.catClearancePx;
     setShiftCap(Math.max(0, Math.floor(room)));
-  }, [frame]);
+  }, [fit]);
 
   useEffect(() => {
     document.title = t("meta.homeTitle");
   }, [t]);
 
+  // Leaving the tab (a page opened in a new one) puts everything back at rest.
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setActive(null);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  // Hover-to-open arms only after the pointer really moves here, so a pointer resting on a
-  // shard at load doesn't dwell. Also reset when the page is restored from the back/forward cache.
-  useEffect(() => {
-    let origin: { x: number; y: number } | null = null;
-    const onMove = (e: PointerEvent) => {
-      if (!origin) origin = { x: e.clientX, y: e.clientY };
-      else if (Math.hypot(e.clientX - origin.x, e.clientY - origin.y) > DWELL_ARM_PX) setArmed(true);
+    const reset = () => {
+      setHovered(null);
+      setFlaring(null);
+      setFade(0);
     };
-    const onPageShow = (e: PageTransitionEvent) => {
-      if (!e.persisted) return;
-      origin = null;
-      setArmed(false);
-      setActive(null);
-      setCatHover(false);
-    };
-    // A page opened in another tab: this tab goes back to rest, with no ring or hover left over.
-    const onLeaveTab = () => {
-      setActive(null);
-      setResetKey((n) => n + 1);
-    };
-    const onVisibility = () => document.hidden && onLeaveTab();
-    window.addEventListener("pointermove", onMove);
+    const onVisibility = () => document.hidden && reset();
+    const onPageShow = (e: PageTransitionEvent) => e.persisted && (reset(), setCatHover(false));
+    window.addEventListener("blur", reset);
     window.addEventListener("pageshow", onPageShow);
-    window.addEventListener("blur", onLeaveTab);
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
-      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("blur", reset);
       window.removeEventListener("pageshow", onPageShow);
-      window.removeEventListener("blur", onLeaveTab);
       document.removeEventListener("visibilitychange", onVisibility);
+      timers.current.forEach(clearTimeout);
     };
   }, []);
+
+  const tipOf = (i: number) => {
+    const r = emberRefs.current[i]?.getBoundingClientRect();
+    return r && r.width ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+  };
+  const getTips = useCallback(() => pages.map((_, i) => tipOf(i)), []);
+  const getFocus = useCallback(() => (hoveredRef.current === null ? null : tipOf(hoveredRef.current)), []);
+  const getKeepOuts = useCallback(() => {
+    const bar = document.querySelector(".owner-link")?.parentElement?.getBoundingClientRect() ?? new DOMRect(0, 0, window.innerWidth, 0);
+    const rects = [bar];
+    for (const el of [wordmarkRef.current, subtitleRef.current, catRef.current]) if (el) rects.push(el.getBoundingClientRect());
+    // Keep the lit tips visible too, so an eye never parks on a link's ember.
+    for (const ember of emberRefs.current) if (ember) rects.push(ember.getBoundingClientRect());
+    return rects;
+  }, []);
+
+  // Click / tap / Enter: inhale + exhale, the ember flares, a puff swells over the page, and the
+  // page opens in a new tab while the click still counts as a user gesture.
+  const select = (index: number) => (e: MouseEvent<HTMLAnchorElement>) => {
+    const page = pages[index];
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    if (blocked.has(page.id)) {
+      // The script pop-up was blocked last time: let this click open the tab as a plain link.
+      setBlocked((s) => new Set([...s].filter((id) => id !== page.id)));
+      return;
+    }
+    e.preventDefault();
+    playDrag();
+    setFlaring(page.id);
+    const tip = tipOf(index);
+    if (reduce) setFade((n) => n + 1);
+    else if (tip) timers.current.push(setTimeout(() => smokeRef.current?.burst(tip.x, tip.y), SELECT.flareMs * 0.6));
+    timers.current.push(
+      setTimeout(() => {
+        if (!openInNewTab(page.path)) setBlocked((s) => new Set(s).add(page.id));
+      }, SELECT.openAfterMs),
+      setTimeout(() => setFlaring(null), SELECT.burstMs),
+    );
+  };
+
+  const catHeight = fit.catWidth / CAT.aspect;
 
   return (
     <>
@@ -99,31 +167,28 @@ export function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative flex min-h-svh flex-col overflow-hidden"
+        className="relative flex h-dvh flex-col overflow-hidden"
         style={{ background: "radial-gradient(ellipse at 50% 42%, #f4f4f4 0%, #f4f4f4 38%, #e9e9e9 100%)" }}
       >
-        <header className="relative px-4 pt-10 text-center sm:pt-12" style={{ paddingBottom: "clamp(16px, 2.2vw, 24px)" }}>
-          {/* Holds the space the label pill used to take, so "CLAUDE" and the cat stay put in every language. */}
+        <header className="relative shrink-0 px-4 pt-10 text-center sm:pt-12" style={{ paddingBottom: "clamp(16px, 2.2vw, 24px)" }}>
+          {/* Holds the space the old label pill took, so the wordmark sits where it always has. */}
           <div
             aria-hidden="true"
             className="h-[var(--spacer)] sm:h-[var(--spacer-sm)]"
             style={{ "--spacer": `${HEADER.spacerPx}px`, "--spacer-sm": `${HEADER.spacerDesktopPx}px` } as CSSProperties}
           />
           <div ref={titleRef}>
-            <div
-              style={{
-                translate: `0 ${shiftCap === null ? "0px" : `min(${HEADER.shift}, ${shiftCap}px)`}`,
-              }}
-            >
+            <div style={{ translate: `0 ${shiftCap === null ? "0px" : `min(${HEADER.shift}, ${shiftCap}px)`}` }}>
               <h1
+                ref={wordmarkRef}
                 lang="en"
                 dir="ltr"
-                className="font-brand mt-2 font-black leading-[0.82] tracking-[-0.045em] text-ink"
+                className="font-brand mx-auto mt-2 w-fit font-black leading-[0.82] tracking-[-0.045em] text-ink"
                 style={{ fontSize: "clamp(3.5rem, min(20.5vw, 30svh), 24rem)" }}
               >
-                CLAUDE
+                JOINT
               </h1>
-              <p className="mt-3 text-sm text-neutral-500 sm:text-base">
+              <p ref={subtitleRef} className="mx-auto mt-3 w-fit text-sm text-neutral-500 sm:text-base">
                 {t("hero.subtitle")}
               </p>
             </div>
@@ -132,53 +197,67 @@ export function Hero() {
 
         <Haze thick={catHover} />
 
-        {/* Stage: fills the remaining height; the frame sits bottom-centre inside it. */}
-        <div ref={stageRef} className="relative min-h-[300px] flex-1">
+        {/* Stage: the rest of the screen. The cat frame stands on its bottom edge. */}
+        <div ref={stageRef} className="relative min-h-0 flex-1">
           <div
             className="absolute bottom-0 left-1/2"
-            style={{ width: frame.width, height: frame.height, transform: "translateX(-50%)" }}
+            style={{ width: fit.catWidth, height: catHeight, transform: "translateX(-50%)" }}
           >
-            {/* layout.shards is sorted left → right. Pages follow reading order: Page 1 is the leftmost
-                shard in LTR and the rightmost in RTL. DOM (and so tab) order follows the pages. */}
-            {pages.map((page, n) => {
-              const i = dir === "rtl" ? layout.shards.length - 1 - n : n;
-              return (
-                <Shard
-                  key={page.id}
-                  page={page}
-                  placement={layout.shards[i]}
-                  width={layout.shardWidth}
-                  index={i}
-                  armed={armed}
-                  resetKey={resetKey}
-                  active={active === page.id}
-                  dimmed={active !== null && active !== page.id}
-                  onEnter={setActive}
-                  onLeave={(id) => setActive((cur) => (cur === id ? null : cur))}
-                />
-              );
-            })}
-
-            {layout.sparkles.map((s, i) => (
-              <Sparkle
-                key={i}
-                spokes={i === 0 ? 10 : 12}
-                className="absolute z-[15]"
-                style={{ left: `${s.left}%`, top: `${s.top}%`, width: `${s.width}%` }}
-              />
-            ))}
+            {/* Behind the cat (lower z), so the filter ends tuck behind its head. Pages follow
+                reading order: Page 1 is the leftmost joint in LTR, the rightmost in RTL. DOM and
+                tab order follow the pages. */}
+            <div className="absolute inset-0 z-10">
+              {pages.map((page, n) => {
+                const i = dir === "rtl" ? fan.length - 1 - n : n;
+                return (
+                  <Joint
+                    key={page.id}
+                    page={page}
+                    placement={fan[i]}
+                    order={i}
+                    hovered={hovered === n}
+                    dimmed={hovered !== null && hovered !== n}
+                    flaring={flaring === page.id}
+                    blocked={blocked.has(page.id)}
+                    emberRef={(el) => {
+                      emberRefs.current[n] = el;
+                    }}
+                    onHover={(on) => setHovered((cur) => (on ? n : cur === n ? null : cur))}
+                    onSelect={select(n)}
+                  />
+                );
+              })}
+            </div>
 
             <Cat
               ref={catRef}
-              placement={layout.cat}
+              placement={{ height: 100, bottom: 0 }}
               alt={t("hero.catAlt")}
               onHoverChange={setCatHover}
               onTap={() => setBurstAt(Date.now())}
             />
-
-            <SmokeCanvas hovering={catHover} burstAt={burstAt} catRef={catRef} />
           </div>
+
+          <SmokeCanvas hovering={catHover} burstAt={burstAt} catRef={catRef} />
         </div>
+
+        <JointSmoke ref={smokeRef} getTips={getTips} hovered={hovered} />
+        <WanderingEyes getKeepOuts={getKeepOuts} getFocus={getFocus} />
+
+        {/* Reduced motion: a plain fade stands in for the smoke burst. */}
+        <AnimatePresence>
+          {reduce && fade > 0 && (
+            <motion.div
+              key={fade}
+              aria-hidden="true"
+              className="pointer-events-none fixed inset-0 z-[40] bg-[#f1efec]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.75, 0] }}
+              transition={{ duration: SELECT.burstMs / 1000, times: [0, 0.4, 1] }}
+              onAnimationComplete={() => setFade(0)}
+            />
+          )}
+        </AnimatePresence>
       </motion.main>
     </>
   );

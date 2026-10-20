@@ -1,34 +1,34 @@
 {
   "meta": {
-    "homeTitle": "my vibe coding ai",
-    "pageTitle": "{{title}} · Claude",
+    "homeTitle": "my joint",
+    "pageTitle": "{{title}} · JOINT",
     "notFoundTitle": "Not found"
   },
   "topBar": {
-    "label": "Graphic design prompts for"
+    "github": "{{name}} on GitHub (opens in a new tab)"
   },
   "hero": {
-    "subtitle": "Instantly level up your work using Claude.ai!",
+    "subtitle": "Make your dreams colorful",
     "catAlt": "Tabby cat in a sunny field"
   },
   "pages": {
-    "p1": { "title": "Page 1", "description": "Placeholder: a short line about what lives on page one." },
-    "p2": { "title": "Page 2", "description": "Placeholder: a short line about what lives on page two." },
-    "p3": { "title": "Page 3", "description": "Placeholder: a short line about what lives on page three." },
-    "p4": { "title": "Page 4", "description": "Placeholder: a short line about what lives on page four." }
+    "me": { "title": "Me", "description": "Placeholder: a short line about me." },
+    "products": { "title": "Products", "description": "Joints & cigarettes" },
+    "vapes": { "title": "Vapes", "description": "Placeholder: a short line about the vapes." },
+    "contact": { "title": "Contact", "description": "Placeholder: how to get in touch." }
   },
   "page": {
-    "heading": "Page {{n}}",
     "body1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
     "body2": "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra.",
     "body3": "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis."
   },
-  "shard": {
-    "ariaLabel": "Open {{title}} in a new tab",
-    "hintDwelling": "Hold to open · click to go",
-    "hintOpened": "Opened in a new tab",
-    "hintBlocked": "Click to open",
-    "hintKeyboard": "Press Enter to open in a new tab"
+  "joint": {
+    "ariaLabel": "Open {{title}}",
+    "hintBlocked": "Click to open"
+  },
+  "sound": {
+    "mute": "Mute sound",
+    "unmute": "Turn sound on"
   },
   "menu": {
     "open": "Open menu",

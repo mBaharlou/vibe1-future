@@ -1,34 +1,34 @@
 {
   "meta": {
-    "homeTitle": "vibe coding yapay zekâm",
-    "pageTitle": "{{title}} · Claude",
+    "homeTitle": "joint'im",
+    "pageTitle": "{{title}} · JOINT",
     "notFoundTitle": "Sayfa bulunamadı"
   },
   "topBar": {
-    "label": "Grafik tasarım promptları"
+    "github": "GitHub'da {{name}} (yeni sekmede açılır)"
   },
   "hero": {
-    "subtitle": "Claude.ai ile işini hemen bir üst seviyeye taşı!",
+    "subtitle": "Hayallerini renklendir",
     "catAlt": "Güneşli bir çayırda tekir kedi"
   },
   "pages": {
-    "p1": { "title": "Sayfa 1", "description": "Yer tutucu: birinci sayfada neler olduğunu anlatan kısa bir cümle." },
-    "p2": { "title": "Sayfa 2", "description": "Yer tutucu: ikinci sayfada neler olduğunu anlatan kısa bir cümle." },
-    "p3": { "title": "Sayfa 3", "description": "Yer tutucu: üçüncü sayfada neler olduğunu anlatan kısa bir cümle." },
-    "p4": { "title": "Sayfa 4", "description": "Yer tutucu: dördüncü sayfada neler olduğunu anlatan kısa bir cümle." }
+    "me": { "title": "Ben", "description": "Yer tutucu: benimle ilgili kısa bir cümle." },
+    "products": { "title": "Ürünler", "description": "Joint'ler ve sigaralar" },
+    "vapes": { "title": "Vape'ler", "description": "Yer tutucu: vape'ler hakkında kısa bir cümle." },
+    "contact": { "title": "İletişim", "description": "Yer tutucu: bana nasıl ulaşabileceğin." }
   },
   "page": {
-    "heading": "Sayfa {{n}}",
     "body1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
     "body2": "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra.",
     "body3": "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis."
   },
-  "shard": {
-    "ariaLabel": "{{title}} yeni sekmede aç",
-    "hintDwelling": "Açmak için bekle · hemen gitmek için tıkla",
-    "hintOpened": "Yeni sekmede açıldı",
-    "hintBlocked": "Açmak için tıkla",
-    "hintKeyboard": "Yeni sekmede açmak için Enter'a bas"
+  "joint": {
+    "ariaLabel": "{{title}} sayfasını aç",
+    "hintBlocked": "Açmak için tıkla"
+  },
+  "sound": {
+    "mute": "Sesi kapat",
+    "unmute": "Sesi aç"
   },
   "menu": {
     "open": "Menüyü aç",

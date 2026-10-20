@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import { pages } from "./data/pages";
 import { Hero } from "./components/Hero";
 import { NotFound } from "./components/NotFound";
@@ -15,6 +15,10 @@ export default function App() {
         <Route path="/" element={<Hero />} />
         {pages.map((page) => (
           <Route key={page.id} path={page.path} element={<PageLayout page={page} />} />
+        ))}
+        {/* Old URLs: replace, so Back doesn't land on the redirect again. */}
+        {pages.map((page) => (
+          <Route key={page.legacyPath} path={page.legacyPath} element={<Navigate to={page.path} replace />} />
         ))}
         <Route path="*" element={<NotFound />} />
       </Routes>

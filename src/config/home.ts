@@ -13,112 +13,119 @@ export const CAT = {
 /** Where smoke comes from, as % of the cat frame. Tied to CAT.zoom / CAT.focus. */
 export const MOUTH_ORIGIN = { x: 40.8, y: 54.6 };
 
-// ── Shards ───────────────────────────────────────────────────────────
-/** Denim blue sampled from the photo's sky (median of its blue pixels), plus ±8% lightness. */
-export const DENIM = {
-  base: "#2D6280",
-  /** Lightness offsets (percentage points) for the tint and shade. */
-  tint: 8,
-  shade: -8,
-};
+// ── Owner (top bar link) ─────────────────────────────────────────────
+export const OWNER = { name: "Mohammad Baharlou", githubUrl: "https://github.com/mBaharlou" };
 
-/** One shared outline for all four shards, drawn in a 100 × (100·aspect) box. */
-export const SHARD = {
-  /** Height / width. */
-  aspect: 1.3,
-  points: "34,0 90,16 100,74 62,130 8,110 0,44",
-};
+// ── Palette ──────────────────────────────────────────────────────────
+/** Denim blue sampled from the photo's sky; the site's accent (bar tint, focus, menu hover). */
+export const DENIM = { base: "#2D6280" };
 
-/** Placement as % of the hero frame. `cx` is the centre; size comes from the layout. */
-export type ShardPlacement = { cx: number; top: number; rotate: number };
+// ── Joints ───────────────────────────────────────────────────────────
+/**
+ * Point on the cat's head the joints fan out from, in % of the cat frame (x from the left,
+ * y from the top). The filter ends sit behind the head; the lit tips point outward.
+ */
+export const HEAD_ORIGIN = { x: 50, y: 32 };
 
-export type Layout = {
-  /** Frame width / height. */
-  ratio: number;
-  /** Cat frame height and distance from the frame bottom, as % of the frame height. */
-  cat: { height: number; bottom: number };
-  /** Every shard's width as % of the frame width. */
-  shardWidth: number;
-  /** Sorted left → right, so index 0 is Page 1. */
-  shards: ShardPlacement[];
-  sparkles: { left: number; top: number; width: number }[];
-};
+/** One fanned joint. `angle`: tip direction in degrees (0 = right, -90 = up). `dist`: filter
+ *  end's distance from HEAD_ORIGIN, in % of the cat frame width. */
+export type JointPlacement = { angle: number; dist: number };
 
-const leftToRight = (shards: ShardPlacement[]) => [...shards].sort((a, b) => a.cx - b.cx);
-
-// The shards fan out from under the cat's bottom edge in an even arc:
-// equal spacing, outer pair a little higher and more tilted.
-export const LAYOUTS: Record<"wide" | "tall", Layout> = {
-  wide: {
-    ratio: 1.25,
-    cat: { height: 70, bottom: 24 },
-    shardWidth: 13,
-    shards: leftToRight([
-      { cx: 27, top: 64, rotate: 22 },
-      { cx: 42.3, top: 70, rotate: 8 },
-      { cx: 57.7, top: 70, rotate: -8 },
-      { cx: 73, top: 64, rotate: -22 },
-    ]),
-    sparkles: [
-      { left: 2, top: 50, width: 6 },
-      { left: 92, top: 44, width: 5 },
+export const JOINT = {
+  src: "/photo/joint-cutout.webp",
+  fallbackSrc: "/photo/joint-cutout.png",
+  /** Cutout height / width (508 × 68 px). */
+  aspect: 68 / 508,
+  /** Length of every joint, in % of the cat frame width. */
+  length: 92,
+  /** Wide screens fan out flatter; tall screens steeper so the fan fits the width. */
+  fans: {
+    wide: [
+      { angle: -166, dist: 0 },
+      { angle: -138, dist: 0 },
+      { angle: -42, dist: 0 },
+      { angle: -14, dist: 0 },
     ],
-  },
-  tall: {
-    ratio: 0.8,
-    cat: { height: 64, bottom: 26 },
-    shardWidth: 20,
-    shards: leftToRight([
-      { cx: 14, top: 66, rotate: 22 },
-      { cx: 38, top: 70, rotate: 8 },
-      { cx: 62, top: 70, rotate: -8 },
-      { cx: 86, top: 66, rotate: -22 },
-    ]),
-    sparkles: [
-      { left: 4, top: 34, width: 9 },
-      { left: 86, top: 30, width: 8 },
+    tall: [
+      { angle: -146, dist: 0 },
+      { angle: -116, dist: 2 },
+      { angle: -64, dist: 2 },
+      { angle: -34, dist: 0 },
     ],
-  },
+  } satisfies Record<string, JointPlacement[]>,
+  /** Stage width / height below which the tall fan is used. */
+  tallBelow: 1.05,
+  /** The cat frame never takes more than this share of the stage height. */
+  catMaxHeight: 0.86,
+  /** Space kept free around the fan, in px. */
+  marginPx: 14,
+  /** Load: slide out from behind the head along the joint's own axis, plus a fade. */
+  intro: { ms: 900, staggerMs: 120, slidePct: 45, ease: [0.22, 1, 0.36, 1] as const },
+  /** Idle sway around the filter end. */
+  sway: { deg: 1.5, minS: 7, maxS: 9 },
+  hover: { scale: 1.06, dimOpacity: 0.72 },
+  /** Ember at the lit tip. */
+  ember: { color: "255, 150, 60", pulseS: 3.2 },
 };
 
-/** Stage width / height below which the tall layout is used. */
-export const TALL_BELOW = 0.95;
-
-// ── Shard motion ─────────────────────────────────────────────────────
-/** Load: fade + slide up out from under the cat. */
-export const INTRO = { fadeMs: 800, staggerMs: 100, slidePx: 10 };
-
-export const FLOAT = { px: 2.5, minS: 6, maxS: 8 };
-
-export const GLOW = {
-  blurPx: 24,
-  /** Breathing range and the static value used with reduced motion. */
-  min: 0.2,
-  max: 0.35,
-  staticOpacity: 0.25,
-  scale: 1.05,
-  minS: 8,
-  maxS: 10,
-  /** Glow while a shard is hovered or focused. */
-  active: 0.5,
+/** Thin wisps rising from each lit tip (one shared canvas). Matches the cat smoke, much lighter. */
+export const JOINT_SMOKE = {
+  /** Emission interval per joint; hovering a joint thickens its smoke. */
+  emitMs: 300,
+  hoverEmitMs: 140,
+  lifeMs: [2600, 3800] as const,
+  /** Puff radius in px at the start and end of its life. */
+  radius: [3, 14] as const,
+  rise: [60, 110] as const,
+  curl: 9,
+  startOpacity: 0.25,
+  hoverOpacity: 0.34,
+  maxParticles: 90,
+  colors: ["#f5f2ee", "#e8e5e1", "#d9d6d2"],
 };
 
-/** Fill and glow drift between ±lightness (percentage points) of the base blue. */
-export const COLOR_DRIFT = { lightness: 4, seconds: 12 };
+/** Selecting a joint: the ember flares, a big soft puff swells over the page, then the page opens. */
+export const SELECT = {
+  flareMs: 260,
+  burstMs: 900,
+  burstPuffs: 18,
+  /** Largest puff radius, as a share of the larger viewport side. */
+  burstRadius: 0.55,
+  burstOpacity: 0.7,
+  /** window.open runs this long after the click, well inside the click's activation window. */
+  openAfterMs: 520,
+  /** New tab: the haze clears off the page. */
+  revealMs: 700,
+};
 
-export const HOVER = { scale: 1.08, dimOpacity: 0.45, previewMs: 300, rewindMs: 350 };
+/** Synthesized inhale + exhale (Web Audio). */
+export const SOUND = {
+  volume: 0.35,
+  inhaleMs: 560,
+  pauseMs: 90,
+  exhaleMs: 620,
+  /** Paper crackle bursts during the inhale. */
+  crackles: 7,
+  storageKey: "muted",
+};
 
-/** The pointer must travel this far on the home page before hover-to-enter arms. */
-export const DWELL_ARM_PX = 12;
-
-/** Hover this long to open a page in a new tab. */
-export const DWELL_MS = 1200;
-
-/** Pulse on the shard itself when its page opens (the home tab stays put). */
-export const RIPPLE = { ms: 400, scale: 1.22 };
-
-/** Dwell finished but the browser blocked the pop-up: the full ring pulses until hover ends. */
-export const BLOCKED_PULSE = { seconds: 1.4, minOpacity: 0.4 };
+// ── Wandering eyes ───────────────────────────────────────────────────
+export const EYES = {
+  /** Eye width in px (mobile, desktop). */
+  sizePx: [30, 44] as const,
+  /** Seconds for the drift to roughly cross its region. */
+  crossS: [15, 25] as const,
+  /** Gentle tilt, degrees. */
+  tiltDeg: 8,
+  /** How far the iris can move, as a share of the eye's half width. */
+  irisTravel: 0.42,
+  blinkMs: 120,
+  blinkEveryS: [3, 7] as const,
+  /** An eye this close (px) to a hovered joint's tip looks at it instead of the cursor. */
+  lookAtJointPx: 420,
+  /** Extra room kept around the keep-out areas (wordmark, subtitle, cat, top bar). */
+  keepOutPadPx: 10,
+};
 
 // ── Top bar, menu and language switcher ─────────────────────────────
 export const BAR = {

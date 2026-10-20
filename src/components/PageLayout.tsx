@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { SHARD } from "../config/home";
+import { JOINT } from "../config/home";
 import type { PageData } from "../data/pages";
 import { useLocale } from "../i18n";
+import { SmokeReveal } from "./SmokeReveal";
 import { TopBar } from "./TopBar";
 
-/** Shared shell for /page-1 … /page-4. Text comes from src/locales/*.json. */
+/** Shared shell for /me, /products, /vapes and /contact. Text comes from src/locales/*.json. */
 export function PageLayout({ page }: { page: PageData }) {
-  const { t, upper, num } = useLocale();
+  const { t, upper } = useLocale();
   const title = t(`pages.${page.key}.title`);
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export function PageLayout({ page }: { page: PageData }) {
   return (
     <>
       <TopBar home />
+      <SmokeReveal />
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -25,27 +27,23 @@ export function PageLayout({ page }: { page: PageData }) {
         style={{ background: "radial-gradient(ellipse at 50% 30%, #f4f4f4 0%, #f4f4f4 40%, #e9e9e9 100%)" }}
       >
         <div aria-hidden="true" className="absolute inset-y-0 start-0 w-2 sm:w-3" style={{ background: page.color }} />
-        <svg
+        <img
           aria-hidden="true"
-          viewBox={`0 0 100 ${100 * SHARD.aspect}`}
-          className="absolute -end-10 w-[min(34vw,260px)] rotate-12"
-          style={{ top: "calc(var(--bar-h) - 32px)" }}
-        >
-          <polygon points={SHARD.points} fill={page.color} />
-        </svg>
+          alt=""
+          src={JOINT.src}
+          className="absolute -end-20 w-[min(52vw,400px)] -rotate-[28deg] opacity-90"
+          style={{ top: "calc(var(--bar-h) - 36px)" }}
+        />
 
         <div
           className="relative mx-auto max-w-3xl px-6 pb-8 sm:px-10 sm:pb-14"
           style={{ paddingTop: "calc(var(--bar-h) + 84px)" }}
         >
-          <p className="bar-label" style={{ color: page.color }}>
-            {upper(title)}
-          </p>
           <h1
-            className="mt-2 font-black leading-[0.85] tracking-[-0.045em] text-ink rtl:leading-[1.15] rtl:tracking-normal"
+            className="font-black leading-[0.85] tracking-[-0.045em] text-ink rtl:leading-[1.15] rtl:tracking-normal"
             style={{ fontSize: "clamp(3rem, 14vw, 9rem)" }}
           >
-            {upper(t("page.heading", { n: num(page.id) }))}
+            {upper(title)}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-neutral-600">{t(`pages.${page.key}.description`)}</p>
 

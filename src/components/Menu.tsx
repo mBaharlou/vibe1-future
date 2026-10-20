@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type MouseEvent, type PointerEvent, type RefObject } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { DENIM, HAMBURGER, MENU, SHARD } from "../config/home";
+import { HAMBURGER, JOINT, MENU } from "../config/home";
 import { pages } from "../data/pages";
 import { useLocale } from "../i18n";
 import { NEW_TAB } from "../lib/tabs";
@@ -205,7 +205,7 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
           <motion.nav
             id={NAV_ID}
             aria-label={t("menu.navLabel")}
-            className="menu-track absolute top-1/2 h-9 rounded-full bg-white/45 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)]"
+            className="menu-track absolute top-1/2 h-9 rounded-full"
             data-scroll={fit?.scroll}
             style={{
               insetInlineEnd: `calc(100% + ${MENU.buttonGapPx}px)`,
@@ -228,9 +228,7 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
                     onClick={close}
                     className="menu-item flex h-9 items-center gap-1 whitespace-nowrap rounded-full px-[3px] text-[11px] font-medium text-ink focus-visible:outline-[3px] focus-visible:-outline-offset-2 focus-visible:outline-ink sm:gap-2 sm:px-3 sm:text-[13px]"
                   >
-                    <svg aria-hidden="true" viewBox={`0 0 100 ${100 * SHARD.aspect}`} className="w-1.5 shrink-0 rotate-12 sm:w-2.5">
-                      <polygon points={SHARD.points} fill={DENIM.base} />
-                    </svg>
+                    <img aria-hidden="true" alt="" src={JOINT.src} className="w-3.5 shrink-0 -rotate-12 sm:w-4" />
                     <span className="menu-item-label relative">{t(`pages.${page.key}.title`)}</span>
                   </a>
                 </motion.li>

@@ -36,44 +36,69 @@ body {
 
 /* ── Home ambient motion. Timings and values arrive as CSS variables from src/config/home.ts. ── */
 
-.shard-float {
-  animation: shard-float var(--float-s) ease-in-out var(--float-delay) infinite alternate;
+/* Joints sway gently around the filter end, which sits behind the cat's head. */
+.joint-sway {
+  transform-origin: 0 50%;
+  animation: joint-sway var(--sway-s) ease-in-out var(--sway-delay) infinite alternate;
 }
 
-@keyframes shard-float {
-  from { transform: translateY(0); }
-  to { transform: translateY(calc(var(--float-px) * -1)); }
+@keyframes joint-sway {
+  from { transform: rotate(calc(var(--sway-deg) * -1)); }
+  to { transform: rotate(var(--sway-deg)); }
 }
 
-.shard-breathe {
-  opacity: var(--glow-min);
-  animation: shard-breathe var(--breathe-s) ease-in-out var(--breathe-delay) infinite;
+/* Ember: a small warm glow at the lit tip that slowly pulses; brighter on hover, flares on select. */
+.joint-ember {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  height: 230%;
+  aspect-ratio: 1;
+  translate: 38% -50%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 222, 160, 0.95) 0%, rgba(var(--ember), 0.7) 18%, rgba(var(--ember), 0.22) 42%, rgba(var(--ember), 0) 68%);
+  opacity: 0.5;
+  animation: ember-pulse var(--ember-s) ease-in-out infinite;
+  transition: scale 300ms ease-out;
 }
 
-.shard-breathe[data-paused="true"] {
-  animation-play-state: paused;
+@keyframes ember-pulse {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 0.72; }
 }
 
-@keyframes shard-breathe {
-  0%, 100% { opacity: var(--glow-min); transform: scale(1); }
-  50% { opacity: var(--glow-max); transform: scale(var(--glow-scale)); }
+.joint-ember[data-hot="true"] {
+  animation-name: ember-hot;
+  scale: 1.25;
 }
 
-.shard-drift {
-  fill: var(--c);
-  animation: shard-drift var(--drift-s) ease-in-out var(--drift-delay) infinite;
+@keyframes ember-hot {
+  0%, 100% { opacity: 0.82; }
+  50% { opacity: 1; }
 }
 
-@keyframes shard-drift {
-  0%, 100% { fill: var(--c); }
-  33% { fill: var(--c-light); }
-  66% { fill: var(--c-dark); }
-}
-
-/* Hovered/focused shard: hold the lighter tint instead of drifting. */
-[data-active="true"] .shard-main {
+/* Selected: a drag on the joint. */
+.joint-ember[data-flare="true"] {
   animation: none;
-  fill: var(--c-tint);
+  opacity: 1;
+  scale: 2.4;
+  transition: scale 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.joint-hint {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-ink);
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
 }
 
 .haze-drift {
@@ -85,15 +110,70 @@ body {
   to { transform: translateX(var(--haze-dx)); }
 }
 
+/* Wandering eyes: the lid closes for a quick blink. */
+.wander-eye {
+  will-change: transform;
+}
+
+.wander-eye-lid {
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: top;
+  transition: transform 60ms ease-in-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .shard-float,
-  .shard-drift,
+  .joint-sway,
   .haze-drift {
     animation: none;
   }
-  .shard-breathe {
+  .joint-ember {
     animation: none;
-    opacity: var(--glow-static);
+    opacity: 0.55;
+  }
+  /* No smoke particles: a faint, still haze hangs over each tip instead. */
+  .joint-ember::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    bottom: 55%;
+    width: 110%;
+    height: 170%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(225, 221, 215, 0.55), rgba(225, 221, 215, 0));
+    filter: blur(3px);
+  }
+}
+
+/* ── Top bar: the owner's name is a link, so it reads deeper than the other bar text, with a
+   GitHub mark and an underline that draws in on hover. Always LTR (a Latin name). ── */
+
+.bar-label.owner-link {
+  color: #0f1d2a;
+  font-weight: 600;
+}
+
+.owner-link-text::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0.35em;
+  bottom: -4px;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.owner-link:hover .owner-link-text::after,
+.owner-link:focus-visible .owner-link-text::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .owner-link-text::after {
+    transition: none;
   }
 }
 
@@ -311,5 +391,18 @@ button:active .ham-press {
 @media (prefers-reduced-motion: reduce) {
   .menu-item-label::after {
     transition: none;
+  }
+}
+
+/* Small screens: the name tightens up so the bar's side items never touch it. */
+@media (max-width: 639px) {
+  .owner-link {
+    letter-spacing: 0.07em;
+  }
+}
+
+@media (max-width: 379px) {
+  .owner-link {
+    font-size: 9px;
   }
 }
