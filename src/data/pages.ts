@@ -17,5 +17,3 @@ export const pages: PageData[] = [
   { id: 3, key: "p3", color: DENIM.base, path: "/page-3" },
   { id: 4, key: "p4", color: DENIM.base, path: "/page-4" },
 ];
-
-export const getPage = (id: number) => pages.find((p) => p.id === id);
