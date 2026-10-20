@@ -7,6 +7,16 @@
   --color-ink: #1f1f1f;
 }
 
+/* Persian uses Vazirmatn; English/Turkish and the CLAUDE wordmark stay Montserrat. */
+:lang(fa) {
+  font-family: "Vazirmatn", system-ui, sans-serif;
+}
+
+.font-brand,
+.font-brand:lang(fa) {
+  font-family: "Montserrat", system-ui, sans-serif;
+}
+
 html,
 body {
   background: var(--color-paper);
@@ -14,11 +24,14 @@ body {
   overflow-x: hidden;
 }
 
-input,
-button,
-textarea,
-select {
-  font: inherit;
+/* In the base layer so utility classes (text size, weight) still win on buttons. */
+@layer base {
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
 }
 
 /* ── Home ambient motion. Timings and values arrive as CSS variables from src/config/home.ts. ── */
@@ -84,48 +97,192 @@ select {
   }
 }
 
-/* ── Menu button: three rounded lines; middle shortens on hover, all morph into an X when open. ── */
+/* ── Top bar label. Letter-spacing would break Persian joining, so fa gets none and a larger size. ── */
 
-.menu-line {
+.bar-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .bar-label {
+    font-size: 12px;
+    letter-spacing: 0.35em;
+  }
+}
+
+.bar-label:lang(fa) {
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+@media (min-width: 640px) {
+  .bar-label:lang(fa) {
+    font-size: 14px;
+  }
+}
+
+/* ── 3D hamburger. Layers: perspective → press → tilt (JS) → wobble → slat (fold) → flip → faces.
+   Open: slats flip top → bottom (stagger), then fold into an X. Close runs the exact reverse:
+   the X unfolds first, then the slats flip back bottom → top. ── */
+
+.ham {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 16px;
+}
+
+.ham-3d {
   position: absolute;
+  inset: 0;
+  perspective: var(--ham-persp);
+}
+
+.ham-press,
+.ham-tilt,
+.ham-wobble,
+.ham-slat,
+.ham-flip {
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+.ham-press,
+.ham-tilt,
+.ham-wobble {
+  inset: 0;
+}
+
+.ham-press {
+  transition: transform 140ms ease-out;
+}
+
+button:active .ham-press {
+  transform: translateZ(-6px) scale(0.94);
+}
+
+.ham-wobble {
+  animation: ham-wobble 9s ease-in-out infinite;
+}
+
+@keyframes ham-wobble {
+  0%, 100% { transform: rotateX(0deg) rotateY(0deg); }
+  33% { transform: rotateX(2deg) rotateY(-2.5deg); }
+  66% { transform: rotateX(-1.5deg) rotateY(2deg); }
+}
+
+.ham-slat {
   left: 0;
-  right: 0;
-  height: 1.5px;
+  width: var(--len);
+  height: 2.5px;
+  transform-origin: center;
+  /* Closing: the X unfolds first. */
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 220ms ease;
+  transition-delay: 0ms;
+}
+
+.ham-slat-top { top: 0; }
+.ham-slat-mid { top: calc(50% - 1.25px); }
+.ham-slat-bot { bottom: 0; }
+
+.ham-flip {
+  inset: 0;
+  transition: transform 260ms cubic-bezier(0.34, 1.4, 0.64, 1);
+  /* Closing: flip back after the unfold, bottom slat first. */
+  transition-delay: calc(240ms + var(--ri) * var(--ham-stagger));
+}
+
+.ham-face {
+  position: absolute;
+  inset: 0;
   border-radius: 999px;
+  backface-visibility: hidden;
+}
+
+.ham-face-front {
   background: #2b2b2b;
-  transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
+  transform: translateZ(0.3px);
 }
 
-.menu-line-top { top: 0; }
-.menu-line-mid { top: calc(50% - 0.75px); transform-origin: right; }
-.menu-line-bot { bottom: 0; }
-
-.menu-button:hover .menu-line-mid { transform: scaleX(0.6); }
-.menu-button[data-open="true"] .menu-line-top { transform: translateY(6.25px) rotate(45deg); }
-.menu-button[data-open="true"] .menu-line-mid { transform: scaleX(0); opacity: 0; }
-.menu-button[data-open="true"] .menu-line-bot { transform: translateY(-6.25px) rotate(-45deg); }
-
-.menu-item {
-  transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+.ham-face-back {
+  background: #2d6280;
+  transform: rotateX(180deg) translateZ(0.3px);
 }
 
-.menu-item:hover,
-.menu-item:focus-visible {
-  transform: translateX(4px);
-  color: #2d6280;
+.ham[data-open="true"] .ham-flip {
+  transform: rotateX(180deg);
+  transition-delay: calc(var(--i) * var(--ham-stagger));
 }
+
+.ham[data-open="true"] .ham-slat {
+  transition-delay: 300ms;
+}
+
+/* Arms 20px long, crossing at the icon's centre (22 × 16 box). */
+.ham[data-open="true"] .ham-slat-top {
+  transform: translateY(6.75px) rotate(45deg) scaleX(0.909);
+}
+
+.ham[data-open="true"] .ham-slat-mid {
+  transform: rotateY(90deg) scaleX(0.4);
+  opacity: 0;
+}
+
+.ham[data-open="true"] .ham-slat-bot {
+  transform: translateX(1.65px) translateY(-6.75px) rotate(-45deg) scaleX(1.0695);
+}
+
+.ham-flat {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.ham-flat svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #2b2b2b;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  transition: opacity 200ms ease;
+}
+
+.ham-flat-x { opacity: 0; }
+.ham[data-open="true"] .ham-flat-bars { opacity: 0; }
+.ham[data-open="true"] .ham-flat-x { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ham-3d { display: none; }
+  .ham-flat { display: block; }
+}
+
+/* ── Inline menu items: denim text and an underline that draws from the start edge. ── */
 
 .menu-item-label::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
+  inset-inline: 0;
+  bottom: -3px;
   height: 1px;
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.menu-item-label:dir(rtl)::after {
+  transform-origin: right;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  color: #2d6280;
 }
 
 .menu-item:hover .menu-item-label::after,
@@ -133,10 +290,26 @@ select {
   transform: scaleX(1);
 }
 
+.menu-track {
+  scrollbar-width: none;
+}
+
+.menu-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Only when the items don't fit even without the label (≈360px): scroll, fading the far edge. */
+.menu-track[data-scroll="true"] {
+  overflow-x: auto;
+  mask-image: linear-gradient(to left, #000 80%, transparent);
+}
+
+.menu-track[data-scroll="true"]:dir(rtl) {
+  mask-image: linear-gradient(to right, #000 80%, transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .menu-line,
-  .menu-item,
   .menu-item-label::after {
-    transition: opacity 200ms ease;
+    transition: none;
   }
 }

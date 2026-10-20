@@ -3,7 +3,6 @@
 // ── Cat ──────────────────────────────────────────────────────────────
 export const CAT = {
   src: "/photo/main-cat.jpg",
-  alt: "Tabby cat in a sunny field",
   /** Arch frame width / height. */
   aspect: 3 / 4,
   /** Zoom into the photo, anchored at `focus` (% of the frame). */
@@ -121,10 +120,24 @@ export const RIPPLE = { ms: 400, scale: 1.22 };
 /** Dwell finished but the browser blocked the pop-up: the full ring pulses until hover ends. */
 export const BLOCKED_PULSE = { seconds: 1.4, minOpacity: 0.4 };
 
-// ── Header and menu ──────────────────────────────────────────────────
+// ── Top bar, menu and language switcher ─────────────────────────────
+export const BAR = {
+  heightPx: 56,
+  mobileHeightPx: 48,
+  /** Breakpoint (px) where the bar switches to its desktop height. */
+  desktopFromPx: 640,
+  /** Bar tint (denim at ~6%), blur and hairline border. */
+  background: `${DENIM.base}0f`,
+  blurPx: 8,
+  border: "rgba(0, 0, 0, 0.06)",
+  /** Label fade when a side item needs its space on narrow screens. */
+  labelFadeMs: 200,
+};
+
 export const HEADER = {
-  /** Top bar padding above the label and menu button. */
-  topPx: 10,
+  /** Height the old label pill took in the header flow; keeps "CLAUDE" and the cat where they were. */
+  spacerPx: 27,
+  spacerDesktopPx: 28,
   /** How far "CLAUDE" + subtitle move down (CSS length). */
   shift: "clamp(24px, calc(2.5vw + 16px), 56px)",
   /** The shift shrinks so the subtitle keeps at least this much room above the cat. */
@@ -132,18 +145,48 @@ export const HEADER = {
 };
 
 export const MENU = {
-  buttonPx: 40,
-  widthPx: 320,
-  /** Panel height as a CSS length. */
-  height: "50vh",
-  /** Gap between the button and the panel. */
-  gapPx: 8,
-  openMs: 350,
-  closeMs: 300,
-  /** Pointer has left both button and panel for this long before it closes. */
+  /** Space between the hamburger and the menu track. */
+  buttonGapPx: 4,
+  /** Minimum space kept between the menu and the centred label. */
+  labelGapPx: 24,
+  /** Minimum space kept between the menu and the language switcher (label hidden). */
+  switcherGapPx: 8,
+  openMs: 450,
+  closeMs: 350,
+  /** Pointer has left both button and menu for this long before it closes. */
   closeDelayMs: 200,
-  itemStaggerMs: 40,
+  itemStaggerMs: 50,
   ease: [0.22, 1, 0.36, 1] as const,
+};
+
+export const HAMBURGER = {
+  hitPx: 44,
+  perspectivePx: 400,
+  /** Max magnetic tilt toward the cursor, in degrees, and the radius (px) it reacts within. */
+  tiltDeg: 14,
+  tiltRadiusPx: 160,
+  /** 0–1 per frame; lower is smoother. */
+  tiltSmoothing: 0.14,
+  /** Delay between the slats flipping. */
+  flipStaggerMs: 70,
+};
+
+export const LANG_SWITCH = {
+  /** Smoke condenses into each option. */
+  condenseMs: 500,
+  staggerMs: 80,
+  /** Options dissolve into smoke. */
+  dissolveMs: 700,
+  /** Hover-out grace before the others dissolve. */
+  closeDelayMs: 200,
+  /** Particles per option and their look. */
+  particles: 16,
+  particleRadius: [2.5, 6] as const,
+  colors: ["#d9d6d2", "#cfcbc6", "#e8e5e1"],
+  /** Crossfade when the direction flips (en/tr ↔ fa). */
+  dirFadeMs: 250,
+  /** Gap between the switcher and the centred label. */
+  labelGapPx: 24,
 };
 
 /** After window.close(), give the tab this long to go before falling back to "/". */

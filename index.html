@@ -1,14 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>my vibe coding ai</title>
+    <script>
+      // Set language and direction before anything paints, so there is no flash of the wrong
+      // language or layout. Same rule as src/i18n.ts: localStorage "lang" → browser language → en.
+      (function () {
+        var langs = ["en", "tr", "fa"];
+        var lang = null;
+        try {
+          lang = localStorage.getItem("lang");
+        } catch (e) {}
+        var nav = navigator.languages || [navigator.language || "en"];
+        for (var i = 0; langs.indexOf(lang) < 0 && i < nav.length; i++) {
+          lang = String(nav[i]).slice(0, 2).toLowerCase();
+        }
+        if (langs.indexOf(lang) < 0) lang = "en";
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;800;900&family=Vazirmatn:wght@400;500;800;900&subset=latin,latin-ext&display=swap"
     />
   </head>
   <body>

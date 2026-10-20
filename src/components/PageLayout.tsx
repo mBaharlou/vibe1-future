@@ -1,24 +1,22 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { SHARD } from "../config/home";
-import { pageTitle, type PageData } from "../data/pages";
-import { HomeButton, TopBar } from "./TopBar";
+import type { PageData } from "../data/pages";
+import { useLocale } from "../i18n";
+import { TopBar } from "./TopBar";
 
-const lorem = [
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
-  "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra.",
-  "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis.",
-];
-
-/** Shared shell for /page-1 … /page-4. Real content comes from src/data/pages.ts later. */
+/** Shared shell for /page-1 … /page-4. Text comes from src/locales/*.json. */
 export function PageLayout({ page }: { page: PageData }) {
+  const { t, upper, num } = useLocale();
+  const title = t(`pages.${page.key}.title`);
+
   useEffect(() => {
-    document.title = pageTitle(page.title);
-  }, [page]);
+    document.title = t("meta.pageTitle", { title });
+  }, [t, title]);
 
   return (
     <>
-      <TopBar left={<HomeButton />} />
+      <TopBar home />
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -26,31 +24,35 @@ export function PageLayout({ page }: { page: PageData }) {
         className="relative min-h-svh overflow-hidden"
         style={{ background: "radial-gradient(ellipse at 50% 30%, #f4f4f4 0%, #f4f4f4 40%, #e9e9e9 100%)" }}
       >
-        <div aria-hidden="true" className="absolute inset-y-0 left-0 w-2 sm:w-3" style={{ background: page.color }} />
+        <div aria-hidden="true" className="absolute inset-y-0 start-0 w-2 sm:w-3" style={{ background: page.color }} />
         <svg
           aria-hidden="true"
           viewBox={`0 0 100 ${100 * SHARD.aspect}`}
-          className="absolute -right-10 -top-8 w-[min(34vw,260px)] rotate-12"
+          className="absolute -end-10 w-[min(34vw,260px)] rotate-12"
+          style={{ top: "calc(var(--bar-h) - 32px)" }}
         >
           <polygon points={SHARD.points} fill={page.color} />
         </svg>
 
-        <div className="relative mx-auto max-w-3xl px-6 pb-8 pt-24 sm:px-10 sm:pb-14 sm:pt-28">
-          <p className="text-xs font-medium uppercase tracking-[0.35em]" style={{ color: page.color }}>
-            {page.title}
+        <div
+          className="relative mx-auto max-w-3xl px-6 pb-8 sm:px-10 sm:pb-14"
+          style={{ paddingTop: "calc(var(--bar-h) + 84px)" }}
+        >
+          <p className="bar-label" style={{ color: page.color }}>
+            {upper(title)}
           </p>
           <h1
-            className="mt-2 font-black leading-[0.85] tracking-[-0.045em] text-ink"
+            className="mt-2 font-black leading-[0.85] tracking-[-0.045em] text-ink rtl:leading-[1.15] rtl:tracking-normal"
             style={{ fontSize: "clamp(3rem, 14vw, 9rem)" }}
           >
-            PAGE {page.id}
+            {upper(t("page.heading", { n: num(page.id) }))}
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-neutral-600">{page.description}</p>
+          <p className="mt-5 max-w-xl text-lg text-neutral-600">{t(`pages.${page.key}.description`)}</p>
 
-          <div className="mt-10 max-w-2xl space-y-5 leading-relaxed text-neutral-700">
-            {lorem.map((text, i) => (
-              <p key={i}>{text}</p>
-            ))}
+          <div className="mt-10 max-w-2xl space-y-5 leading-relaxed text-neutral-700 rtl:leading-loose">
+            <p>{t("page.body1")}</p>
+            <p>{t("page.body2")}</p>
+            <p>{t("page.body3")}</p>
           </div>
         </div>
       </motion.main>

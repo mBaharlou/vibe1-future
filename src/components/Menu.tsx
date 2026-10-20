@@ -1,47 +1,109 @@
-import { useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type MouseEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type MouseEvent, type PointerEvent, type RefObject } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { DENIM, MENU, SHARD } from "../config/home";
+import { DENIM, HAMBURGER, MENU, SHARD } from "../config/home";
 import { pages } from "../data/pages";
+import { useLocale } from "../i18n";
 import { NEW_TAB } from "../lib/tabs";
+import { HamburgerIcon } from "./HamburgerIcon";
 
-const PANEL_ID = "site-menu";
+const NAV_ID = "site-menu";
 // A click right after hover opened the menu is the same gesture; don't let it close again.
 const CLICK_AFTER_HOVER_MS = 400;
-// Collapsed to the panel's top-right corner. Open overshoots the edges so the shadow isn't clipped.
-const CLIP_CLOSED = "inset(0% 0% 100% 100%)";
-const CLIP_OPEN = "inset(-10% -10% -14% -16%)";
+
+type Props = {
+  /** The centred bar label: the menu stops MENU.labelGapPx before it. */
+  labelRef: RefObject<HTMLElement | null>;
+  /** The language switcher: the menu never reaches it, even with the label hidden. */
+  switcherRef: RefObject<HTMLElement | null>;
+  /** True while the open menu needs the label's space (narrow screens). */
+  onCrowd: (crowded: boolean) => void;
+};
+
+type Fit = { width: number; crowd: boolean; scroll: boolean };
 
 const isHoverPointer = (e: PointerEvent) => e.pointerType !== "touch";
+const seconds = (ms: number) => ms / 1000;
 
-/** Top-right hamburger. Hover opens it (tap on touch, Enter/Space on keyboard); the panel grows leftward. */
-export function Menu() {
+/**
+ * Hamburger at the bar's end. The menu opens sideways inside the bar, from the button toward the
+ * centred label (mirrored in RTL), as one row of page links that open in new tabs.
+ */
+export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
+  const { t, dir } = useLocale();
   const reduce = useReducedMotion();
+  const rtl = dir === "rtl";
   const [open, setOpen] = useState(false);
+  const [fit, setFit] = useState<Fit | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const hoverOpenedAt = useRef(0);
   const focusFirst = useRef(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const cancelClose = () => clearTimeout(closeTimer.current);
-  const close = () => {
-    cancelClose();
+  const close = useCallback(() => {
+    clearTimeout(closeTimer.current);
     setOpen(false);
-  };
+  }, []);
 
-  useEffect(() => cancelClose, []);
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+  useEffect(() => onCrowd(open && !!fit?.crowd), [open, fit, onCrowd]);
 
-  // Leaving the tab (e.g. a page just opened in a new one) always resets the menu.
+  // Leaving the tab (a page just opened in a new one) resets the menu.
   useEffect(() => {
     window.addEventListener("blur", close);
     return () => window.removeEventListener("blur", close);
-  }, []);
+  }, [close]);
+
+  // Touch: tapping anywhere outside closes it.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: globalThis.PointerEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) close();
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [open, close]);
+
+  // Room between the button and the label (or, if the items need more, the switcher).
+  const measure = useCallback(() => {
+    const button = buttonRef.current?.getBoundingClientRect();
+    const label = labelRef.current?.getBoundingClientRect();
+    const switcher = switcherRef.current?.getBoundingClientRect();
+    const list = listRef.current;
+    if (!button || !label || !switcher || !list) return;
+    // offsetWidth, not scrollWidth: the items slide in with a transform that would inflate it.
+    const content = list.offsetWidth;
+    const toLabel = rtl
+      ? label.left - MENU.labelGapPx - (button.right + MENU.buttonGapPx)
+      : button.left - MENU.buttonGapPx - (label.right + MENU.labelGapPx);
+    const toSwitcher = rtl
+      ? switcher.left - MENU.switcherGapPx - (button.right + MENU.buttonGapPx)
+      : button.left - MENU.buttonGapPx - (switcher.right + MENU.switcherGapPx);
+    const crowd = content > toLabel;
+    const room = Math.max(0, Math.floor(crowd ? toSwitcher : toLabel));
+    setFit({ width: Math.min(content, room), crowd, scroll: content > room });
+  }, [labelRef, switcherRef, rtl]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    measure();
+    const observer = new ResizeObserver(measure);
+    if (labelRef.current) observer.observe(labelRef.current);
+    if (switcherRef.current) observer.observe(switcherRef.current);
+    if (listRef.current) observer.observe(listRef.current);
+    observer.observe(document.documentElement);
+    // Web fonts change the items' width once they arrive.
+    void document.fonts.ready.then(measure);
+    return () => observer.disconnect();
+  }, [open, measure, labelRef, switcherRef]);
 
   useEffect(() => {
-    if (!open || !focusFirst.current) return;
+    if (!open || !fit || !focusFirst.current) return;
     focusFirst.current = false;
-    panelRef.current?.querySelector("a")?.focus();
-  }, [open]);
+    listRef.current?.querySelector("a")?.focus();
+  }, [open, fit]);
 
   const onPointerEnter = (e: PointerEvent) => {
     if (!isHoverPointer(e)) return;
@@ -65,90 +127,111 @@ export function Menu() {
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== "Escape" || !open) return;
-    e.stopPropagation();
-    close();
-    buttonRef.current?.focus();
+    if (e.key === "Escape" && open) {
+      e.stopPropagation();
+      close();
+      buttonRef.current?.focus();
+      return;
+    }
+    const links = Array.from(listRef.current?.querySelectorAll("a") ?? []);
+    const at = links.indexOf(document.activeElement as HTMLAnchorElement);
+    if (at < 0) return;
+    // Arrow keys follow what you see: in RTL the row runs right → left.
+    const step = ({ ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 } as Record<string, number>)[e.key];
+    const next = e.key === "Home" ? 0 : e.key === "End" ? links.length - 1 : step !== undefined ? at + step : -1;
+    if (next < 0 || next >= links.length) return;
+    e.preventDefault();
+    links[next].focus();
   };
 
   const onBlur = (e: FocusEvent) => {
-    if (!e.currentTarget.contains(e.relatedTarget as Node | null) && e.relatedTarget) close();
+    if (e.relatedTarget && !e.currentTarget.contains(e.relatedTarget as Node)) close();
   };
 
-  const seconds = (ms: number) => ms / 1000;
+  // Collapsed at the edge next to the button; the reveal runs toward the label.
+  const clipClosed = rtl ? "inset(0% 100% 0% 0% round 999px)" : "inset(0% 0% 0% 100% round 999px)";
+  const clipOpen = "inset(0% 0% 0% 0% round 999px)";
+  const slide = (rtl ? -1 : 1) * 10;
+
+  const track = {
+    closed: reduce
+      ? { opacity: 0, transition: { duration: 0.2 } }
+      : {
+          clipPath: clipClosed,
+          // Items leave farthest-first while the track folds back into the button.
+          transition: { duration: seconds(MENU.closeMs), ease: MENU.ease, staggerChildren: seconds(MENU.itemStaggerMs), staggerDirection: 1 },
+        },
+    open: reduce
+      ? { opacity: 1, transition: { duration: 0.2 } }
+      : {
+          clipPath: clipOpen,
+          // Nearest the button first, which is the last item in reading order.
+          transition: {
+            duration: seconds(MENU.openMs),
+            ease: MENU.ease,
+            delayChildren: 0.06,
+            staggerChildren: seconds(MENU.itemStaggerMs),
+            staggerDirection: -1,
+          },
+        },
+  };
+  const item = {
+    closed: reduce ? { opacity: 0 } : { opacity: 0, x: slide, transition: { duration: 0.16, ease: "easeIn" as const } },
+    open: reduce ? { opacity: 1 } : { opacity: 1, x: 0, transition: { duration: 0.32, ease: MENU.ease } },
+  };
 
   return (
-    // Hover is tracked on the button and the panel themselves, not this wrapper: when the panel
-    // unmounts under the pointer, the wrapper never gets a pointerleave and would stop reopening.
-    <div className="pointer-events-auto relative" onKeyDown={onKeyDown} onBlur={onBlur}>
+    <div ref={wrapRef} className="pointer-events-auto relative" onKeyDown={onKeyDown} onBlur={onBlur}>
+      {/* Hover is tracked on the button and the menu themselves, not this wrapper: when the menu
+          unmounts under the pointer, the wrapper never gets a pointerleave and would stop reopening. */}
       <button
         ref={buttonRef}
         type="button"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? t("menu.close") : t("menu.open")}
         aria-expanded={open}
-        aria-controls={PANEL_ID}
-        data-open={open}
+        aria-controls={NAV_ID}
         onClick={onButtonClick}
+        onFocus={(e) => e.currentTarget.matches(":focus-visible") && setOpen(true)}
         onPointerEnter={onPointerEnter}
         onPointerLeave={onPointerLeave}
-        className="menu-button group grid place-items-center rounded-full bg-white/55 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.05)] backdrop-blur-md focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink"
-        style={{ width: MENU.buttonPx, height: MENU.buttonPx }}
+        className="grid place-items-center rounded-full focus-visible:outline-[3px] focus-visible:outline-offset-0 focus-visible:outline-ink"
+        style={{ width: HAMBURGER.hitPx, height: HAMBURGER.hitPx }}
       >
-        <span aria-hidden="true" className="relative block h-3.5 w-5">
-          <span className="menu-line menu-line-top" />
-          <span className="menu-line menu-line-mid" />
-          <span className="menu-line menu-line-bot" />
-        </span>
+        <HamburgerIcon open={open} />
       </button>
 
       <AnimatePresence>
         {open && (
           <motion.nav
-            ref={panelRef}
-            id={PANEL_ID}
-            aria-label="Pages"
+            id={NAV_ID}
+            aria-label={t("menu.navLabel")}
+            className="menu-track absolute top-1/2 h-9 rounded-full bg-white/45 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)]"
+            data-scroll={fit?.scroll}
+            style={{
+              insetInlineEnd: `calc(100% + ${MENU.buttonGapPx}px)`,
+              translate: "0 -50%",
+              width: fit?.width ?? 0,
+            }}
+            variants={track}
+            initial="closed"
+            animate="open"
+            exit="closed"
             onPointerEnter={onPointerEnter}
             onPointerLeave={onPointerLeave}
-            className="absolute right-0 overflow-y-auto rounded-2xl border border-white/70 bg-[#fafaf8]/80 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.3),0_4px_14px_-6px_rgba(0,0,0,0.08)] backdrop-blur-xl"
-            style={{
-              top: `calc(100% + ${MENU.gapPx}px)`,
-              width: `min(${MENU.widthPx}px, calc(100vw - 32px))`,
-              height: MENU.height,
-              transformOrigin: "top right",
-            }}
-            initial={reduce ? { opacity: 0 } : { clipPath: CLIP_CLOSED }}
-            animate={reduce ? { opacity: 1 } : { clipPath: CLIP_OPEN }}
-            exit={
-              reduce
-                ? { opacity: 0, transition: { duration: 0.2 } }
-                : { clipPath: CLIP_CLOSED, transition: { duration: seconds(MENU.closeMs), ease: MENU.ease } }
-            }
-            transition={reduce ? { duration: 0.2 } : { duration: seconds(MENU.openMs), ease: MENU.ease }}
           >
-            <span aria-hidden="true" className="absolute inset-y-5 left-0 w-[2px] rounded-full" style={{ background: DENIM.base }} />
-            <ul className="px-3 py-4">
-              {pages.map((page, i) => (
-                <motion.li
-                  key={page.id}
-                  initial={reduce ? { opacity: 0 } : { opacity: 0, x: 10 }}
-                  animate={reduce ? { opacity: 1 } : { opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                  transition={{
-                    duration: reduce ? 0.2 : 0.3,
-                    ease: MENU.ease,
-                    delay: reduce ? 0 : 0.08 + seconds(i * MENU.itemStaggerMs),
-                  }}
-                >
+            <ul ref={listRef} className="flex h-full w-max items-center px-0.5 sm:px-2">
+              {pages.map((page) => (
+                <motion.li key={page.id} variants={item}>
                   <a
                     href={page.path}
                     {...NEW_TAB}
                     onClick={close}
-                    className="menu-item flex min-h-11 items-center gap-3 rounded-lg px-3 text-[15px] font-medium text-ink focus-visible:outline-[3px] focus-visible:outline-offset-0 focus-visible:outline-ink"
+                    className="menu-item flex h-9 items-center gap-1 whitespace-nowrap rounded-full px-[3px] text-[11px] font-medium text-ink focus-visible:outline-[3px] focus-visible:-outline-offset-2 focus-visible:outline-ink sm:gap-2 sm:px-3 sm:text-[13px]"
                   >
-                    <svg aria-hidden="true" viewBox={`0 0 100 ${100 * SHARD.aspect}`} className="w-3 shrink-0 rotate-12">
+                    <svg aria-hidden="true" viewBox={`0 0 100 ${100 * SHARD.aspect}`} className="w-1.5 shrink-0 rotate-12 sm:w-2.5">
                       <polygon points={SHARD.points} fill={DENIM.base} />
                     </svg>
-                    <span className="menu-item-label relative">{page.title}</span>
+                    <span className="menu-item-label relative">{t(`pages.${page.key}.title`)}</span>
                   </a>
                 </motion.li>
               ))}

@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "homeTitle": "vibe coding yapay zekâm",
+    "pageTitle": "{{title}} · Claude",
+    "notFoundTitle": "Sayfa bulunamadı"
+  },
+  "topBar": {
+    "label": "Grafik tasarım promptları"
+  },
+  "hero": {
+    "subtitle": "Claude.ai ile işini hemen bir üst seviyeye taşı!",
+    "catAlt": "Güneşli bir çayırda tekir kedi"
+  },
+  "pages": {
+    "p1": { "title": "Sayfa 1", "description": "Yer tutucu: birinci sayfada neler olduğunu anlatan kısa bir cümle." },
+    "p2": { "title": "Sayfa 2", "description": "Yer tutucu: ikinci sayfada neler olduğunu anlatan kısa bir cümle." },
+    "p3": { "title": "Sayfa 3", "description": "Yer tutucu: üçüncü sayfada neler olduğunu anlatan kısa bir cümle." },
+    "p4": { "title": "Sayfa 4", "description": "Yer tutucu: dördüncü sayfada neler olduğunu anlatan kısa bir cümle." }
+  },
+  "page": {
+    "heading": "Sayfa {{n}}",
+    "body1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
+    "body2": "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra.",
+    "body3": "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis."
+  },
+  "shard": {
+    "ariaLabel": "{{title}} yeni sekmede aç",
+    "hintDwelling": "Açmak için bekle · hemen gitmek için tıkla",
+    "hintOpened": "Yeni sekmede açıldı",
+    "hintBlocked": "Açmak için tıkla",
+    "hintKeyboard": "Yeni sekmede açmak için Enter'a bas"
+  },
+  "menu": {
+    "open": "Menüyü aç",
+    "close": "Menüyü kapat",
+    "navLabel": "Sayfalar"
+  },
+  "home": {
+    "back": "Ana sayfa",
+    "backLabel": "Ana sayfaya dön"
+  },
+  "notFound": {
+    "label": "Sayfa bulunamadı",
+    "text": "Bu adreste bir şey yok.",
+    "back": "Ana sayfaya dön"
+  },
+  "language": {
+    "button": "Dil: {{name}}. Dili değiştir",
+    "list": "Diller"
+  }
+}

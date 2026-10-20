@@ -14,6 +14,7 @@ import {
   SHARD,
   type ShardPlacement,
 } from "../config/home";
+import { useLocale } from "../i18n";
 import { shiftLightness } from "../lib/color";
 import { NEW_TAB, openInNewTab } from "../lib/tabs";
 import { ShardPreview } from "./ShardPreview";
@@ -45,6 +46,8 @@ const viewBox = `0 0 100 ${100 * SHARD.aspect}`;
 
 export function Shard({ page, placement, width, index, active, dimmed, armed, resetKey, onEnter, onLeave }: Props) {
   const reduce = useReducedMotion();
+  const { t } = useLocale();
+  const title = t(`pages.${page.key}.title`);
   const [phase, setPhase] = useState<Phase>("idle");
   const [ripples, setRipples] = useState(0);
   const [introDone, setIntroDone] = useState(false);
@@ -134,7 +137,7 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, re
       <motion.a
         href={page.path}
         {...NEW_TAB}
-        aria-label={`Open Page ${page.id} in a new tab`}
+        aria-label={t("shard.ariaLabel", { title })}
         aria-describedby={active ? previewId : undefined}
         data-active={active}
         data-phase={phase}
@@ -240,15 +243,16 @@ export function Shard({ page, placement, width, index, active, dimmed, armed, re
             id={previewId}
             page={page}
             side={side}
-            hint={
+            title={title}
+            hint={t(
               phase === "blocked"
-                ? "Click to open"
+                ? "shard.hintBlocked"
                 : phase === "opened"
-                  ? "Opened in a new tab"
+                  ? "shard.hintOpened"
                   : phase === "idle"
-                    ? "Press Enter to open in a new tab"
-                    : "Hold to open · click to go"
-            }
+                    ? "shard.hintKeyboard"
+                    : "shard.hintDwelling",
+            )}
             onOpen={() => openInNewTab(page.path) && opened()}
           />
         )}

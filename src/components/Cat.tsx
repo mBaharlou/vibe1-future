@@ -5,12 +5,13 @@ type Props = {
   ref: Ref<HTMLDivElement>;
   /** Height and distance from the bottom, as % of the hero frame. */
   placement: { height: number; bottom: number };
+  alt: string;
   onHoverChange: (hovering: boolean) => void;
   onTap: () => void;
 };
 
 /** The hero cat, cropped into a soft arch so the photo sits inside the poster. */
-export function Cat({ ref, placement, onHoverChange, onTap }: Props) {
+export function Cat({ ref, placement, alt, onHoverChange, onTap }: Props) {
   return (
     <div
       ref={ref}
@@ -28,7 +29,7 @@ export function Cat({ ref, placement, onHoverChange, onTap }: Props) {
     >
       <img
         src={CAT.src}
-        alt={CAT.alt}
+        alt={alt}
         draggable={false}
         className="h-full w-full select-none object-cover"
         style={{

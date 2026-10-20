@@ -1,8 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { pages } from "../data/pages";
-import { DENIM, DWELL_ARM_PX, HEADER, LAYOUTS, TALL_BELOW } from "../config/home";
-import { HOME_TITLE } from "../data/pages";
+import { DWELL_ARM_PX, HEADER, LAYOUTS, TALL_BELOW } from "../config/home";
+import { useLocale } from "../i18n";
 import { Cat } from "./Cat";
 import { Haze } from "./Haze";
 import { Shard } from "./Shard";
@@ -10,11 +10,8 @@ import { SmokeCanvas } from "./SmokeCanvas";
 import { Sparkle } from "./Sparkle";
 import { TopBar } from "./TopBar";
 
-const LABEL = "Graphic design prompts for";
-const labelClass = "inline-block rounded-full text-[10px] font-medium uppercase tracking-[0.35em] text-neutral-800 sm:text-xs";
-const labelStyle = { padding: "6px 14px", background: `${DENIM.base}0f` };
-
 export function Hero() {
+  const { t, dir } = useLocale();
   const [active, setActive] = useState<number | null>(null);
   const [catHover, setCatHover] = useState(false);
   const [burstAt, setBurstAt] = useState(0);
@@ -53,7 +50,10 @@ export function Hero() {
   }, [frame]);
 
   useEffect(() => {
-    document.title = HOME_TITLE;
+    document.title = t("meta.homeTitle");
+  }, [t]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setActive(null);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -94,13 +94,7 @@ export function Hero() {
 
   return (
     <>
-      <TopBar
-        center={
-          <p className={`${labelClass} shrink-0 backdrop-blur-sm max-sm:tracking-[0.25em]`} style={labelStyle}>
-            {LABEL}
-          </p>
-        }
-      />
+      <TopBar />
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -109,10 +103,12 @@ export function Hero() {
         style={{ background: "radial-gradient(ellipse at 50% 42%, #f4f4f4 0%, #f4f4f4 38%, #e9e9e9 100%)" }}
       >
         <header className="relative px-4 pt-10 text-center sm:pt-12" style={{ paddingBottom: "clamp(16px, 2.2vw, 24px)" }}>
-          {/* The visible label lives in the fixed top bar; this invisible copy keeps the header's height. */}
-          <p aria-hidden="true" className={`${labelClass} invisible`} style={labelStyle}>
-            {LABEL}
-          </p>
+          {/* Holds the space the label pill used to take, so "CLAUDE" and the cat stay put in every language. */}
+          <div
+            aria-hidden="true"
+            className="h-[var(--spacer)] sm:h-[var(--spacer-sm)]"
+            style={{ "--spacer": `${HEADER.spacerPx}px`, "--spacer-sm": `${HEADER.spacerDesktopPx}px` } as CSSProperties}
+          />
           <div ref={titleRef}>
             <div
               style={{
@@ -120,13 +116,15 @@ export function Hero() {
               }}
             >
               <h1
-                className="mt-2 font-black leading-[0.82] tracking-[-0.045em] text-ink"
+                lang="en"
+                dir="ltr"
+                className="font-brand mt-2 font-black leading-[0.82] tracking-[-0.045em] text-ink"
                 style={{ fontSize: "clamp(3.5rem, min(20.5vw, 30svh), 24rem)" }}
               >
                 CLAUDE
               </h1>
               <p className="mt-3 text-sm text-neutral-500 sm:text-base">
-                Instantly level up your work using Claude.ai!
+                {t("hero.subtitle")}
               </p>
             </div>
           </div>
@@ -140,14 +138,15 @@ export function Hero() {
             className="absolute bottom-0 left-1/2"
             style={{ width: frame.width, height: frame.height, transform: "translateX(-50%)" }}
           >
-            {/* layout.shards is sorted left → right, so shard i opens pages[i]. Tab order follows. */}
-            {layout.shards.map((placement, i) => {
-              const page = pages[i];
+            {/* layout.shards is sorted left → right. Pages follow reading order: Page 1 is the leftmost
+                shard in LTR and the rightmost in RTL. DOM (and so tab) order follows the pages. */}
+            {pages.map((page, n) => {
+              const i = dir === "rtl" ? layout.shards.length - 1 - n : n;
               return (
                 <Shard
                   key={page.id}
                   page={page}
-                  placement={placement}
+                  placement={layout.shards[i]}
                   width={layout.shardWidth}
                   index={i}
                   armed={armed}
@@ -172,6 +171,7 @@ export function Hero() {
             <Cat
               ref={catRef}
               placement={layout.cat}
+              alt={t("hero.catAlt")}
               onHoverChange={setCatHover}
               onTap={() => setBurstAt(Date.now())}
             />
