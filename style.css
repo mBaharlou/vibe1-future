@@ -42,12 +42,19 @@ select {
 }
 
 body {
+  font-weight: 300;
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 500;
 }
 
 .container {
