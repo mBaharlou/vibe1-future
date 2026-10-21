@@ -1,7 +1,8 @@
 import { httpError, sseData, type Provider } from "./types.js";
 
 // Google Gemini (free tier in Google AI Studio). GEMINI_MODEL overrides the default.
-const DEFAULT_MODEL = "gemini-3.8-flash";
+// Flash-Lite: fast and on the free tier (3.8 Flash is often overloaded there).
+const DEFAULT_MODEL = "gemini-3.5-flash-lite";
 // Gemini counts thinking tokens against maxOutputTokens, so the reply gets this much headroom
 // on top of maxTokens (thinking is kept at "low").
 const THINKING_HEADROOM = 1000;
