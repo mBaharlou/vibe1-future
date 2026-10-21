@@ -184,6 +184,23 @@ export const WORDMARK = {
   hueS: 26,
 };
 
+/** Smoke that slowly fills the O's hole, packs it, then pours out and drifts off the top of the
+ *  page, on a loop. ?smokeFast=1 in the URL squeezes the whole cycle into `fast` (≈20s) for testing. */
+export const O_SMOKE = {
+  fillMs: 210000,
+  fullMs: 1500,
+  releaseMs: 3500,
+  pauseMs: 2000,
+  fast: { fillMs: 13500, fullMs: 1500, releaseMs: 3200, pauseMs: 1800 },
+  /** Puffs inside the O when it is full, and the most the release can have in flight. */
+  maxParticles: 70,
+  /** Release whoosh, through the sound module (respects mute and the audio unlock). */
+  releaseVolume: 0.2,
+  colors: ["#f7f5f2", "#e6e2dd", "#cfcac4"],
+  /** Reduced motion: a faint, still haze in the hole instead of the cycle. */
+  staticHaze: 0.35,
+};
+
 // ── Top bar, menu and language switcher ─────────────────────────────
 export const BAR = {
   heightPx: 56,
@@ -251,6 +268,22 @@ export const LANG_SWITCH = {
   dirFadeMs: 250,
   /** Gap between the switcher and the centred label. */
   labelGapPx: 24,
+};
+
+// ── "Ask the cat" (every page) ───────────────────────────────────────
+export const ASK_CAT = {
+  /** Round avatar under the hamburger, in px. */
+  size: 52,
+  mobileSize: 44,
+  /** The cat's face cropped from CAT.src: object-position (%), then a zoom around `origin` (% of the avatar). */
+  face: { x: 42, y: 92, zoom: 2.3, origin: { x: 42, y: 50 } },
+  /** Desktop panel; under 640px it is a full-height bottom sheet instead. */
+  panel: { width: 380, height: 560, gapPx: 10 },
+  maxChars: 1000,
+  /** The character counter shows from here on. */
+  counterFrom: 800,
+  /** sessionStorage: the conversation survives navigation and refresh in this tab. */
+  storageKey: "ask-cat-chat",
 };
 
 /** After window.close(), give the tab this long to go before falling back to "/". */

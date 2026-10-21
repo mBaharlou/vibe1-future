@@ -4,7 +4,8 @@ import { SOUND } from "../config/home";
 // Sounds, synthesized with the Web Audio API (nothing to license):
 // - lighter: 1–3 flint clicks (sharp band-passed noise ticks with a tiny metallic ring), the gas
 //   hiss once the valve opens, and a low flame whoosh when it catches;
-// - exhale: a soft, low breath under the final smoke burst.
+// - exhale: a soft, low breath under the final smoke burst;
+// - whoosh: the smoke pouring out of the wordmark's O.
 // Browsers only allow audio after the user clicks/taps/presses a key on the page, so the context
 // is created on the first pointerdown/keydown ("unlock"). Until then every sound is silent.
 
@@ -205,6 +206,25 @@ export function playExhale() {
   g.gain.exponentialRampToValueAtTime(SOUND.exhale * SOUND.volume * 3, t0 + 0.08);
   g.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
   noise(audio, t0, len).connect(low).connect(g).connect(audio.destination);
+}
+
+/** A very soft whoosh: band-passed noise sweeping up, then away. `volume` is the peak gain. */
+export function playWhoosh(volume: number, durationMs = 900) {
+  const audio = ready();
+  if (!audio) return;
+  const t0 = audio.currentTime + 0.01;
+  const len = durationMs / 1000;
+  const band = audio.createBiquadFilter();
+  band.type = "bandpass";
+  band.Q.value = 0.9;
+  band.frequency.setValueAtTime(320, t0);
+  band.frequency.exponentialRampToValueAtTime(1500, t0 + len * 0.35);
+  band.frequency.exponentialRampToValueAtTime(600, t0 + len);
+  const g = audio.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(volume, t0 + len * 0.25);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
+  noise(audio, t0, len).connect(band).connect(g).connect(audio.destination);
 }
 
 const subscribeUnlock = (listener: () => void) => {

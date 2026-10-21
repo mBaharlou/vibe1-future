@@ -484,6 +484,88 @@ button:active .ham-press {
   }
 }
 
+/* ── "Ask the cat": a slow idle bob, a quick tilt-and-wiggle on hover, a tooltip beside it. ── */
+
+.ask-cat-bob {
+  animation: ask-bob 3.6s ease-in-out infinite;
+}
+
+@keyframes ask-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.ask-cat-face {
+  transition: transform 200ms ease-out;
+}
+
+.ask-cat-button:hover .ask-cat-face,
+.ask-cat-button:focus-visible .ask-cat-face {
+  animation: ask-wiggle 560ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.ask-cat-button:active .ask-cat-face {
+  transform: scale(0.92);
+}
+
+@keyframes ask-wiggle {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-12deg) scale(1.06); }
+  50% { transform: rotate(8deg) scale(1.06); }
+  75% { transform: rotate(-4deg) scale(1.03); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+.ask-cat-tip {
+  opacity: 0;
+  translate: 6px -50%;
+  transition: opacity 160ms ease-out, translate 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ask-cat-tip:dir(rtl) {
+  translate: -6px -50%;
+}
+
+.ask-cat-button:hover .ask-cat-tip,
+.ask-cat-button:focus-visible .ask-cat-tip {
+  opacity: 1;
+  translate: 0 -50%;
+}
+
+/* Typing: three small smoke puffs pulsing in turn. */
+.ask-typing span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #b9b4ae 0%, #cfcac4 55%, rgba(207, 202, 196, 0) 100%);
+  animation: ask-puff 1.2s ease-in-out infinite;
+}
+
+.ask-typing span:nth-child(2) { animation-delay: 160ms; }
+.ask-typing span:nth-child(3) { animation-delay: 320ms; }
+
+@keyframes ask-puff {
+  0%, 100% { transform: scale(0.7) translateY(0); opacity: 0.45; }
+  40% { transform: scale(1.25) translateY(-3px); opacity: 1; }
+}
+
+/* The input grows with its text (up to max-h). */
+.ask-input {
+  field-sizing: content;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-cat-bob,
+  .ask-cat-button:hover .ask-cat-face,
+  .ask-cat-button:focus-visible .ask-cat-face,
+  .ask-typing span {
+    animation: none;
+  }
+  .ask-cat-tip {
+    transition: none;
+  }
+}
+
 /* Small screens: the name tightens up so the bar's side items never touch it. */
 @media (max-width: 639px) {
   .owner-link {

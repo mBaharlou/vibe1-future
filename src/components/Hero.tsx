@@ -10,6 +10,7 @@ import patternSvg from "../assets/joint-pattern.svg?raw";
 import { Cat } from "./Cat";
 import { Haze } from "./Haze";
 import { Joint, type JointStage } from "./Joint";
+import { OSmoke } from "./OSmoke";
 import { JointSmoke, type JointSmokeHandle } from "./JointSmoke";
 import { SmokeCanvas } from "./SmokeCanvas";
 import { TopBar } from "./TopBar";
@@ -50,7 +51,7 @@ const leftToRight = (fan: JointPlacement[]) =>
   [...fan].sort((a, b) => Math.cos((a.angle * Math.PI) / 180) - Math.cos((b.angle * Math.PI) / 180));
 
 export function Hero() {
-  const { t, dir } = useLocale();
+  const { t, dir, lang } = useLocale();
   const reduce = useReducedMotion();
   const navigate = useNavigate();
   const [catHover, setCatHover] = useState(false);
@@ -64,6 +65,8 @@ export function Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const catRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
+  const wordmarkRef = useRef<HTMLDivElement>(null);
+  const wordmarkFillRef = useRef<HTMLSpanElement>(null);
   const smokeRef = useRef<JointSmokeHandle>(null);
   const emberRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -239,7 +242,7 @@ export function Hero() {
             style={{ "--spacer": `${HEADER.spacerPx}px`, "--spacer-sm": `${HEADER.spacerDesktopPx}px` } as CSSProperties}
           />
           <div ref={titleRef}>
-            <div style={{ translate: `0 ${shiftCap === null ? "0px" : `min(${HEADER.shift}, ${shiftCap}px)`}` }}>
+            <div ref={wordmarkRef} className="relative" style={{ translate: `0 ${shiftCap === null ? "0px" : `min(${HEADER.shift}, ${shiftCap}px)`}` }}>
               {/* Real, selectable text; the rainbow + pattern only fills the letters. */}
               <h1
                 lang="en"
@@ -256,8 +259,10 @@ export function Hero() {
                   } as CSSProperties
                 }
               >
-                <span className="wordmark-fill">JOINT</span>
+                <span ref={wordmarkFillRef} className="wordmark-fill">JOINT</span>
               </h1>
+              {/* Smoke in the O's hole: a canvas over the letter, clipped to the hole only. */}
+              <OSmoke wrapRef={wordmarkRef} fillRef={wordmarkFillRef} measureKey={`${lang}-${dir}`} />
               <p data-eyes-avoid="" className="mx-auto mt-3 w-fit text-sm text-neutral-500 sm:text-base">
                 {t("hero.subtitle")}
               </p>

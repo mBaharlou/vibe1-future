@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { pages } from "./data/pages";
+import { AskCat } from "./components/AskCat";
 import { Eyes } from "./components/Eyes";
 import { Hero } from "./components/Hero";
 import { NotFound } from "./components/NotFound";
@@ -23,8 +24,9 @@ export default function App() {
         ))}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {/* Outside the routes, so the eyes carry on across in-tab navigation. */}
+      {/* Outside the routes, so the eyes and the chat carry on across in-tab navigation. */}
       <Eyes />
+      <AskCat />
     </>
   );
 }

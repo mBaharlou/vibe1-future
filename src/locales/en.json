@@ -47,5 +47,24 @@
   "language": {
     "button": "Language: {{name}}. Change language",
     "list": "Languages"
+  },
+  "ask": {
+    "tooltip": "Ask a question",
+    "open": "Ask the cat a question",
+    "title": "Ask the cat",
+    "close": "Close chat",
+    "newChat": "New chat",
+    "greeting": "Meow! I'm the cat of this site. Ask me anything about it.",
+    "inputLabel": "Your question",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "typing": "The cat is typing…",
+    "counter": "{{n}} / {{max}}",
+    "retry": "Try again",
+    "errors": {
+      "not_configured": "The AI isn't set up yet.",
+      "rate_limited": "Too many messages, try again in a minute.",
+      "error": "Something went wrong."
+    }
   }
 }

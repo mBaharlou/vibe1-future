@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { JOINT } from "../config/home";
 import type { PageData } from "../data/pages";
 import { useLocale } from "../i18n";
 import { SmokeReveal } from "./SmokeReveal";
@@ -26,15 +25,6 @@ export function PageLayout({ page }: { page: PageData }) {
         className="relative min-h-svh overflow-hidden"
         style={{ background: "radial-gradient(ellipse at 50% 30%, #f4f4f4 0%, #f4f4f4 40%, #e9e9e9 100%)" }}
       >
-        <div aria-hidden="true" className="absolute inset-y-0 start-0 w-2 sm:w-3" style={{ background: page.color }} />
-        <img
-          aria-hidden="true"
-          alt=""
-          src={JOINT.src}
-          className="absolute -end-20 w-[min(52vw,400px)] -rotate-[28deg] opacity-90"
-          style={{ top: "calc(var(--bar-h) - 36px)" }}
-        />
-
         <div
           className="relative mx-auto max-w-3xl px-6 pb-8 sm:px-10 sm:pb-14"
           style={{ paddingTop: "calc(var(--bar-h) + 84px)" }}

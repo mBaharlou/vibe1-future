@@ -47,5 +47,24 @@
   "language": {
     "button": "Dil: {{name}}. Dili değiştir",
     "list": "Diller"
+  },
+  "ask": {
+    "tooltip": "Bir soru sor",
+    "open": "Kediye bir soru sor",
+    "title": "Kediye sor",
+    "close": "Sohbeti kapat",
+    "newChat": "Yeni sohbet",
+    "greeting": "Miyav! Bu sitenin kedisiyim. Site hakkında bana istediğini sorabilirsin.",
+    "inputLabel": "Sorun",
+    "placeholder": "Sorunu yaz…",
+    "send": "Gönder",
+    "typing": "Kedi yazıyor…",
+    "counter": "{{n}} / {{max}}",
+    "retry": "Tekrar dene",
+    "errors": {
+      "not_configured": "Yapay zekâ henüz kurulmadı.",
+      "rate_limited": "Çok fazla mesaj gönderildi, bir dakika sonra tekrar dene.",
+      "error": "Bir şeyler ters gitti."
+    }
   }
 }

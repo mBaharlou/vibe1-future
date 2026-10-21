@@ -1,0 +1,123 @@
+import { pickProvider, ProviderError, type ChatMessage } from "./ai/index.js";
+
+// POST /api/chat: { messages, lang } → the reply streamed as plain UTF-8 text.
+// Failures before the first token are JSON { error } with a status:
+//   not_configured 503 · rate_limited 429 · bad_request 400 · forbidden 403/405 · error 502.
+// Shared by the Vercel function (api/chat.ts) and the Vite dev middleware (vite.config.ts).
+
+export const LIMITS = {
+  /** History sent to the model: the newest messages only. */
+  maxMessages: 20,
+  maxChars: 1000,
+  maxTokens: 500,
+  /** Per IP, in memory (per server instance). */
+  ratePerMinute: 10,
+};
+
+const LANGUAGES = { en: "English", tr: "Turkish", fa: "Persian (Farsi)" } as const;
+type Lang = keyof typeof LANGUAGES;
+
+const systemPrompt = (lang: Lang) => `You are "the cat" of a small personal website called JOINT: a tabby cat in a sunny field who greets visitors. You are friendly, warm and a little playful (an occasional cat-like touch is fine, but don't overdo it).
+
+Always answer in ${LANGUAGES[lang]}, whatever language the visitor writes in.
+Keep answers short: 2–5 sentences, unless the visitor asks for more detail. Plain text or light Markdown only.
+
+About the site: the home page shows the cat with four joints fanning out of its head; each one opens a page. The pages are Me (about the site's owner, Mohammad Baharlou), Products (joints & cigarettes), Vapes, and Contact (how to get in touch). There is also a menu under the hamburger button at the top, a language switcher (English, Turkish, Persian) and a sound toggle. You can point visitors to these pages, but you don't know details beyond this, so don't invent prices, stock, addresses or other facts.
+
+Stay on safe ground: no medical, legal or financial advice (suggest a professional instead). Never encourage anyone to use tobacco, cannabis or vaping products, and if someone seems to be a minor, kindly tell them these products are for adults only. Decline anything harmful or explicit, briefly and kindly.`;
+
+const json = (status: number, error: string) =>
+  new Response(JSON.stringify({ error }), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
+
+// ── Rate limit: a sliding one-minute window per IP ──
+const hits = new Map<string, number[]>();
+function limited(ip: string, now = Date.now()) {
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
+  const over = recent.length >= LIMITS.ratePerMinute;
+  if (!over) recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 5000) for (const [key, times] of hits) if (!times.some((t) => now - t < 60_000)) hits.delete(key);
+  return over;
+}
+
+const clientIp = (request: Request) =>
+  request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "local";
+
+/** Only the site's own pages may call this: the Origin must match the host it was sent to. */
+function sameOrigin(request: Request) {
+  const origin = request.headers.get("origin");
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  if (!origin || !host) return false;
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
+}
+
+function parseBody(body: unknown): { messages: ChatMessage[]; lang: Lang } | null {
+  if (!body || typeof body !== "object") return null;
+  const { messages, lang } = body as { messages?: unknown; lang?: unknown };
+  if (!Array.isArray(messages) || messages.length === 0) return null;
+  const clean: ChatMessage[] = [];
+  for (const m of messages) {
+    if (!m || typeof m !== "object") return null;
+    const { role, content } = m as { role?: unknown; content?: unknown };
+    if ((role !== "user" && role !== "assistant") || typeof content !== "string") return null;
+    if (content.length > LIMITS.maxChars) return null;
+    if (content.trim()) clean.push({ role, content });
+  }
+  // The newest messages, starting with the visitor's.
+  const recent = clean.slice(-LIMITS.maxMessages);
+  while (recent.length && recent[0].role !== "user") recent.shift();
+  if (!recent.length || recent[recent.length - 1].role !== "user") return null;
+  return { messages: recent, lang: lang === "tr" || lang === "fa" ? lang : "en" };
+}
+
+export async function handleChat(request: Request, env: Record<string, string | undefined> = process.env): Promise<Response> {
+  if (request.method !== "POST") return json(405, "forbidden");
+  if (!sameOrigin(request)) return json(403, "forbidden");
+
+  const provider = pickProvider(env);
+  if (!provider) return json(503, "not_configured");
+  if (limited(clientIp(request))) return json(429, "rate_limited");
+
+  const input = parseBody(await request.json().catch(() => null));
+  if (!input) return json(400, "bad_request");
+
+  const iterator = provider
+    .stream({ system: systemPrompt(input.lang), messages: input.messages, maxTokens: LIMITS.maxTokens, signal: request.signal })
+    [Symbol.asyncIterator]();
+
+  // Wait for the first piece, so a failure can still be answered with a proper status.
+  let first: IteratorResult<string>;
+  try {
+    first = await iterator.next();
+  } catch (error) {
+    console.error(`[chat] ${provider.name}:`, error instanceof Error ? error.message : error);
+    return error instanceof ProviderError && error.kind === "rate_limited" ? json(429, "rate_limited") : json(502, "error");
+  }
+
+  const encoder = new TextEncoder();
+  let pending: IteratorResult<string> | null = first;
+  const body = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        const next = pending ?? (await iterator.next());
+        pending = null;
+        if (next.done) controller.close();
+        else controller.enqueue(encoder.encode(next.value));
+      } catch (error) {
+        console.error(`[chat] ${provider.name} (mid-stream):`, error instanceof Error ? error.message : error);
+        controller.error(error);
+      }
+    },
+    async cancel() {
+      await iterator.return?.();
+    },
+  });
+
+  return new Response(body, {
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" },
+  });
+}
