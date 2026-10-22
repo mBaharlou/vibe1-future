@@ -5,7 +5,7 @@ import { useLocale } from "../i18n";
 import { SmokeReveal } from "./SmokeReveal";
 import { TopBar } from "./TopBar";
 
-/** Shared shell for /me, /products, /vapes and /contact. Text comes from src/locales/*.json. */
+/** Shared shell for /me and /contact. Text comes from src/locales/*.json. */
 export function PageLayout({ page }: { page: PageData }) {
   const { t, upper } = useLocale();
   const title = t(`pages.${page.key}.title`);

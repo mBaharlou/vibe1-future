@@ -11,6 +11,8 @@ const VIEW = { w: 100, h: 64 };
 const AVOID = "[data-eyes-avoid]";
 /** Never catch an eye through these (they sit above the eyes layer). */
 const ABOVE = "[data-topbar], [role=dialog], .ask-cat";
+/** A click on something interactive is never a catch, even with an eye floating over it. */
+const INTERACTIVE = "a[href], button, input, textarea, select, label, summary, [role=button], [role=option], [contenteditable], [tabindex]:not([tabindex='-1'])";
 const GRAVITY = 900;
 
 type Eye = {
@@ -169,7 +171,8 @@ export function Eyes() {
     };
     const catchable = (e: Eye) => e.cryAt < 0 && clock >= e.catchableAt;
     const eyeAt = (p: Vec) => {
-      if (document.elementFromPoint(p.x, p.y)?.closest(ABOVE)) return -1;
+      const under = document.elementFromPoint(p.x, p.y);
+      if (under?.closest(ABOVE) || under?.closest(INTERACTIVE)) return -1;
       return eyes.findIndex((e) => catchable(e) && isOver(e, p));
     };
     let swallowClick = false;

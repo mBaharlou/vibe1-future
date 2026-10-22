@@ -14,7 +14,7 @@
   "pages": {
     "me": { "title": "Ben", "description": "Yer tutucu: benimle ilgili kısa bir cümle." },
     "products": { "title": "Ürünler", "description": "Joint'ler ve sigaralar" },
-    "vapes": { "title": "Vape'ler", "description": "Yer tutucu: vape'ler hakkında kısa bir cümle." },
+    "vapes": { "title": "Vape'ler", "description": "Cihazlar ve aromalar" },
     "contact": { "title": "İletişim", "description": "Yer tutucu: bana nasıl ulaşabileceğin." }
   },
   "page": {
@@ -65,6 +65,125 @@
       "not_configured": "Yapay zekâ henüz kurulmadı.",
       "rate_limited": "Çok fazla mesaj gönderildi, bir dakika sonra tekrar dene.",
       "error": "Bir şeyler ters gitti."
+    }
+  },
+  "shop": {
+    "note": "Yalnızca vitrin · 18+",
+    "gridLabel": "{{title}}: tüm ürünler",
+    "add": "{{name}} ürününü sepete ekle",
+    "increase": "Bir {{name}} daha",
+    "decrease": "Bir {{name}} eksilt",
+    "quantity": "{{name}} adedi",
+    "tags": {
+      "new": "Yeni",
+      "bestseller": "Çok satan",
+      "limited": "Sınırlı"
+    },
+    "cart": {
+      "open": "Sepeti aç, {{n}} ürün",
+      "title": "Sepetin",
+      "empty": "Sepetin boş.",
+      "subtotal": "Ara toplam",
+      "checkout": "Ödeme (yakında)",
+      "clear": "Sepeti boşalt",
+      "remove": "{{name}} ürününü çıkar",
+      "close": "Sepeti kapat",
+      "each": "Tanesi {{price}}"
+    },
+    "email": {
+      "title": "Bana yaz",
+      "line": "Sorular, siparişler, iş birlikleri. Bir satır bırak.",
+      "button": "E-posta gönder",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı!",
+      "copyLabel": "E-posta adresini kopyala"
+    },
+    "top": "Başa dön",
+    "heroAlt": {
+      "joints": "Yeşil yapraklar arasında parlayan yeşil gözlü kara bir kedi",
+      "vapes": "Kırmızı kadife üzerinde, bulutlar ve bir güneşle balıkçı şapkalı tekir kedi"
+    },
+    "items": {
+      "emerald-night": {
+        "name": "Zümrüt Gece",
+        "tagline": "Gece yarısı dokunuşlu, derin yeşil bir sükûnet."
+      },
+      "black-forest": {
+        "name": "Kara Orman",
+        "tagline": "Topraksı ve odunsu, akşamüstü bir yürüyüş gibi."
+      },
+      "velvet-leaf": {
+        "name": "Kadife Yaprak",
+        "tagline": "Kadife kadar yumuşak, özenle sarılmış."
+      },
+      "jade-smoke": {
+        "name": "Yeşim Duman",
+        "tagline": "Serin, yumuşak ve biraz gizemli."
+      },
+      "midnight-mint": {
+        "name": "Gece Yarısı Nanesi",
+        "tagline": "Geç saatler için taze bir nane esintisi."
+      },
+      "green-comet": {
+        "name": "Yeşil Kuyruklu Yıldız",
+        "tagline": "Parlak, cesur ve göz açıp kapayıncaya kadar."
+      },
+      "obsidian-haze": {
+        "name": "Obsidyen Pus",
+        "tagline": "Koyu, parlak ve ağır ağır yanan."
+      },
+      "moss-and-moon": {
+        "name": "Yosun ve Ay",
+        "tagline": "Gümüş bir ayın altında yosun yeşilleri."
+      },
+      "neon-sage": {
+        "name": "Neon Adaçayı",
+        "tagline": "Bitkisel ve canlı, neon bir parıltıyla."
+      },
+      "silent-pine": {
+        "name": "Sessiz Çam",
+        "tagline": "Ağır akşamlar için sakin çam notaları."
+      },
+      "cherry-pop": {
+        "name": "Kiraz Pop",
+        "tagline": "Gazoz gibi küçük bir dokunuşla tatlı kiraz."
+      },
+      "red-velvet": {
+        "name": "Kırmızı Kadife",
+        "tagline": "Pasta gibi zengin, kremsi ve yumuşak."
+      },
+      "ruby-cloud": {
+        "name": "Yakut Bulut",
+        "tagline": "Böğürtlen ışıltılı, iri ve yumuşak bulutlar."
+      },
+      "scarlet-mist": {
+        "name": "Al Sis",
+        "tagline": "Hafif kırmızı bir sis, ferah ve esintili."
+      },
+      "cinnamon-kiss": {
+        "name": "Tarçın Öpücüğü",
+        "tagline": "Tatlı bir bitişle sıcacık tarçın."
+      },
+      "strawberry-haze": {
+        "name": "Çilek Pusu",
+        "tagline": "Rüya gibi bir pusun içinde sulu çilek."
+      },
+      "crimson-wave": {
+        "name": "Kızıl Dalga",
+        "tagline": "Dalga gibi gelen cüretkâr kırmızı meyveler."
+      },
+      "rose-quartz": {
+        "name": "Pembe Kuvars",
+        "tagline": "Narin gül ve liçi, pembenin en zarifi."
+      },
+      "pomegranate-glow": {
+        "name": "Nar Işıltısı",
+        "tagline": "Geceyi aydınlatan mayhoş nar."
+      },
+      "snow-and-ember": {
+        "name": "Kar ve Kor",
+        "tagline": "Buz gibi serinlik, sıcak kırmızı bir kıvılcımla buluşuyor."
+      }
     }
   }
 }

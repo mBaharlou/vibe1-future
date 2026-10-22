@@ -6,17 +6,25 @@ import { Hero } from "./components/Hero";
 import { NotFound } from "./components/NotFound";
 import { PageLayout } from "./components/PageLayout";
 import { ScrollManager } from "./components/ScrollManager";
+import { ShopPage } from "./components/shop/ShopPage";
+import { ThemeRoot } from "./components/ThemeRoot";
+import { CartProvider } from "./lib/cart";
 
 export default function App() {
   const location = useLocation();
 
   return (
-    <>
+    <CartProvider>
+      <ThemeRoot />
       <ScrollManager />
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Hero />} />
         {pages.map((page) => (
-          <Route key={page.id} path={page.path} element={<PageLayout page={page} />} />
+          <Route
+            key={page.id}
+            path={page.path}
+            element={page.shop ? <ShopPage page={page} category={page.shop} /> : <PageLayout page={page} />}
+          />
         ))}
         {/* Old URLs: replace, so Back doesn't land on the redirect again. */}
         {pages.map((page) => (
@@ -27,6 +35,6 @@ export default function App() {
       {/* Outside the routes, so the eyes and the chat carry on across in-tab navigation. */}
       <Eyes />
       <AskCat />
-    </>
+    </CartProvider>
   );
 }

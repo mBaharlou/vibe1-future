@@ -2,6 +2,7 @@ import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next, useTranslation } from "react-i18next";
 import { LANG_SWITCH } from "./config/home";
+import { CURRENCY } from "./config/shop";
 import en from "./locales/en.json";
 import fa from "./locales/fa.json";
 import tr from "./locales/tr.json";
@@ -76,18 +77,20 @@ export async function switchLanguage(lang: Lang) {
   if (root && flips && !reduce) root.animate([{ opacity: 0 }, { opacity: 1 }], { duration: half, easing: "ease-out" });
 }
 
-/** Current language plus locale helpers: uppercase (Turkish i → İ) and native digits. */
+/** Current language plus locale helpers: uppercase (Turkish i → İ), native digits and prices. */
 export function useLocale() {
   const { t, i18n: instance } = useTranslation();
   const lang: Lang = isLang(instance.resolvedLanguage) ? instance.resolvedLanguage : "en";
   const tag = lang === "fa" ? "fa-IR" : lang;
   const numbers = new Intl.NumberFormat(tag, { useGrouping: false });
+  const money = new Intl.NumberFormat(tag, { style: "currency", currency: CURRENCY });
   return {
     t,
     lang,
     dir: dirOf(lang),
     upper: (text: string) => text.toLocaleUpperCase(lang),
     num: (n: number) => numbers.format(n),
+    price: (n: number) => money.format(n),
   };
 }
 

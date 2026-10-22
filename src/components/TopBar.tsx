@@ -90,7 +90,7 @@ function HomeButton() {
       }}
       data-eyes-avoid=""
       // RTL: it moves to the right with the content, so it stops short of the Ask-the-cat button there.
-      className="fixed start-3 z-[55] inline-flex rtl:start-[60px] sm:rtl:start-20 h-10 items-center gap-2 rounded-full bg-white/55 px-4 text-sm font-medium text-neutral-700 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.05)] backdrop-blur-md hover:text-ink focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink sm:start-6"
+      className="home-button fixed start-3 z-[55] inline-flex rtl:start-[60px] sm:rtl:start-20 h-10 items-center gap-2 rounded-full bg-white/55 px-4 text-sm font-medium text-neutral-700 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.05)] backdrop-blur-md hover:text-ink focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink sm:start-6"
       style={{ top: "calc(var(--bar-h) + 12px)" }}
     >
       <span aria-hidden="true">{dir === "rtl" ? "→" : "←"}</span> {t("home.back")}

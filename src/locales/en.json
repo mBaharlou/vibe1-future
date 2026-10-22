@@ -14,7 +14,7 @@
   "pages": {
     "me": { "title": "Me", "description": "Placeholder: a short line about me." },
     "products": { "title": "Products", "description": "Joints & cigarettes" },
-    "vapes": { "title": "Vapes", "description": "Placeholder: a short line about the vapes." },
+    "vapes": { "title": "Vapes", "description": "Devices & flavors" },
     "contact": { "title": "Contact", "description": "Placeholder: how to get in touch." }
   },
   "page": {
@@ -65,6 +65,125 @@
       "not_configured": "The AI isn't set up yet.",
       "rate_limited": "Too many messages, try again in a minute.",
       "error": "Something went wrong."
+    }
+  },
+  "shop": {
+    "note": "Showcase only · 18+",
+    "gridLabel": "{{title}}: all products",
+    "add": "Add {{name}} to cart",
+    "increase": "One more {{name}}",
+    "decrease": "One less {{name}}",
+    "quantity": "Quantity of {{name}}",
+    "tags": {
+      "new": "New",
+      "bestseller": "Best seller",
+      "limited": "Limited"
+    },
+    "cart": {
+      "open": "Open cart, {{n}} items",
+      "title": "Your cart",
+      "empty": "Your cart is empty.",
+      "subtotal": "Subtotal",
+      "checkout": "Checkout (coming soon)",
+      "clear": "Clear cart",
+      "remove": "Remove {{name}}",
+      "close": "Close cart",
+      "each": "{{price}} each"
+    },
+    "email": {
+      "title": "Email me",
+      "line": "Questions, orders, collabs. Drop me a line.",
+      "button": "Send an email",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "copyLabel": "Copy the email address"
+    },
+    "top": "Back to top",
+    "heroAlt": {
+      "joints": "A black cat with glowing green eyes among green leaves",
+      "vapes": "A tabby cat in a bucket hat on red velvet, with clouds and a sun"
+    },
+    "items": {
+      "emerald-night": {
+        "name": "Emerald Night",
+        "tagline": "Deep green calm with a midnight finish."
+      },
+      "black-forest": {
+        "name": "Black Forest",
+        "tagline": "Earthy and woody, like a walk at dusk."
+      },
+      "velvet-leaf": {
+        "name": "Velvet Leaf",
+        "tagline": "Soft as velvet, rolled with care."
+      },
+      "jade-smoke": {
+        "name": "Jade Smoke",
+        "tagline": "Cool, smooth and a little mysterious."
+      },
+      "midnight-mint": {
+        "name": "Midnight Mint",
+        "tagline": "A fresh mint breeze for late nights."
+      },
+      "green-comet": {
+        "name": "Green Comet",
+        "tagline": "Bright, bold and gone in a flash."
+      },
+      "obsidian-haze": {
+        "name": "Obsidian Haze",
+        "tagline": "Dark, glossy and slow-burning."
+      },
+      "moss-and-moon": {
+        "name": "Moss & Moon",
+        "tagline": "Mossy greens under a silver moon."
+      },
+      "neon-sage": {
+        "name": "Neon Sage",
+        "tagline": "Herbal and bright, with a neon glow."
+      },
+      "silent-pine": {
+        "name": "Silent Pine",
+        "tagline": "Quiet pine notes for a slow evening."
+      },
+      "cherry-pop": {
+        "name": "Cherry Pop",
+        "tagline": "Sweet cherry with a fizzy little kick."
+      },
+      "red-velvet": {
+        "name": "Red Velvet",
+        "tagline": "Rich, creamy and smooth as cake."
+      },
+      "ruby-cloud": {
+        "name": "Ruby Cloud",
+        "tagline": "Big soft clouds with a berry glow."
+      },
+      "scarlet-mist": {
+        "name": "Scarlet Mist",
+        "tagline": "Light red mist, bright and breezy."
+      },
+      "cinnamon-kiss": {
+        "name": "Cinnamon Kiss",
+        "tagline": "Warm cinnamon with a sweet finish."
+      },
+      "strawberry-haze": {
+        "name": "Strawberry Haze",
+        "tagline": "Juicy strawberry in a dreamy haze."
+      },
+      "crimson-wave": {
+        "name": "Crimson Wave",
+        "tagline": "Bold red berries rolling in like a wave."
+      },
+      "rose-quartz": {
+        "name": "Rose Quartz",
+        "tagline": "Delicate rose and lychee, pretty in pink."
+      },
+      "pomegranate-glow": {
+        "name": "Pomegranate Glow",
+        "tagline": "Tart pomegranate that lights up the night."
+      },
+      "snow-and-ember": {
+        "name": "Snow & Ember",
+        "tagline": "Icy cool meets a warm red spark."
+      }
     }
   }
 }

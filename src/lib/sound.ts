@@ -4,7 +4,8 @@ import { SOUND } from "../config/home";
 // Sounds, synthesized with the Web Audio API (nothing to license):
 // - lighter: 1–3 flint clicks (sharp band-passed noise ticks with a tiny metallic ring), the gas
 //   hiss once the valve opens, and a low flame whoosh when it catches;
-// - exhale: a soft, low breath under the final smoke burst.
+// - exhale: a soft, low breath under the final smoke burst;
+// - pop: a tiny, soft bubble pop when something lands in the shop cart.
 // Browsers only allow audio after the user clicks/taps/presses a key on the page, so the context
 // is created on the first pointerdown/keydown ("unlock"). Until then every sound is silent.
 
@@ -205,6 +206,32 @@ export function playExhale() {
   g.gain.exponentialRampToValueAtTime(SOUND.exhale * SOUND.volume * 3, t0 + 0.08);
   g.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
   noise(audio, t0, len).connect(low).connect(g).connect(audio.destination);
+}
+
+/** A tiny, soft pop (a sine blip falling in pitch, plus a breath of noise). `volume` is the peak gain. */
+export function playPop(volume: number) {
+  const audio = ready();
+  if (!audio) return;
+  const t0 = audio.currentTime + 0.005;
+  const osc = audio.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(920, t0);
+  osc.frequency.exponentialRampToValueAtTime(380, t0 + 0.09);
+  const g = audio.createGain();
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(volume, t0 + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.13);
+  osc.connect(g).connect(audio.destination);
+  osc.start(t0);
+  osc.stop(t0 + 0.15);
+  const air = audio.createBiquadFilter();
+  air.type = "highpass";
+  air.frequency.value = 2400;
+  const ag = audio.createGain();
+  ag.gain.setValueAtTime(0.0001, t0);
+  ag.gain.exponentialRampToValueAtTime(volume * 0.25, t0 + 0.004);
+  ag.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.04);
+  noise(audio, t0, 0.05).connect(air).connect(ag).connect(audio.destination);
 }
 
 const subscribeUnlock = (listener: () => void) => {
