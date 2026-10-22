@@ -90,18 +90,29 @@
       "close": "Sepeti kapat",
       "each": "Tanesi {{price}}"
     },
-    "email": {
-      "title": "Bana yaz",
-      "line": "Sorular, siparişler, iş birlikleri. Bir satır bırak.",
-      "button": "E-posta gönder",
-      "copy": "Kopyala",
-      "copied": "Kopyalandı!",
-      "copyLabel": "E-posta adresini kopyala"
-    },
     "top": "Başa dön",
     "heroAlt": {
       "joints": "Yeşil yapraklar arasında parlayan yeşil gözlü kara bir kedi",
       "vapes": "Kırmızı kadife üzerinde, bulutlar ve bir güneşle balıkçı şapkalı tekir kedi"
+    },
+    "contact": {
+      "title": "Bana yaz",
+      "line": "Sorular, siparişler, iş birlikleri. Bir satır bırak.",
+      "name": "Ad",
+      "email": "E-posta",
+      "message": "Mesaj",
+      "send": "Gönder",
+      "sending": "Gönderiliyor…",
+      "success": "Teşekkürler! Mesajın yola çıktı.",
+      "error": "Gönderilemedi. Tekrar dene ya da bana doğrudan e-posta at.",
+      "rateLimited": "Çok fazla mesaj oldu. Birkaç dakika sonra tekrar dene ya da bana doğrudan e-posta at.",
+      "direct": "ya da bana doğrudan e-posta at",
+      "counter": "{{n}} / {{max}}",
+      "invalid": {
+        "name": "Lütfen adını yaz.",
+        "email": "Lütfen geçerli bir e-posta adresi gir.",
+        "message": "Lütfen bir mesaj yaz."
+      }
     },
     "items": {
       "emerald-night": {
@@ -183,6 +194,22 @@
       "snow-and-ember": {
         "name": "Kar ve Kor",
         "tagline": "Buz gibi serinlik, sıcak kırmızı bir kıvılcımla buluşuyor."
+      },
+      "aurora-leaf": {
+        "name": "Aurora Yaprağı",
+        "tagline": "Kuzey ışıkları yeşili, yumuşak ve serin."
+      },
+      "smoky-fern": {
+        "name": "Dumanlı Eğrelti",
+        "tagline": "Gür ve yapraklı, dumanlı bir dokunuşla."
+      },
+      "berry-blaze": {
+        "name": "Meyve Alevi",
+        "tagline": "Cesur ve canlı bitişli karışık kırmızı meyveler."
+      },
+      "velvet-sunset": {
+        "name": "Kadife Gün Batımı",
+        "tagline": "Sıcak gün batımı kırmızıları, yumuşak ve dingin."
       }
     }
   }

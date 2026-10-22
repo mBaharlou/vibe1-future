@@ -7,13 +7,12 @@ export const CURRENCY = "USD";
 /** The "Email me" section at the bottom of the shop pages. */
 export const CONTACT_EMAIL = "mmdbaharlou@gmail.com";
 
-/** Product photos (made by scripts/shop-images.mjs). `cutout`: shown cut out on a backdrop of the
- *  theme's accents instead of filling the image area. */
+/** Product photos (made by scripts/shop-images.mjs). */
 export const PRODUCT_IMAGES = {
-  "joint-a": { webp: "/products/joints/joint-a-cutout.webp", fallback: "/products/joints/joint-a-cutout.png", ...sizes["joint-a-cutout"], cutout: true },
-  "joint-b": { webp: "/products/joints/joint-b-cutout.webp", fallback: "/products/joints/joint-b-cutout.png", ...sizes["joint-b-cutout"], cutout: true },
-  "vape-a": { webp: "/products/vapes/vape-a.webp", fallback: "/products/vapes/vape-a.jpg", ...sizes["vape-a"], cutout: false },
-  "vape-b": { webp: "/products/vapes/vape-b.webp", fallback: "/products/vapes/vape-b.jpg", ...sizes["vape-b"], cutout: false },
+  "joint-a": { webp: "/products/joints/joint-a.webp", fallback: "/products/joints/joint-a.jpg", ...sizes["joint-a"] },
+  "joint-b": { webp: "/products/joints/joint-b.webp", fallback: "/products/joints/joint-b.jpg", ...sizes["joint-b"] },
+  "vape-a": { webp: "/products/vapes/vape-a.webp", fallback: "/products/vapes/vape-a.jpg", ...sizes["vape-a"] },
+  "vape-b": { webp: "/products/vapes/vape-b.webp", fallback: "/products/vapes/vape-b.jpg", ...sizes["vape-b"] },
 } as const;
 
 export type ProductImage = keyof typeof PRODUCT_IMAGES;
@@ -33,11 +32,13 @@ export const SHOP = {
   flyMs: 600,
   popVolume: 0.2,
   /** Grid breakpoints (px): 1 column below the first, then 2, 3, 4. */
-  columnsFrom: [560, 960, 1360] as const,
+  columnsFrom: [520, 820, 1100] as const,
   storageKey: "shop-cart",
   /** Bottom hero cat height; on tablets the width cap keeps room for the email and back-to-top beside it. */
   heroHeight: "max(320px, min(66vh, 760px, 46vw))",
   heroHeightMobile: "min(56vh, 520px)",
-  /** "Copied!" shows this long. */
-  copiedMs: 1800,
+  /** Contact form (the server checks the same limits, api/_lib/contact.ts). */
+  contact: { nameMax: 100, messageMax: 2000, counterFrom: 1800 },
+  /** Back to top: ignition, then the flight (the page scrolls up with it). */
+  rocket: { igniteMs: 250, flyMs: 850, maxPuffs: 260 },
 };

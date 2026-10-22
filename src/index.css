@@ -722,12 +722,6 @@ html[data-scheme="dark"] .wander-eye svg {
   will-change: transform;
 }
 
-.shop-fly-cutout {
-  object-fit: contain;
-  padding: 6px;
-  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--t-accent2) 40%, var(--t-surface)), var(--t-surface));
-}
-
 .shop-land-puff {
   position: fixed;
   z-index: 80;
@@ -742,58 +736,149 @@ html[data-scheme="dark"] .wander-eye svg {
   to { transform: scale(1.7) translateY(-10%); opacity: 0; }
 }
 
-/* Back to top: the arrow nudges up and a wisp of smoke rises from it. */
-.shop-top-arrow {
-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+
+/* Products cards: no box and no light. The photo sits in a thin frame offset toward the end side
+   (a print on a shifted mat) that slides into line on hover while the photo zooms. */
+.ed-frame {
+  translate: 8px 8px;
+  transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.shop-top:hover .shop-top-arrow,
-.shop-top:focus-visible .shop-top-arrow {
-  transform: translateY(-4px);
+.ed-frame:dir(rtl) {
+  translate: -8px 8px;
 }
 
-.shop-top-wisp {
+.ed-card:hover .ed-frame,
+.ed-card:focus-within .ed-frame {
+  translate: 0 0;
+}
+
+.ed-img {
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ed-card:hover .ed-img,
+.ed-card:focus-within .ed-img {
+  transform: scale(1.05);
+}
+
+.ed-name::after {
+  content: "";
   position: absolute;
-  left: 50%;
-  top: 10%;
-  width: 18px;
-  height: 30px;
-  margin-left: -9px;
+  inset-inline: 0;
+  bottom: -3px;
+  height: 1.5px;
+  background: var(--t-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ed-name:dir(rtl)::after {
+  transform-origin: right;
+}
+
+.ed-card:hover .ed-name::after,
+.ed-card:focus-within .ed-name::after {
+  transform: scaleX(1);
+}
+
+/* "Email me": underline fields straight on the page; the accent on focus. */
+.cf-field label {
+  color: var(--t-text-muted);
+  transition: color 200ms ease;
+}
+
+.cf-field input,
+.cf-field textarea {
+  display: block;
+  width: 100%;
+  padding: 6px 0 8px;
+  border: 0;
+  border-bottom: 1.5px solid color-mix(in srgb, var(--t-text) 55%, transparent);
+  border-radius: 0;
+  background: transparent;
+  color: var(--t-text);
+  outline: none;
+  resize: vertical;
+  transition: border-color 200ms ease;
+}
+
+.cf-field:focus-within label {
+  color: var(--t-accent);
+}
+
+.cf-field input:focus,
+.cf-field textarea:focus {
+  border-bottom-color: var(--t-accent);
+}
+
+.cf-field[data-invalid="true"] input,
+.cf-field[data-invalid="true"] textarea {
+  border-bottom-color: var(--t-danger);
+}
+
+.cf-spinner {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--t-smoke) 80%, transparent), transparent);
-  filter: blur(2px);
+  border: 2px solid currentColor;
+  border-inline-end-color: transparent;
+  animation: cf-spin 800ms linear infinite;
+}
+
+@keyframes cf-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Back to top: a plain outline circle; the accent and a small nudge on hover. After a launch it
+   stays hidden until the bottom section comes back into view, then fades in. */
+.top-btn {
+  border: 1.5px solid var(--t-text);
+  color: var(--t-text);
+  transition: border-color 200ms ease, opacity 400ms ease, visibility 400ms;
+}
+
+.top-btn svg {
+  transition: transform 200ms ease;
+}
+
+.top-btn:hover,
+.top-btn:focus-visible {
+  border-color: var(--t-accent);
+}
+
+.top-btn:hover svg,
+.top-btn:focus-visible svg {
+  transform: translateY(-2px);
+}
+
+.top-btn[data-launched="true"] {
   opacity: 0;
-  pointer-events: none;
-}
-
-.shop-top:hover .shop-top-wisp,
-.shop-top:focus-visible .shop-top-wisp {
-  animation: shop-top-wisp 1300ms ease-out infinite;
-}
-
-.shop-top:hover .shop-top-wisp:nth-child(2) {
-  animation-delay: 650ms;
-}
-
-@keyframes shop-top-wisp {
-  0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
-  20% { opacity: 0.85; }
-  100% { transform: translate(6px, -46px) scale(1.5); opacity: 0; }
+  visibility: hidden;
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .shop-card-img,
-  .shop-top-arrow {
+  .ed-img,
+  .ed-frame,
+  .ed-name::after,
+  .top-btn svg {
     transition: none;
   }
   .shop-card:hover .shop-card-img,
   .shop-card:focus-within .shop-card-img,
-  .shop-top:hover .shop-top-arrow {
+  .ed-card:hover .ed-img,
+  .ed-card:focus-within .ed-img,
+  .top-btn:hover svg {
     transform: none;
   }
   .shop-card-glare,
-  .shop-card-puff,
-  .shop-top-wisp {
+  .shop-card-puff {
     display: none;
+  }
+  .cf-spinner {
+    animation-duration: 2.4s;
   }
 }

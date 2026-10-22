@@ -16,7 +16,7 @@ export function puffAt(x: number, y: number, size = 54) {
   el.addEventListener("animationend", () => el.remove(), { once: true });
 }
 
-export function flyToCart(from: HTMLElement, to: HTMLElement, src: string, cutout: boolean, onLand: () => void) {
+export function flyToCart(from: HTMLElement, to: HTMLElement, src: string, onLand: () => void) {
   const a = from.getBoundingClientRect();
   const b = to.getBoundingClientRect();
   const size = 64;
@@ -29,7 +29,7 @@ export function flyToCart(from: HTMLElement, to: HTMLElement, src: string, cutou
   el.src = src;
   el.alt = "";
   el.setAttribute("aria-hidden", "true");
-  el.className = `shop-fly${cutout ? " shop-fly-cutout" : ""}`;
+  el.className = "shop-fly";
   el.style.width = el.style.height = `${size}px`;
   document.body.appendChild(el);
 

@@ -90,18 +90,29 @@
       "close": "Close cart",
       "each": "{{price}} each"
     },
-    "email": {
-      "title": "Email me",
-      "line": "Questions, orders, collabs. Drop me a line.",
-      "button": "Send an email",
-      "copy": "Copy",
-      "copied": "Copied!",
-      "copyLabel": "Copy the email address"
-    },
     "top": "Back to top",
     "heroAlt": {
       "joints": "A black cat with glowing green eyes among green leaves",
       "vapes": "A tabby cat in a bucket hat on red velvet, with clouds and a sun"
+    },
+    "contact": {
+      "title": "Email me",
+      "line": "Questions, orders, collabs. Drop me a line.",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send",
+      "sending": "Sending…",
+      "success": "Thanks! Your message is on its way.",
+      "error": "Couldn't send. Try again or email me directly.",
+      "rateLimited": "That's a lot of messages. Try again in a few minutes, or email me directly.",
+      "direct": "or email me directly",
+      "counter": "{{n}} / {{max}}",
+      "invalid": {
+        "name": "Please tell me your name.",
+        "email": "Please enter a valid email address.",
+        "message": "Please write a message."
+      }
     },
     "items": {
       "emerald-night": {
@@ -183,6 +194,22 @@
       "snow-and-ember": {
         "name": "Snow & Ember",
         "tagline": "Icy cool meets a warm red spark."
+      },
+      "aurora-leaf": {
+        "name": "Aurora Leaf",
+        "tagline": "Northern-lights green, soft and cool."
+      },
+      "smoky-fern": {
+        "name": "Smoky Fern",
+        "tagline": "Lush and leafy, with a smoky twist."
+      },
+      "berry-blaze": {
+        "name": "Berry Blaze",
+        "tagline": "Mixed red berries with a bold, bright finish."
+      },
+      "velvet-sunset": {
+        "name": "Velvet Sunset",
+        "tagline": "Warm sunset reds, smooth and mellow."
       }
     }
   }

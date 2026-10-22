@@ -55,7 +55,10 @@ export function CartButton({ onOpen }: { onOpen: () => void }) {
     window.addEventListener("resize", schedule);
     const observer = new ResizeObserver(schedule);
     observer.observe(document.body);
+    // The things it avoids also slide in (entrance animations) without a scroll or resize.
+    const recheck = setInterval(schedule, 400);
     return () => {
+      clearInterval(recheck);
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);

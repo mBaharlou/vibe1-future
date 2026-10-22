@@ -18,6 +18,8 @@ export type Theme = {
   onAccent: string;
   onAccent2: string;
   glow: string;
+  /** Form errors. */
+  danger: string;
   smoke: string;
   border: string;
   /** Top bar background and text, so it fits the page. */
@@ -42,6 +44,7 @@ export const THEMES = {
     onAccent: "#04100a",
     onAccent2: "#04100a",
     glow: "rgba(75, 163, 71, 0.5)",
+    danger: "#ff8f7d",
     smoke: "#d6e2d4",
     border: "rgba(109, 200, 64, 0.22)",
     bar: "rgba(6, 16, 10, 0.82)",
@@ -62,6 +65,7 @@ export const THEMES = {
     onAccent: "#ffffff",
     onAccent2: "#3a1816",
     glow: "rgba(142, 38, 48, 0.32)",
+    danger: "#b3261e",
     smoke: "#9a9590",
     border: "rgba(83, 32, 36, 0.12)",
     bar: "rgba(255, 255, 255, 0.84)",

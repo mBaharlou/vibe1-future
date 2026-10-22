@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CAT } from "../../config/home";
-import { CONTACT_EMAIL, SHOP, SHOP_HEROES } from "../../config/shop";
+import { SHOP, SHOP_HEROES } from "../../config/shop";
 import type { ProductCategory } from "../../data/products";
 import { useLocale } from "../../i18n";
+import { launchRocket } from "../../lib/rocket";
 import { Cat } from "../Cat";
+import { ContactForm } from "./ContactForm";
 
 type Props = {
   category: ProductCategory;
@@ -12,148 +14,102 @@ type Props = {
   titleRef: RefObject<HTMLHeadingElement | null>;
 };
 
+const heroCss = `:root{--shop-hero-h:${SHOP.heroHeightMobile}}@media (min-width:768px){:root{--shop-hero-h:${SHOP.heroHeight}}}`;
+
 /**
- * The end of a shop page: the page's cat in the home cat's arch frame, centred and standing on the
- * very bottom edge, "Email me" on its start side and "Back to top" on its end side (mirrored in
- * RTL). Under 768px: email, then back to top, then the cat.
+ * The end of a shop page, everything on the bottom edge: the page's cat in the home cat's arch
+ * frame, centred; the "Email me" form at the bottom start corner; "Back to top" at the bottom end
+ * corner (mirrored in RTL). Under 768px: the form, then the cat, with "Back to top" in the corner
+ * beside it.
  */
 export function ShopBottomHero({ category, titleRef }: Props) {
   const { t } = useLocale();
   const reduce = useReducedMotion();
-  const appear = (from: number) =>
-    reduce
-      ? { initial: { opacity: 0 }, whileInView: { opacity: 1 }, transition: { duration: 0.3 } }
-      : {
-          initial: { opacity: 0, x: from },
-          whileInView: { opacity: 1, x: 0 },
-          transition: { type: "spring" as const, bounce: 0, duration: 0.9 },
-        };
+  const appear = reduce
+    ? { initial: { opacity: 0 }, whileInView: { opacity: 1 }, transition: { duration: 0.3 } }
+    : { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, transition: { type: "spring" as const, bounce: 0, duration: 0.9 } };
 
   return (
     <section
-      aria-label={t("shop.email.title")}
-      className="relative mx-auto mt-24 flex w-full max-w-[1400px] flex-col items-center gap-10 px-5 sm:mt-32 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-end md:gap-6 lg:gap-8"
+      aria-labelledby="contact-title"
+      className="relative mt-24 flex w-full flex-col items-center sm:mt-32 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-end"
     >
-      <motion.div {...appear(-40)} viewport={{ once: true, amount: 0.4 }} className="w-full md:mb-[18vh] md:justify-self-end md:self-end">
-        <EmailCard />
+      <style>{heroCss}</style>
+      <motion.div
+        {...appear}
+        viewport={{ once: true, amount: 0.3 }}
+        data-eyes-avoid=""
+        data-cart-avoid=""
+        className="relative mb-10 w-full max-w-sm px-6 md:mb-0 md:max-w-[360px] md:justify-self-start md:pb-8 md:ps-8 md:pe-6"
+      >
+        <ContactForm />
       </motion.div>
 
       {/* The cat stands on the bottom edge: nothing follows this section. */}
-      <div
-        data-cart-avoid=""
-        className="relative order-last md:order-none"
-        style={{ height: `var(--shop-hero-h)`, aspectRatio: CAT.aspect }}
-      >
-        <style>{`:root{--shop-hero-h:${SHOP.heroHeightMobile}}@media (min-width:768px){:root{--shop-hero-h:${SHOP.heroHeight}}}`}</style>
+      <div data-cart-avoid="" className="relative" style={{ height: "var(--shop-hero-h)", aspectRatio: CAT.aspect }}>
         <Cat placement={{ height: 100, bottom: 0 }} photo={SHOP_HEROES[category]} alt={t(`shop.heroAlt.${category}`)} />
       </div>
 
-      <motion.div {...appear(40)} viewport={{ once: true, amount: 0.4 }} className="md:mb-[18vh] md:justify-self-start md:self-end">
+      <div className="absolute bottom-4 end-4 z-30 md:static md:justify-self-end md:pb-6 md:pe-6">
         <BackToTop titleRef={titleRef} />
-      </motion.div>
+      </div>
     </section>
   );
 }
 
-function EmailCard() {
-  const { t } = useLocale();
-  const [copied, setCopied] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(CONTACT_EMAIL);
-    } catch {
-      // Older browsers / blocked clipboard: select-and-copy fallback.
-      const area = document.createElement("textarea");
-      area.value = CONTACT_EMAIL;
-      area.style.position = "fixed";
-      area.style.opacity = "0";
-      document.body.appendChild(area);
-      area.select();
-      document.execCommand("copy");
-      area.remove();
-    }
-    setCopied(true);
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setCopied(false), SHOP.copiedMs);
-  };
-
-  return (
-    <div
-      data-eyes-avoid=""
-      data-cart-avoid=""
-      className="mx-auto w-full max-w-sm rounded-[22px] border p-6 text-center md:mx-0 md:p-5 md:text-start lg:p-6"
-      style={{ background: "color-mix(in srgb, var(--t-surface) 88%, transparent)", borderColor: "var(--t-border)", boxShadow: "0 18px 50px -24px var(--t-glow)" }}
-    >
-      <h2 className="text-2xl font-black tracking-tight md:text-xl lg:text-2xl rtl:tracking-normal" style={{ color: "var(--t-text)" }}>
-        {t("shop.email.title")}
-      </h2>
-      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--t-text-muted)" }}>
-        {t("shop.email.line")}
-      </p>
-      <p dir="ltr" className="mt-4 select-all break-all font-semibold md:text-sm lg:text-base" style={{ color: "var(--t-accent)" }}>
-        {CONTACT_EMAIL}
-      </p>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-2 md:justify-start">
-        <a
-          href={`mailto:${CONTACT_EMAIL}`}
-          className="inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm font-bold outline-none transition-transform hover:-translate-y-0.5 focus-visible:outline-[3px] focus-visible:outline-offset-2"
-          style={{ background: "var(--t-accent)", color: "var(--t-on-accent)", outlineColor: "var(--t-text)" }}
-        >
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" />
-            <path d="M4.5 7l7.5 6 7.5-6" />
-          </svg>
-          {t("shop.email.button")}
-        </a>
-        <button
-          type="button"
-          onClick={copy}
-          aria-label={copied ? t("shop.email.copied") : t("shop.email.copyLabel")}
-          className="inline-flex h-11 items-center rounded-full border px-4 text-sm font-semibold outline-none focus-visible:outline-[3px] focus-visible:outline-offset-2"
-          style={{ borderColor: "var(--t-accent)", color: "var(--t-text)", outlineColor: "var(--t-text)" }}
-        >
-          {copied ? t("shop.email.copied") : t("shop.email.copy")}
-        </button>
-        <span className="sr-only" aria-live="polite">
-          {copied ? t("shop.email.copied") : ""}
-        </span>
-      </div>
-    </div>
-  );
-}
-
+/**
+ * A plain outline circle with an up arrow. Clicking launches it like a rocket (src/lib/rocket.ts)
+ * while the page scrolls up with it; it quietly fades back in the next time this section shows.
+ */
 function BackToTop({ titleRef }: { titleRef: RefObject<HTMLHeadingElement | null> }) {
   const { t } = useLocale();
   const reduce = useReducedMotion();
-  const toTop = () => {
-    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-    titleRef.current?.focus({ preventScroll: true });
+  const ref = useRef<HTMLButtonElement>(null);
+  const [launched, setLaunched] = useState(false);
+  const away = useRef(false);
+
+  // Back in place once the section has left the screen and comes into view again.
+  useEffect(() => {
+    const el = ref.current?.closest("section");
+    if (!el || !launched) return;
+    away.current = false;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) away.current = true;
+      else if (away.current) setLaunched(false);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [launched]);
+
+  const focusTitle = () => titleRef.current?.focus({ preventScroll: true });
+
+  const onClick = () => {
+    const button = ref.current;
+    if (reduce || !button) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      focusTitle();
+      return;
+    }
+    if (launched) return;
+    launchRocket(button, focusTitle);
+    setLaunched(true);
   };
+
   return (
     <button
+      ref={ref}
       type="button"
-      onClick={toTop}
+      onClick={onClick}
+      aria-label={t("shop.top")}
+      data-launched={launched}
       data-eyes-avoid=""
       data-cart-avoid=""
-      className="shop-top group flex flex-col items-center gap-2 rounded-3xl p-2 outline-none focus-visible:outline-[3px]"
-      style={{ outlineColor: "var(--t-text)" }}
+      className="top-btn grid size-12 place-items-center rounded-full outline-none focus-visible:outline-[3px] focus-visible:outline-offset-4"
+      style={{ outlineColor: "var(--t-accent)" }}
     >
-      <span
-        className="relative grid size-16 place-items-center rounded-full border"
-        style={{ background: "var(--t-surface)", borderColor: "var(--t-accent)", color: "var(--t-accent)", boxShadow: "0 14px 36px -16px var(--t-glow)" }}
-      >
-        <span aria-hidden="true" className="shop-top-wisp" />
-        <span aria-hidden="true" className="shop-top-wisp" />
-        <svg aria-hidden="true" viewBox="0 0 24 24" className="shop-top-arrow relative size-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 19V5M5.5 11.5L12 5l6.5 6.5" />
-        </svg>
-      </span>
-      <span className="text-sm font-semibold" style={{ color: "var(--t-text)" }}>
-        {t("shop.top")}
-      </span>
+      <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 19V5M6 11l6-6 6 6" />
+      </svg>
     </button>
   );
 }

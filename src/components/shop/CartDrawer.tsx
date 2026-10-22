@@ -109,11 +109,11 @@ export function CartDrawer({ onClose }: { onClose: () => void }) {
                   <li key={product.id} className="flex items-center gap-3 py-3" style={{ borderColor: "var(--t-border)" }}>
                     <span
                       className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl"
-                      style={{ background: image.cutout ? "radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--t-accent) 35%, var(--t-surface)), var(--t-surface))" : "var(--t-bg)" }}
+                      style={{ background: "var(--t-bg)" }}
                     >
                       <picture>
                         <source srcSet={image.webp} type="image/webp" />
-                        <img src={image.fallback} alt="" width={64} height={64} loading="lazy" className={`size-16 ${image.cutout ? "object-contain p-1.5" : "object-cover"}`} />
+                        <img src={image.fallback} alt="" width={64} height={64} loading="lazy" className="size-16 object-cover" />
                       </picture>
                     </span>
                     <div className="min-w-0 flex-1">

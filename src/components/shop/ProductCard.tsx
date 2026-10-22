@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode, type Ref } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { PRODUCT_IMAGES, SHOP } from "../../config/shop";
 import type { Product } from "../../data/products";
@@ -16,23 +16,132 @@ type Props = {
 
 const spring = { stiffness: 220, damping: 24, mass: 0.6 };
 
-/**
- * A product card: rises in as it scrolls into view (with a puff of smoke as it lands), tilts toward
- * the cursor with a glare and a glow on hover, and has a "+" that turns into a quantity stepper.
- * Every colour comes from the page theme.
- */
-export function ProductCard({ product, index, columns }: Props) {
-  const { t, price } = useLocale();
+/** Products gets the minimal editorial card; Vapes keeps the lit, tilting card. */
+export function ProductCard(props: Props) {
+  return props.product.category === "joints" ? <EditorialCard {...props} /> : <GlowCard {...props} />;
+}
+
+/** "+" → stepper, and the fly-to-cart from the card's photo (the pop and badge bump on landing). */
+function useAddToCart(product: Product) {
   const reduce = useReducedMotion();
   const cart = useCart();
-  const qty = cart.qtyOf(product.id);
-  const image = PRODUCT_IMAGES[product.image];
-  const name = t(product.nameKey);
-  const [landed, setLanded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const image = PRODUCT_IMAGES[product.image];
+  const land = () => {
+    cart.ping();
+    playPop(SHOP.popVolume);
+  };
+  const add = () => {
+    cart.add(product.id);
+    const target = cart.targetRef.current;
+    const img = imgRef.current;
+    if (reduce || !target || !img) return land();
+    // Wait a frame: on the first add the cart button is only just popping in.
+    requestAnimationFrame(() => flyToCart(img, target, img.currentSrc || image.fallback, land));
+  };
+  return { imgRef, qty: cart.qtyOf(product.id), add, setQty: (n: number) => cart.setQty(product.id, n) };
+}
+
+/** The entrance every card shares: rise, un-rotate and fade in (staggered per row), then a puff. */
+function Entrance({ index, columns, children }: { index: number; columns: number; children: ReactNode }) {
+  const reduce = useReducedMotion();
+  const [landed, setLanded] = useState(false);
+  const delay = reduce ? 0 : ((index % columns) * SHOP.enter.staggerMs) / 1000;
+  return (
+    <motion.li
+      className="relative list-none"
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: SHOP.enter.rise, rotate: SHOP.enter.rotate }}
+      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0, rotate: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={reduce ? { duration: 0.4, delay } : { type: "spring", bounce: 0, duration: SHOP.enter.duration, delay }}
+      onAnimationComplete={() => setLanded(true)}
+      style={{ perspective: SHOP.tilt.perspective }}
+    >
+      {landed && !reduce && <span aria-hidden="true" className="shop-card-puff" />}
+      {children}
+    </motion.li>
+  );
+}
+
+function Photo({ product, imgRef, className = "" }: { product: Product; imgRef: Ref<HTMLImageElement>; className?: string }) {
+  const image = PRODUCT_IMAGES[product.image];
+  return (
+    <picture className="absolute inset-0 block">
+      <source srcSet={image.webp} type="image/webp" />
+      <img
+        ref={imgRef}
+        src={image.fallback}
+        alt=""
+        width={image.width}
+        height={image.height}
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+        className={`relative h-full w-full select-none object-cover ${className}`}
+      />
+    </picture>
+  );
+}
+
+/**
+ * Products: no card box and no light. The photo sits on the page in a thin offset frame (a print
+ * with a shifted mat) that slides into line on hover while the photo zooms; under it an index, the
+ * tag, the name (underlined on hover), the tagline, a hairline, then price and "+".
+ */
+function EditorialCard({ product, index, columns }: Props) {
+  const { t, price, num } = useLocale();
+  const { imgRef, qty, add, setQty } = useAddToCart(product);
+  const name = t(product.nameKey);
+  const number = num(index + 1).padStart(2, num(0));
+  return (
+    <Entrance index={index} columns={columns}>
+      <article className="ed-card group relative">
+        <div className="relative">
+          <span aria-hidden="true" className="ed-frame pointer-events-none absolute inset-0 rounded-2xl border" style={{ borderColor: "var(--t-accent)" }} />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl" style={{ background: "var(--t-bg)" }}>
+            <Photo product={product} imgRef={imgRef} className="ed-img" />
+          </div>
+        </div>
+        <div className="mt-6">
+          <div className="flex items-baseline gap-3 text-xs">
+            <span className="font-mono tabular-nums" style={{ color: "var(--t-text-muted)" }}>
+              {number}
+            </span>
+            {product.tag && (
+              <span className="font-bold uppercase tracking-[0.14em] rtl:tracking-normal" style={{ color: "var(--t-accent)" }}>
+                {t(`shop.tags.${product.tag}`)}
+              </span>
+            )}
+          </div>
+          <h3 className="mt-1.5 text-lg font-extrabold leading-tight" style={{ color: "var(--t-text)" }}>
+            <span className="ed-name relative">{name}</span>
+          </h3>
+          <p className="mt-1.5 line-clamp-2 min-h-[2lh] text-sm leading-snug" style={{ color: "var(--t-text-muted)" }}>
+            {t(product.taglineKey)}
+          </p>
+          <hr className="my-4 border-0 border-t" style={{ borderColor: "var(--t-border)" }} />
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-lg font-bold tabular-nums" style={{ color: "var(--t-text)" }}>
+              {price(product.price)}
+            </span>
+            <AddControl name={name} qty={qty} onAdd={add} onSet={setQty} />
+          </div>
+        </div>
+      </article>
+    </Entrance>
+  );
+}
+
+/**
+ * Vapes: a card that tilts toward the cursor with a glare and a glow on hover. Every colour comes
+ * from the page theme.
+ */
+function GlowCard({ product, index, columns }: Props) {
+  const { t, price } = useLocale();
+  const reduce = useReducedMotion();
+  const { imgRef, qty, add, setQty } = useAddToCart(product);
+  const name = t(product.nameKey);
   const accent2 = index % 2 === 1;
-  // A long, flat cut-out (a tube lying down) stands diagonally so it fills the tall image area.
-  const wide = image.cutout && image.width / image.height > 2;
 
   // Tilt toward the pointer, a lift, and a glare that follows it (all springs on transforms).
   const px = useMotionValue(0.5);
@@ -57,41 +166,8 @@ export function ProductCard({ product, index, columns }: Props) {
     hover.set(0);
   };
 
-  const onAdd = () => {
-    cart.add(product.id);
-    playPopSoon();
-  };
-  // The thumbnail flies to the cart; the pop and the badge bump happen when it lands.
-  const playPopSoon = () => {
-    const target = cart.targetRef.current;
-    const img = imgRef.current;
-    if (reduce || !target || !img) {
-      cart.ping();
-      playPop(SHOP.popVolume);
-      return;
-    }
-    // Wait a frame: on the first add the cart button is only just popping in.
-    requestAnimationFrame(() =>
-      flyToCart(img, target, img.currentSrc || image.fallback, image.cutout, () => {
-        cart.ping();
-        playPop(SHOP.popVolume);
-      }),
-    );
-  };
-
-  const delay = reduce ? 0 : ((index % columns) * SHOP.enter.staggerMs) / 1000;
-
   return (
-    <motion.li
-      className="relative list-none"
-      initial={reduce ? { opacity: 0 } : { opacity: 0, y: SHOP.enter.rise, rotate: SHOP.enter.rotate }}
-      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0, rotate: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={reduce ? { duration: 0.4, delay } : { type: "spring", bounce: 0, duration: SHOP.enter.duration, delay }}
-      onAnimationComplete={() => setLanded(true)}
-      style={{ perspective: SHOP.tilt.perspective }}
-    >
-      {landed && !reduce && <span aria-hidden="true" className="shop-card-puff" />}
+    <Entrance index={index} columns={columns}>
       <motion.article
         className="shop-card group relative flex h-full flex-col rounded-[22px]"
         style={{ rotateX: reduce ? 0 : rotateX, rotateY: reduce ? 0 : rotateY, y: reduce ? 0 : lift, transformStyle: "preserve-3d" }}
@@ -118,37 +194,13 @@ export function ProductCard({ product, index, columns }: Props) {
         />
 
         <div className="relative flex h-full flex-col overflow-hidden rounded-[22px] border" style={{ background: "var(--t-surface)", borderColor: "var(--t-border)" }}>
-          {/* Image: a photo filling the area, or a cut-out on a backdrop of the theme's accents. */}
-          <div className="relative aspect-[4/5] overflow-hidden">
-            <div
-              aria-hidden="true"
-              className="absolute inset-0"
-              style={{
-                background: image.cutout
-                  ? `radial-gradient(ellipse 80% 70% at 50% 45%, color-mix(in srgb, ${accent2 ? "var(--t-accent2)" : "var(--t-accent)"} 34%, var(--t-surface)) 0%, var(--t-surface) 72%)`
-                  : "var(--t-surface)",
-              }}
-            />
+          <div className="relative aspect-[4/5] overflow-hidden" style={{ background: "var(--t-surface)" }}>
             <div
               aria-hidden="true"
               className="absolute left-1/2 top-1/2 size-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
-              style={{ background: accent2 ? "var(--t-accent2)" : "var(--t-accent)", mixBlendMode: image.cutout ? "normal" : "soft-light" }}
+              style={{ background: accent2 ? "var(--t-accent2)" : "var(--t-accent)", mixBlendMode: "soft-light" }}
             />
-            <picture className="absolute inset-0 block" style={wide ? { transform: "rotate(-32deg) scale(1.3)" } : undefined}>
-              <source srcSet={image.webp} type="image/webp" />
-              <img
-                ref={imgRef}
-                src={image.fallback}
-                alt=""
-                width={image.width}
-                height={image.height}
-                loading="lazy"
-                decoding="async"
-                draggable={false}
-                className={`shop-card-img relative h-full w-full select-none ${image.cutout ? "object-contain p-[12%]" : "object-cover"}`}
-                style={image.cutout ? { filter: "drop-shadow(0 18px 22px rgba(0,0,0,0.45))" } : undefined}
-              />
-            </picture>
+            <Photo product={product} imgRef={imgRef} className="shop-card-img" />
             {product.tag && (
               <span
                 className="absolute start-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide shadow-sm rtl:tracking-normal"
@@ -181,12 +233,12 @@ export function ProductCard({ product, index, columns }: Props) {
               <span className="text-lg font-bold tabular-nums" style={{ color: "var(--t-accent)" }}>
                 {price(product.price)}
               </span>
-              <AddControl name={name} qty={qty} onAdd={onAdd} onSet={(n) => cart.setQty(product.id, n)} />
+              <AddControl name={name} qty={qty} onAdd={add} onSet={setQty} />
             </div>
           </div>
         </div>
       </motion.article>
-    </motion.li>
+    </Entrance>
   );
 }
 

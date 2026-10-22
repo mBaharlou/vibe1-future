@@ -1,7 +1,7 @@
 import type { ProductImage } from "../config/shop";
 
-// The shop's products: 10 per page, each photo used in turn. Names, taglines and tags live in
-// src/locales/*.json under shop.items.<id> and shop.tags.<tag>. Prices are in CURRENCY.
+// The shop's products: 12 per page (3 full rows of 4), each photo used in turn. Names, taglines
+// and tags live in src/locales/*.json under shop.items.<id> and shop.tags.<tag>. Prices are in CURRENCY.
 
 export type ProductCategory = "joints" | "vapes";
 export type ProductTag = "new" | "bestseller" | "limited";
@@ -27,6 +27,8 @@ const JOINTS = [
   ["moss-and-moon", 19.9, "new"],
   ["neon-sage", 22.8, undefined],
   ["silent-pine", 12.9, undefined],
+  ["aurora-leaf", 31.9, "new"],
+  ["smoky-fern", 14.9, undefined],
 ] as const;
 
 const VAPES = [
@@ -40,6 +42,8 @@ const VAPES = [
   ["rose-quartz", 34.9, "new"],
   ["pomegranate-glow", 22.5, undefined],
   ["snow-and-ember", 46.5, undefined],
+  ["berry-blaze", 27.9, undefined],
+  ["velvet-sunset", 36.9, "bestseller"],
 ] as const;
 
 export type ProductId = (typeof JOINTS)[number][0] | (typeof VAPES)[number][0];

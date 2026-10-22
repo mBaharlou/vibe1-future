@@ -4,20 +4,12 @@
     "height": 1308
   },
   "joint-a": {
-    "width": 474,
-    "height": 493
-  },
-  "joint-a-cutout": {
-    "width": 301,
-    "height": 384
+    "width": 468,
+    "height": 585
   },
   "joint-b": {
-    "width": 1000,
+    "width": 800,
     "height": 1000
-  },
-  "joint-b-cutout": {
-    "width": 944,
-    "height": 272
   },
   "vapes-hero": {
     "width": 675,

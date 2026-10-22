@@ -1,4 +1,5 @@
 import { pickProvider, ProviderError, type ChatMessage } from "./ai/index.js";
+import { clientIp, json as jsonBody, rateLimiter, sameOrigin } from "./http.js";
 
 // POST /api/chat: { messages, lang } → the reply streamed as plain UTF-8 text.
 // Failures before the first token are JSON { error } with a status:
@@ -36,34 +37,8 @@ In your answers, call the pages by the names the site shows in this language: ${
 
 Stay on safe ground: no medical, legal or financial advice (suggest a professional instead). Never encourage anyone to use tobacco, cannabis or vaping products, and if someone seems to be a minor, kindly tell them these products are for adults only. Decline anything harmful or explicit, briefly and kindly.`;
 
-const json = (status: number, error: string) =>
-  new Response(JSON.stringify({ error }), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
-
-// ── Rate limit: a sliding one-minute window per IP ──
-const hits = new Map<string, number[]>();
-function limited(ip: string, now = Date.now()) {
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
-  const over = recent.length >= LIMITS.ratePerMinute;
-  if (!over) recent.push(now);
-  hits.set(ip, recent);
-  if (hits.size > 5000) for (const [key, times] of hits) if (!times.some((t) => now - t < 60_000)) hits.delete(key);
-  return over;
-}
-
-const clientIp = (request: Request) =>
-  request.headers.get("x-forwarded-for")?.split(",")[0].trim() || request.headers.get("x-real-ip") || "local";
-
-/** Only the site's own pages may call this: the Origin must match the host it was sent to. */
-function sameOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  if (!origin || !host) return false;
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
+const json = (status: number, error: string) => jsonBody(status, { error });
+const limited = rateLimiter(LIMITS.ratePerMinute, 60_000);
 
 function parseBody(body: unknown): { messages: ChatMessage[]; lang: Lang } | null {
   if (!body || typeof body !== "object") return null;
