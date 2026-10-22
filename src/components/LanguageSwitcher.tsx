@@ -22,7 +22,7 @@ type Props = {
  * growing toward the page centre; choosing one (or leaving) dissolves them back into smoke.
  */
 export function LanguageSwitcher({ buttonRef, labelRef, onCrowd }: Props) {
-  const { t, lang, dir } = useLocale();
+  const { t, lang } = useLocale();
   const reduce = useReducedMotion();
   const [expanded, setExpanded] = useState(false);
   const [crowd, setCrowd] = useState(false);
@@ -84,15 +84,16 @@ export function LanguageSwitcher({ buttonRef, labelRef, onCrowd }: Props) {
       const list = listRef.current;
       if (!button || !label || !list) return;
       const listBox = list.getBoundingClientRect();
-      const room = dir === "rtl" ? button.left - LANG_SWITCH.labelGapPx - label.right : label.left - LANG_SWITCH.labelGapPx - button.right;
-      const used = dir === "rtl" ? button.left - listBox.left : listBox.right - button.right;
+      // The bar is LTR in every language: the options always grow to the right.
+      const room = label.left - LANG_SWITCH.labelGapPx - button.right;
+      const used = listBox.right - button.right;
       setCrowd(used > room);
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(document.documentElement);
     return () => observer.disconnect();
-  }, [expanded, dir, labelRef, buttonRef, lang]);
+  }, [expanded, labelRef, buttonRef, lang]);
 
   const choose = (next: Lang) => {
     collapse();
@@ -115,10 +116,8 @@ export function LanguageSwitcher({ buttonRef, labelRef, onCrowd }: Props) {
   const onListKey = (e: KeyboardEvent) => {
     const options = visibleOptions();
     const at = options.indexOf(document.activeElement as HTMLElement);
-    const forward = dir === "rtl" ? "ArrowLeft" : "ArrowRight";
-    const back = dir === "rtl" ? "ArrowRight" : "ArrowLeft";
-    if (e.key === forward || e.key === "ArrowDown") focusOption(at + 1);
-    else if (e.key === back || e.key === "ArrowUp") focusOption(at - 1);
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") focusOption(at + 1);
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") focusOption(at - 1);
     else if (e.key === "Enter" || e.key === " ") {
       const chosen = (document.activeElement as HTMLElement | null)?.dataset.lang;
       if (chosen && LANGS.includes(chosen as Lang)) choose(chosen as Lang);

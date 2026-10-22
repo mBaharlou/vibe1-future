@@ -37,7 +37,10 @@ export const JOINT = {
   /** Cutout height / width (508 × 68 px). */
   aspect: 68 / 508,
   /** Length of every joint, in % of the cat frame width. */
-  length: 92,
+  length: 72,
+  /** The cat is sized to fit a fan of joints this long (the original length), so shorter joints
+   *  don't make the cat bigger. */
+  fitLength: 92,
   /** Wide screens fan out flatter; tall screens steeper so the fan fits the width. */
   fans: {
     wide: [
@@ -175,6 +178,34 @@ export const EYES = {
   keepOutPadPx: 10,
 };
 
+/** Catch an eye (click / tap right on it) and it cries, then dashes off. */
+export const EYE_CRY = {
+  /** CRY_MS: how long a caught eye cries. */
+  cryMs: 2000,
+  /** CATCH_HIT_SCALE: the hit area is the eye's outline grown by this much. */
+  catchHitScale: 1.15,
+  /** CATCH_COOLDOWN_MS: after crying, the same eye can't be caught again for this long. */
+  catchCooldownMs: 3000,
+  /** TEAR_COUNT: teardrops per cry. */
+  tearCount: 4,
+  /** ESCAPE_BOOST: the dash away afterwards, as a multiple of EYES.maxSpeed, for `escapeMs`. */
+  escapeBoost: 2,
+  escapeMs: 600,
+  /** The eye shrinks while crying, then widens in surprise before it dashes. */
+  sadScale: 0.9,
+  surpriseScale: 1.15,
+  surpriseMs: 280,
+  /** Sob: a quick ±sobPx horizontal tremble every sobEveryMs. */
+  sobPx: 2,
+  sobEveryMs: 400,
+  /** Tears fall this far (random in range, px) before they splash. */
+  fallPx: [60, 100] as const,
+  /** A slow cursor scares the eyes less, so a careful approach can catch one: below `calmSpeed`
+   *  px/s the repulsion eases down toward `calmFloor` of its full strength. */
+  calmSpeed: 520,
+  calmFloor: 0.15,
+};
+
 // ── "JOINT" wordmark fill ─────────────────────────────────────────────
 /** Rainbow + flower-power pattern clipped to the letters. Pattern scale is in em (follows the
  *  font size, so the look is the same at every screen size). */
@@ -184,8 +215,9 @@ export const WORDMARK = {
   hueS: 26,
 };
 
-/** Smoke that slowly fills the O's hole, packs it, then pours out and drifts off the top of the
- *  page, on a loop. ?smokeFast=1 in the URL squeezes the whole cycle into `fast` (≈20s) for testing. */
+/** Gray smoke that collects in the O's hole from the bottom up, packs it, then bursts out and drifts
+ *  off the top of the page, on a loop. ?smokeFast=1 in the URL squeezes the whole cycle into `fast`
+ *  (≈20s) for testing. */
 export const O_SMOKE = {
   fillMs: 210000,
   fullMs: 1500,
@@ -194,9 +226,9 @@ export const O_SMOKE = {
   fast: { fillMs: 13500, fullMs: 1500, releaseMs: 3200, pauseMs: 1800 },
   /** Puffs inside the O when it is full, and the most the release can have in flight. */
   maxParticles: 70,
-  /** Release whoosh, through the sound module (respects mute and the audio unlock). */
-  releaseVolume: 0.2,
-  colors: ["#f7f5f2", "#e6e2dd", "#cfcac4"],
+  /** Real smoke grays (they must contrast with the off-white page showing through the hole):
+   *  mid, dark (the bottom of the body), light (the top of the body and the wisps). */
+  colors: ["#9a9590", "#7d7873", "#b8b3ad"],
   /** Reduced motion: a faint, still haze in the hole instead of the cycle. */
   staticHaze: 0.35,
 };

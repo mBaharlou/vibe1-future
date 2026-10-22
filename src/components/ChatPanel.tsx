@@ -24,7 +24,7 @@ function useMobile() {
 
 /** The chat panel: grows out of the cat button (desktop) or slides up as a bottom sheet (mobile). */
 export function ChatPanel({ chat, onClose }: Props) {
-  const { t, num, dir } = useLocale();
+  const { t, num } = useLocale();
   const reduce = useReducedMotion();
   const mobile = useMobile();
   const [draft, setDraft] = useState("");
@@ -32,7 +32,6 @@ export function ChatPanel({ chat, onClose }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const busy = chat.status !== "idle";
-  const rtl = dir === "rtl";
 
   useEffect(() => {
     inputRef.current?.focus({ preventScroll: true });
@@ -80,9 +79,10 @@ export function ChatPanel({ chat, onClose }: Props) {
   };
 
   const { panel } = ASK_CAT;
-  // Desktop: just under the cat button, at the same end offset, growing from the button's centre.
+  // Desktop: just under the cat button (always at the right, like the top bar), growing from the button's centre.
+  // The messages inside still follow the page direction.
   const desktopTop = `calc(var(--bar-h) + 12px + var(--ask-size) + ${panel.gapPx}px)`;
-  const origin = `${rtl ? "calc(var(--ask-size) / 2)" : "calc(100% - var(--ask-size) / 2)"} calc(-${panel.gapPx}px - var(--ask-size) / 2)`;
+  const origin = `calc(100% - var(--ask-size) / 2) calc(-${panel.gapPx}px - var(--ask-size) / 2)`;
   const motionProps = reduce
     ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.15 } }
     : mobile
@@ -108,7 +108,7 @@ export function ChatPanel({ chat, onClose }: Props) {
       onKeyDown={onPanelKey}
       {...motionProps}
       className={`ask-panel fixed z-[70] flex flex-col overflow-hidden border border-black/[0.06] bg-[#faf9f7]/[0.88] text-ink shadow-[0_24px_60px_-18px_rgba(0,0,0,0.35),0_2px_6px_rgba(0,0,0,0.06)] backdrop-blur-xl ${
-        mobile ? "inset-x-0 bottom-0 rounded-t-3xl" : "end-4 rounded-3xl"
+        mobile ? "inset-x-0 bottom-0 rounded-t-3xl" : "right-4 rounded-3xl"
       }`}
       style={
         mobile

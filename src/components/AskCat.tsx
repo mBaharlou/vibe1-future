@@ -25,7 +25,7 @@ export function CatAvatar({ className = "" }: { className?: string }) {
   );
 }
 
-// Under the hamburger at the bar's end (mirrored in RTL); the end offset centres it on the hamburger.
+// Under the hamburger, at the right in every language (the top bar never mirrors); the offset centres it on the hamburger.
 const sizeCss = `:root{--ask-size:${ASK_CAT.mobileSize}px}@media (min-width:640px){:root{--ask-size:${ASK_CAT.size}px}}`;
 
 /**
@@ -33,7 +33,7 @@ const sizeCss = `:root{--ask-size:${ASK_CAT.mobileSize}px}@media (min-width:640p
  * grows out of it. Mounted once at the app level, so it and the open chat persist across navigation.
  */
 export function AskCat() {
-  const { t, lang } = useLocale();
+  const { t, lang, dir } = useLocale();
   const chat = useChat(lang);
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -59,7 +59,7 @@ export function AskCat() {
       <style>{sizeCss}</style>
       <div
         data-eyes-avoid=""
-        className="ask-cat fixed end-1.5 z-[58] sm:end-4"
+        className="ask-cat fixed right-1.5 z-[58] sm:right-4"
         style={{ top: "calc(var(--bar-h) + 12px)", width: "var(--ask-size)", height: "var(--ask-size)" }}
       >
         <button
@@ -76,17 +76,12 @@ export function AskCat() {
             <span className="ask-cat-face block h-full w-full rounded-full shadow-[0_6px_18px_-6px_rgba(0,0,0,0.35),0_0_0_2px_#fff,0_0_0_3.5px_rgba(45,98,128,0.35)]">
               <CatAvatar className="h-full w-full" />
             </span>
-            <span
-              aria-hidden="true"
-              className="absolute -bottom-0.5 -end-1 rounded-full bg-[#2d6280] px-1.5 py-px font-brand text-[9px] font-extrabold leading-[14px] tracking-wide text-white shadow-[0_0_0_2px_#fff]"
-            >
-              AI
-            </span>
           </span>
           {!open && (
             <span
               aria-hidden="true"
-              className="ask-cat-tip pointer-events-none absolute top-1/2 end-[calc(100%+12px)] whitespace-nowrap rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-white shadow-lg"
+              dir={dir}
+              className="ask-cat-tip pointer-events-none absolute right-[calc(100%+12px)] top-1/2 whitespace-nowrap rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-white shadow-lg"
             >
               {t("ask.tooltip")}
             </span>

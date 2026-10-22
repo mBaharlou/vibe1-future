@@ -141,6 +141,18 @@ body {
   transition: opacity 300ms ease;
 }
 
+/* Crying: a wet shine fades in over the eye. */
+.wander-eye-wet {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+/* Over an eye that can be caught. */
+html.eye-catchable,
+html.eye-catchable * {
+  cursor: pointer !important;
+}
+
 .wander-eye-lid {
   transform: scaleY(0);
   transform-box: fill-box;
@@ -474,17 +486,13 @@ button:active .ham-press {
   mask-image: linear-gradient(to left, #000 80%, transparent);
 }
 
-.menu-track[data-scroll="true"]:dir(rtl) {
-  mask-image: linear-gradient(to right, #000 80%, transparent);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .menu-item-label::after {
     transition: none;
   }
 }
 
-/* ── "Ask the cat": a slow idle bob, a quick tilt-and-wiggle on hover, a tooltip beside it. ── */
+/* ── "Ask the cat": a slow idle bob, a quick tilt-and-wiggle on hover, a tooltip to its left. ── */
 
 .ask-cat-bob {
   animation: ask-bob 3.6s ease-in-out infinite;
@@ -520,10 +528,6 @@ button:active .ham-press {
   opacity: 0;
   translate: 6px -50%;
   transition: opacity 160ms ease-out, translate 200ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ask-cat-tip:dir(rtl) {
-  translate: -6px -50%;
 }
 
 .ask-cat-button:hover .ask-cat-tip,

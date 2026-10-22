@@ -13,7 +13,8 @@ const barCss = `:root{--bar-h:${BAR.mobileHeightPx}px}@media (min-width:${BAR.de
 /**
  * Full-width strip fixed at the very top: sound toggle and language switcher at the start, the
  * owner's GitHub link centred in the viewport, the menu at the end. A 1fr/auto/1fr grid keeps the
- * link centred and mirrors in RTL.
+ * link centred. The bar is LTR in every language (Persian included): only the text inside it,
+ * not its layout, follows the language.
  */
 export function TopBar({ home = false }: { home?: boolean }) {
   const { t } = useLocale();
@@ -29,6 +30,7 @@ export function TopBar({ home = false }: { home?: boolean }) {
       <style>{barCss}</style>
       <div
         data-topbar=""
+        dir="ltr"
         className="fixed inset-x-0 top-0 z-[60] grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-1.5 sm:px-5"
         style={{
           height: "var(--bar-h)",
@@ -87,7 +89,8 @@ function HomeButton() {
         goHome(navigate);
       }}
       data-eyes-avoid=""
-      className="fixed start-3 z-[55] inline-flex h-10 items-center gap-2 rounded-full bg-white/55 px-4 text-sm font-medium text-neutral-700 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.05)] backdrop-blur-md hover:text-ink focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink sm:start-6"
+      // RTL: it moves to the right with the content, so it stops short of the Ask-the-cat button there.
+      className="fixed start-3 z-[55] inline-flex rtl:start-[60px] sm:rtl:start-20 h-10 items-center gap-2 rounded-full bg-white/55 px-4 text-sm font-medium text-neutral-700 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.05)] backdrop-blur-md hover:text-ink focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-ink sm:start-6"
       style={{ top: "calc(var(--bar-h) + 12px)" }}
     >
       <span aria-hidden="true">{dir === "rtl" ? "→" : "←"}</span> {t("home.back")}

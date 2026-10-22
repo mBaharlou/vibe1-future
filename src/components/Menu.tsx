@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FocusEv
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { HAMBURGER, JOINT, MENU } from "../config/home";
 import { pages } from "../data/pages";
-import { useLocale } from "../i18n";
+import { dirOf, useLocale } from "../i18n";
 import { NEW_TAB } from "../lib/tabs";
 import { HamburgerIcon } from "./HamburgerIcon";
 
@@ -25,13 +25,13 @@ const isHoverPointer = (e: PointerEvent) => e.pointerType !== "touch";
 const seconds = (ms: number) => ms / 1000;
 
 /**
- * Hamburger at the bar's end. The menu opens sideways inside the bar, from the button toward the
- * centred label (mirrored in RTL), as one row of page links that open in new tabs.
+ * Hamburger at the bar's right end. The menu opens sideways inside the bar, from the button toward
+ * the centred label, as one row of page links that open in new tabs. Like the whole bar it is LTR
+ * in every language; only the labels' text is RTL in Persian.
  */
 export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
-  const { t, dir } = useLocale();
+  const { t, lang } = useLocale();
   const reduce = useReducedMotion();
-  const rtl = dir === "rtl";
   const [open, setOpen] = useState(false);
   const [fit, setFit] = useState<Fit | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -75,16 +75,12 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
     if (!button || !label || !switcher || !list) return;
     // offsetWidth, not scrollWidth: the items slide in with a transform that would inflate it.
     const content = list.offsetWidth;
-    const toLabel = rtl
-      ? label.left - MENU.labelGapPx - (button.right + MENU.buttonGapPx)
-      : button.left - MENU.buttonGapPx - (label.right + MENU.labelGapPx);
-    const toSwitcher = rtl
-      ? switcher.left - MENU.switcherGapPx - (button.right + MENU.buttonGapPx)
-      : button.left - MENU.buttonGapPx - (switcher.right + MENU.switcherGapPx);
+    const toLabel = button.left - MENU.buttonGapPx - (label.right + MENU.labelGapPx);
+    const toSwitcher = button.left - MENU.buttonGapPx - (switcher.right + MENU.switcherGapPx);
     const crowd = content > toLabel;
     const room = Math.max(0, Math.floor(crowd ? toSwitcher : toLabel));
     setFit({ width: Math.min(content, room), crowd, scroll: content > room });
-  }, [labelRef, switcherRef, rtl]);
+  }, [labelRef, switcherRef]);
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -136,8 +132,8 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
     const links = Array.from(listRef.current?.querySelectorAll("a") ?? []);
     const at = links.indexOf(document.activeElement as HTMLAnchorElement);
     if (at < 0) return;
-    // Arrow keys follow what you see: in RTL the row runs right → left.
-    const step = ({ ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 } as Record<string, number>)[e.key];
+    // Arrow keys follow what you see: the row runs left → right in every language.
+    const step = ({ ArrowRight: 1, ArrowLeft: -1 } as Record<string, number>)[e.key];
     const next = e.key === "Home" ? 0 : e.key === "End" ? links.length - 1 : step !== undefined ? at + step : -1;
     if (next < 0 || next >= links.length) return;
     e.preventDefault();
@@ -149,9 +145,9 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
   };
 
   // Collapsed at the edge next to the button; the reveal runs toward the label.
-  const clipClosed = rtl ? "inset(0% 100% 0% 0% round 999px)" : "inset(0% 0% 0% 100% round 999px)";
+  const clipClosed = "inset(0% 0% 0% 100% round 999px)";
   const clipOpen = "inset(0% 0% 0% 0% round 999px)";
-  const slide = (rtl ? -1 : 1) * 10;
+  const slide = 10;
 
   const track = {
     closed: reduce
@@ -229,7 +225,9 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
                     className="menu-item flex h-9 items-center gap-1 whitespace-nowrap rounded-full px-[3px] text-[11px] font-medium text-ink focus-visible:outline-[3px] focus-visible:-outline-offset-2 focus-visible:outline-ink sm:gap-2 sm:px-3 sm:text-[13px]"
                   >
                     <img aria-hidden="true" alt="" src={JOINT.src} className="w-3.5 shrink-0 -rotate-12 sm:w-4" />
-                    <span className="menu-item-label relative">{t(`pages.${page.key}.title`)}</span>
+                    <span lang={lang} dir={dirOf(lang)} className="menu-item-label relative">
+                      {t(`pages.${page.key}.title`)}
+                    </span>
                   </a>
                 </motion.li>
               ))}

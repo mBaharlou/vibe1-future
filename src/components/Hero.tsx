@@ -26,7 +26,7 @@ const patternUrl = `url("data:image/svg+xml,${encodeURIComponent(patternSvg)}")`
 function fanBounds(fan: JointPlacement[]) {
   const catH = 1 / CAT.aspect;
   const origin = { x: HEAD_ORIGIN.x / 100 - 0.5, y: -catH + (HEAD_ORIGIN.y / 100) * catH };
-  const len = JOINT.length / 100;
+  const len = JOINT.fitLength / 100;
   const half = (len * JOINT.aspect) / 2 + len * 0.04; // + a little for the ember glow
   let minX = -0.5, maxX = 0.5, minY = -catH;
   for (const { angle, dist } of fan) {
