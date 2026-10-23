@@ -20,10 +20,7 @@ export function NotFound() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
         className="flex min-h-svh flex-col items-center justify-center px-6 text-center"
-        style={{
-          paddingTop: "var(--bar-h)",
-          background: "radial-gradient(ellipse at 50% 40%, #f4f4f4 0%, #f4f4f4 40%, #e9e9e9 100%)",
-        }}
+        style={{ paddingTop: "var(--bar-h)" }}
       >
         <p data-eyes-avoid="" className="bar-label" style={{ color: DENIM.base }}>
           {upper(t("notFound.label"))}

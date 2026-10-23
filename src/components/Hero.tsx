@@ -225,7 +225,6 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="relative flex h-dvh flex-col overflow-hidden"
-        style={{ background: "radial-gradient(ellipse at 50% 42%, #f4f4f4 0%, #f4f4f4 38%, #e9e9e9 100%)" }}
       >
         <header className="relative shrink-0 px-4 pt-10 text-center sm:pt-12" style={{ paddingBottom: "clamp(16px, 2.2vw, 24px)" }}>
           {/* On narrow screens the page links take a row of their own under the bar: make room for it. */}

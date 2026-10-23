@@ -37,7 +37,7 @@ export function ShopBottomHero({ category, titleRef }: Props) {
           <div
             data-eyes-avoid=""
             data-cart-avoid=""
-            className="contact-card relative rounded-[26px] border px-6 pb-7 pt-6 sm:px-8 sm:pb-8 sm:pt-7"
+            className="contact-card glass relative rounded-[26px] border px-6 pb-7 pt-6 sm:px-8 sm:pb-8 sm:pt-7"
             style={{
               background: "var(--t-surface)",
               borderColor: "var(--t-border)",

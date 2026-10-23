@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import forestSvg from "../../assets/forest-pattern.svg?raw";
+import skySvg from "../../assets/sky-pattern.svg?raw";
 import { AnimatePresence, motion } from "framer-motion";
 import { SHOP } from "../../config/shop";
 import type { PageData } from "../../data/pages";
@@ -11,6 +13,25 @@ import { CartButton } from "./CartButton";
 import { CartDrawer } from "./CartDrawer";
 import { ProductCard } from "./ProductCard";
 import { ShopBottomHero } from "./ShopBottomHero";
+
+const svgUrl = (svg: string) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+
+/** The page title's letters are filled like the home wordmark, but still: a forest for the Joint
+ *  page, a cloudy sky for Vapes (.title-fill in index.css). */
+const TITLE_FILLS: Record<ProductCategory, CSSProperties> = {
+  joints: {
+    "--title-pattern": svgUrl(forestSvg),
+    "--title-base": "linear-gradient(180deg, #0b3d1f 0%, #1f6b34 45%, #5fae3e 100%)",
+    "--title-scale": "0.9em",
+    "--title-solid": "#1f6b34",
+  } as CSSProperties,
+  vapes: {
+    "--title-pattern": svgUrl(skySvg),
+    "--title-base": "linear-gradient(180deg, #2b6fd6 0%, #4f9cf5 45%, #a9d4ff 100%)",
+    "--title-scale": "1.1em",
+    "--title-solid": "#2b6fd6",
+  } as CSSProperties,
+};
 
 /** How many cards a grid row holds right now (matches the grid's breakpoints). */
 function useColumns() {
@@ -55,7 +76,7 @@ export function ShopPage({ page, category }: { page: PageData; category: Product
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="relative min-h-svh overflow-x-clip"
-        style={{ background: "var(--t-bg-gradient)", color: "var(--t-text)" }}
+        style={{ color: "var(--t-text)" }}
       >
         <header
           className="relative mx-auto flex max-w-[1400px] flex-col items-center px-5 pb-10 text-center sm:px-10 sm:pb-14"
@@ -65,8 +86,8 @@ export function ShopPage({ page, category }: { page: PageData; category: Product
             ref={titleRef}
             tabIndex={-1}
             data-eyes-avoid=""
-            className="w-fit font-black leading-[0.85] tracking-[-0.045em] outline-none focus-visible:outline-[3px] focus-visible:outline-offset-8 rtl:leading-[1.15] rtl:tracking-normal"
-            style={{ fontSize: "clamp(2.5rem, 9vw, 6rem)", color: "var(--t-text)", outlineColor: "var(--t-accent)" }}
+            className="title-fill w-fit font-black leading-[0.85] tracking-[-0.045em] outline-none focus-visible:outline-[3px] focus-visible:outline-offset-8 rtl:leading-[1.15] rtl:tracking-normal"
+            style={{ fontSize: "clamp(2.5rem, 9vw, 6rem)", outlineColor: "var(--t-accent)", ...TITLE_FILLS[category] }}
           >
             {upper(title)}
           </h1>

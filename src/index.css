@@ -19,9 +19,43 @@
 
 html,
 body {
-  background: var(--color-paper);
   color: var(--color-ink);
   overflow-x: hidden;
+}
+
+/* Only <html> gets a colour (the fallback under the backdrop below); <body> stays clear so the
+   fixed backdrop shows through. */
+html {
+  background: var(--color-paper);
+}
+
+/* The site's backdrop: soft pastel light pooling in the corners, fixed behind every page so the
+   frosted-glass surfaces on top have something to blur. Pages are transparent over it; a themed
+   page swaps in its own palette (--t-bg-gradient, src/config/themes.ts). */
+:root {
+  --site-bg:
+    radial-gradient(60% 50% at 10% 8%, rgba(167, 139, 250, 0.5) 0%, transparent 62%),
+    radial-gradient(50% 45% at 92% 6%, rgba(125, 211, 252, 0.5) 0%, transparent 62%),
+    radial-gradient(55% 50% at 88% 92%, rgba(251, 207, 232, 0.6) 0%, transparent 62%),
+    radial-gradient(55% 50% at 6% 94%, rgba(167, 243, 208, 0.5) 0%, transparent 62%),
+    linear-gradient(160deg, #eef0ff 0%, #f6f1ff 45%, #eefaf8 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--t-bg-gradient, var(--site-bg));
+  transition: opacity 300ms ease;
+}
+
+/* Frosted glass: cards, panels and drawers over the backdrop. */
+.glass {
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 /* In the base layer so utility classes (text size, weight) still win on buttons. */
@@ -200,6 +234,23 @@ html.eye-catchable * {
 @keyframes wordmark-hue {
   from { filter: hue-rotate(0deg); }
   to { filter: hue-rotate(360deg); }
+}
+
+/* ── Shop page titles: the same letter fill as the wordmark, but still. Each page sets its pattern
+   and gradient (--title-*) in ShopPage.tsx. ── */
+
+.title-fill {
+  color: var(--title-solid, var(--t-text));
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .title-fill {
+    color: transparent;
+    background-image: var(--title-pattern), var(--title-base);
+    background-size: var(--title-scale) var(--title-scale), 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
 }
 
 /* Speaker toggle: a soft pulse until the first click/tap/key lets the page play sound. */
@@ -452,8 +503,11 @@ html[data-scheme="dark"] {
   color-scheme: dark;
 }
 
-html[data-theme] body {
+html[data-theme] {
   background-color: var(--t-bg);
+}
+
+html[data-theme] body {
   color: var(--t-text);
 }
 

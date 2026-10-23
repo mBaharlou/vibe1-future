@@ -144,8 +144,8 @@ function GlowCard({ product, index, columns }: Props) {
           style={{ boxShadow: `0 0 0 1.5px ${accent2 ? "var(--t-accent2)" : "var(--t-accent)"}, 0 0 34px -4px var(--t-glow)` }}
         />
 
-        <div className="relative flex h-full flex-col overflow-hidden rounded-[22px] border" style={{ background: "var(--t-surface)", borderColor: "var(--t-border)" }}>
-          <div className="relative aspect-[4/5] overflow-hidden" style={{ background: "var(--t-surface)" }}>
+        <div className="glass relative flex h-full flex-col overflow-hidden rounded-[22px] border" style={{ background: "var(--t-surface)", borderColor: "var(--t-border)" }}>
+          <div className="relative aspect-[4/5] overflow-hidden">
             <div
               aria-hidden="true"
               className="absolute left-1/2 top-1/2 size-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- Seamless tile for the VAPES page title: soft white clouds drifting over a blue sky gradient,
+       clipped to the letters. Shapes stay inside the tile so it repeats cleanly. -->
+  <defs>
+    <g id="cloud">
+      <ellipse cx="0" cy="6" rx="30" ry="9" />
+      <circle cx="-14" cy="0" r="10" />
+      <circle cx="2" cy="-6" r="14" />
+      <circle cx="17" cy="1" r="9" />
+    </g>
+  </defs>
+
+  <!-- Far, faint clouds. -->
+  <g fill="#ffffff" opacity="0.45">
+    <use href="#cloud" transform="translate(150 36) scale(0.7)" />
+    <use href="#cloud" transform="translate(46 150) scale(0.6)" />
+  </g>
+
+  <!-- Near, bright clouds with a soft blue underside. -->
+  <g fill="#dbeafe">
+    <use href="#cloud" transform="translate(58 66) scale(1.05) translate(0 2)" />
+    <use href="#cloud" transform="translate(150 132) scale(0.95) translate(0 2)" />
+  </g>
+  <g fill="#ffffff">
+    <use href="#cloud" transform="translate(58 66) scale(1.05)" />
+    <use href="#cloud" transform="translate(150 132) scale(0.95)" />
+    <use href="#cloud" transform="translate(110 186) scale(0.5)" />
+  </g>
+
+  <!-- A few sparkles of sunlight. -->
+  <g fill="#fff7cc" opacity="0.8">
+    <circle cx="16" cy="18" r="1.6" />
+    <circle cx="186" cy="84" r="1.4" />
+    <circle cx="96" cy="112" r="1.2" />
+  </g>
+</svg>

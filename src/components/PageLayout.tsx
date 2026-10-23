@@ -23,7 +23,6 @@ export function PageLayout({ page }: { page: PageData }) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="relative min-h-svh overflow-hidden"
-        style={{ background: "radial-gradient(ellipse at 50% 30%, #f4f4f4 0%, #f4f4f4 40%, #e9e9e9 100%)" }}
       >
         <div
           className="relative mx-auto max-w-3xl px-6 pb-8 sm:px-10 sm:pb-14"
