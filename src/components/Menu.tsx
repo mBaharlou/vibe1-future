@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { HAMBURGER, JOINT, MENU } from "../config/home";
 import { pages } from "../data/pages";
 import { dirOf, useLocale } from "../i18n";
-import { NEW_TAB } from "../lib/tabs";
+import { Link } from "react-router";
 import { HamburgerIcon } from "./HamburgerIcon";
 
 const NAV_ID = "site-menu";
@@ -218,9 +218,8 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
             <ul ref={listRef} className="flex h-full w-max items-center px-0.5 sm:px-2">
               {pages.map((page) => (
                 <motion.li key={page.id} variants={item}>
-                  <a
-                    href={page.path}
-                    {...NEW_TAB}
+                  <Link
+                    to={page.path}
                     onClick={close}
                     className="menu-item flex h-9 items-center gap-1 whitespace-nowrap rounded-full px-[3px] text-[11px] font-medium text-ink focus-visible:outline-[3px] focus-visible:-outline-offset-2 focus-visible:outline-ink sm:gap-2 sm:px-3 sm:text-[13px]"
                   >
@@ -228,7 +227,7 @@ export function Menu({ labelRef, switcherRef, onCrowd }: Props) {
                     <span lang={lang} dir={dirOf(lang)} className="menu-item-label relative">
                       {t(`pages.${page.key}.title`)}
                     </span>
-                  </a>
+                  </Link>
                 </motion.li>
               ))}
             </ul>

@@ -5,7 +5,6 @@ import { pages } from "../data/pages";
 import { CAT, HEAD_ORIGIN, HEADER, JOINT, LIGHT, SELECT, WORDMARK, type JointPlacement } from "../config/home";
 import { useLocale } from "../i18n";
 import { playExhale, playLighter, type Lighting } from "../lib/sound";
-import { openInNewTab } from "../lib/tabs";
 import patternSvg from "../assets/joint-pattern.svg?raw";
 import { Cat } from "./Cat";
 import { Haze } from "./Haze";
@@ -160,7 +159,7 @@ export function Hero() {
   const getLitTips = useCallback(() => pages.map((_, i) => (activeRef.current?.index === i && activeRef.current.stage === "lit" ? tipOf(i) : null)), []);
 
   // The way to the page: a quiet exhale, the ember flares, a big puff swells over the page, then
-  // the page opens in a new tab, or here if the browser blocks the pop-up (hover isn't a click).
+  // the page opens on its own route in this tab.
   const go = (index: number) => {
     const page = pages[index];
     playExhale();
@@ -168,10 +167,7 @@ export function Hero() {
     const tip = tipOf(index);
     if (reduce) setFade((n) => n + 1);
     else if (tip) later(SELECT.flareMs * 0.6, () => smokeRef.current?.burst(tip.x, tip.y));
-    later(SELECT.openAfterMs, () => {
-      if (openInNewTab(page.path)) later(SELECT.burstMs, reset);
-      else navigate(page.path);
-    });
+    later(SELECT.openAfterMs, () => navigate(page.path));
   };
 
   // Lighter: sparks on each flint strike, the flame once it catches, then the joint is lit, puffs

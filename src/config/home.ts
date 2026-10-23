@@ -318,9 +318,6 @@ export const ASK_CAT = {
   storageKey: "ask-cat-chat",
 };
 
-/** After window.close(), give the tab this long to go before falling back to "/". */
-export const CLOSE_FALLBACK_MS = 150;
-
 // ── Haze and smoke ───────────────────────────────────────────────────
 export const HAZE = {
   blurPx: 40,

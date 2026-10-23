@@ -3,7 +3,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { HEAD_ORIGIN, JOINT, LIGHT, type JointPlacement } from "../config/home";
 import type { PageData } from "../data/pages";
 import { useLocale } from "../i18n";
-import { NEW_TAB } from "../lib/tabs";
 
 /** unlit: at rest · lighting: the lighter is going (flame once it catches) · lit: burning, smoking. */
 export type JointStage = "unlit" | "lighting" | "lit";
@@ -51,7 +50,6 @@ export function Joint({ page, placement, order, stage, flame, lightMs, dimmed, f
   return (
     <a
       href={page.path}
-      {...NEW_TAB}
       aria-label={t("joint.ariaLabel", { title })}
       data-joint={page.key}
       data-stage={stage}
