@@ -10,7 +10,8 @@ import { ThemeRoot } from "./components/ThemeRoot";
 import { CartProvider } from "./lib/cart";
 
 // Only home ships in the first bundle; the other pages load when they're opened.
-const PageLayout = lazy(() => import("./components/PageLayout").then((m) => ({ default: m.PageLayout })));
+const MePage = lazy(() => import("./components/MePage").then((m) => ({ default: m.MePage })));
+const ContactPage = lazy(() => import("./components/ContactPage").then((m) => ({ default: m.ContactPage })));
 const ShopPage = lazy(() => import("./components/shop/ShopPage").then((m) => ({ default: m.ShopPage })));
 const NotFound = lazy(() => import("./components/NotFound").then((m) => ({ default: m.NotFound })));
 
@@ -28,7 +29,9 @@ export default function App() {
           <Route
             key={page.id}
             path={page.path}
-            element={page.shop ? <ShopPage page={page} category={page.shop} /> : <PageLayout page={page} />}
+            element={
+              page.shop ? <ShopPage page={page} category={page.shop} /> : page.key === "me" ? <MePage page={page} /> : <ContactPage page={page} />
+            }
           />
         ))}
         {/* Old URLs: replace, so Back doesn't land on the redirect again. */}

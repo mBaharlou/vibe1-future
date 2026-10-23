@@ -15,7 +15,19 @@ export const CAT = {
 export const MOUTH_ORIGIN = { x: 40.8, y: 54.6 };
 
 // ── Owner (top bar link) ─────────────────────────────────────────────
-export const OWNER = { name: "Mohammad Baharlou", githubUrl: "https://github.com/mBaharlou" };
+/** The site owner: top bar, Me, Contact and the footer. */
+export const OWNER = {
+  name: "Mohammad Baharlou",
+  githubUser: "mBaharlou",
+  githubUrl: "https://github.com/mBaharlou",
+  email: "mmdbaharlou@gmail.com",
+  /** E.164 for tel: links; `phoneDisplay` is what people read. */
+  phone: "+905526890687",
+  phoneDisplay: "+90 552 689 06 87",
+  /** For the live local clock. */
+  timeZone: "Europe/Istanbul",
+  born: "2000-02-13",
+};
 
 // ── Palette ──────────────────────────────────────────────────────────
 /** Denim blue sampled from the photo's sky; the site's accent (bar tint, focus, menu hover). */

@@ -629,32 +629,7 @@ html[data-scheme="dark"] .wander-eye svg {
 }
 
 
-/* "Email me" card: it floats a few px above the ground and its shadow on the ground shrinks and
-   fades as it rises. */
-.contact-ground {
-  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.28), transparent);
-  filter: blur(4px);
-}
-
-.contact-float {
-  animation: contact-float 6s ease-in-out infinite;
-}
-
-.contact-ground-anim {
-  animation: contact-ground 6s ease-in-out infinite;
-}
-
-@keyframes contact-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes contact-ground {
-  0%, 100% { transform: scaleX(1); opacity: 1; }
-  50% { transform: scaleX(0.86); opacity: 0.7; }
-}
-
-/* "Email me": underline fields straight on the page; the accent on focus. */
+/* Contact form: underline fields straight on the card; the accent on focus. */
 .cf-field label {
   color: var(--t-text-muted);
   transition: color 200ms ease;
@@ -746,5 +721,127 @@ html[data-scheme="dark"] .wander-eye svg {
   }
   .cf-spinner {
     animation-duration: 2.4s;
+  }
+}
+
+/* ── Shop shelf: two rows of cards that scroll sideways together (ShopPage.tsx). The edges fade
+   only on a side that has more cards behind it; mirrored in RTL. ── */
+.shelf {
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 20px;
+  scrollbar-width: none;
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-start, 0px), #000 calc(100% - var(--fade-end, 0px)), transparent 100%);
+}
+
+:root[dir="rtl"] .shelf {
+  mask-image: linear-gradient(to left, transparent 0, #000 var(--fade-start, 0px), #000 calc(100% - var(--fade-end, 0px)), transparent 100%);
+}
+
+.shelf::-webkit-scrollbar {
+  display: none;
+}
+
+.shelf[data-at-start="false"] {
+  --fade-start: 40px;
+}
+
+.shelf[data-at-end="false"] {
+  --fade-end: 40px;
+}
+
+.shelf > li {
+  scroll-snap-align: start;
+}
+
+@media (min-width: 640px) {
+  .shelf {
+    scroll-padding-inline: 40px;
+  }
+}
+
+.shelf-arrow {
+  transition: border-color 200ms ease, color 200ms ease, opacity 200ms ease;
+}
+
+.shelf-arrow:hover {
+  border-color: var(--t-accent) !important;
+  color: var(--t-accent) !important;
+}
+
+.shelf-progress {
+  transition: transform 120ms linear;
+}
+
+/* ── Footer (SiteFooter.tsx). ── */
+.footer-mark {
+  background: linear-gradient(120deg, var(--t-accent) 10%, var(--t-accent2) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.footer-heading {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--t-text-muted);
+}
+
+.footer-heading:lang(fa) {
+  letter-spacing: normal;
+}
+
+.footer-link {
+  font-size: 14px;
+  color: var(--t-text);
+  transition: color 200ms ease;
+}
+
+.footer-link:hover,
+.footer-link[aria-current="page"] {
+  color: var(--t-accent);
+}
+
+.footer-link[aria-current="page"] {
+  font-weight: 700;
+}
+
+/* ── Me page: the profile card drifts gently. ── */
+.me-card-float {
+  animation: me-card-float 7s ease-in-out infinite;
+}
+
+@keyframes me-card-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ── Me page: the skills strip slides by on a loop (two copies, so the seam never shows). ── */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 48s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shelf {
+    scroll-snap-type: none;
+  }
+  .shelf-progress,
+  .shelf-arrow,
+  .footer-link {
+    transition: none;
+  }
+  .marquee-track,
+  .me-card-float {
+    animation: none;
   }
 }

@@ -14,7 +14,7 @@
   "pages": {
     "me": {
       "title": "Ben",
-      "description": "Yer tutucu: benimle ilgili kısa bir cümle."
+      "description": "Frontend geliştirici ve arayüz odaklı üretici"
     },
     "products": {
       "title": "Joint",
@@ -26,13 +26,8 @@
     },
     "contact": {
       "title": "İletişim",
-      "description": "Yer tutucu: bana nasıl ulaşabileceğin."
+      "description": "Sorular, projeler, iş birlikleri: bana yazın."
     }
-  },
-  "page": {
-    "body1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
-    "body2": "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra.",
-    "body3": "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis."
   },
   "joint": {
     "ariaLabel": "{{title}} sayfasını aç"
@@ -108,7 +103,7 @@
       "vapes": "Kırmızı kadife üzerinde, bulutlar ve bir güneşle balıkçı şapkalı tekir kedi"
     },
     "contact": {
-      "title": "Bana yaz",
+      "title": "Mesaj gönder",
       "line": "Sorular, siparişler, iş birlikleri. Bir satır bırak.",
       "name": "Ad",
       "email": "E-posta",
@@ -222,7 +217,76 @@
       "velvet-sunset": {
         "name": "Kadife Gün Batımı",
         "tagline": "Sıcak gün batımı kırmızıları, yumuşak ve dingin."
+      },
+      "wild-clover": {
+        "name": "Yabani Yonca",
+        "tagline": "Hafif bitkisel dokunuşlu, taze çayır yeşili."
+      },
+      "pine-whisper": {
+        "name": "Çam Fısıltısı",
+        "tagline": "Serin çam iğneleri ve sakin, odunsu bir bitiş."
+      },
+      "lime-lantern": {
+        "name": "Misket Feneri",
+        "tagline": "Yavaşça parlayan canlı, ferah misket limonu."
+      },
+      "olive-dusk": {
+        "name": "Zeytin Akşamı",
+        "tagline": "Ağır akşamlar için yumuşak zeytin yeşili."
+      },
+      "forest-ember": {
+        "name": "Orman Közü",
+        "tagline": "Sıcak bir parıltıyla dumanlı orman toprağı."
+      },
+      "basil-breeze": {
+        "name": "Fesleğen Esintisi",
+        "tagline": "Yaz esintisinde hafif, biberimsi fesleğen."
+      },
+      "cedar-mist": {
+        "name": "Sedir Sisi",
+        "tagline": "Yumuşak bir pusa sarılmış sedir ağacı."
+      },
+      "kiwi-cloud": {
+        "name": "Kivi Bulutu",
+        "tagline": "Kabarık bir bulutta ekşimsi yeşil kivi."
+      },
+      "raspberry-rain": {
+        "name": "Ahududu Yağmuru",
+        "tagline": "Serin bir yaz sağanağında sulu ahududular."
+      },
+      "coral-crush": {
+        "name": "Mercan Şöleni",
+        "tagline": "Pembe greyfurt ve mercan kadar canlı narenciye."
+      },
+      "blush-mirage": {
+        "name": "Pembe Serap",
+        "tagline": "Gül yaprakları ve liçi, hava kadar hafif."
+      },
+      "cranberry-chill": {
+        "name": "Buzlu Kızılcık",
+        "tagline": "Buz gibi bir bitişle ekşi kızılcık."
+      },
+      "sunset-soda": {
+        "name": "Gün Batımı Gazozu",
+        "tagline": "Altın saatte portakallı ve vişneli gazoz."
+      },
+      "pink-lemon": {
+        "name": "Pembe Limon",
+        "tagline": "Köpüklü pembe limonata, tatlı ve keskin."
+      },
+      "lava-berry": {
+        "name": "Lav Meyvesi",
+        "tagline": "Küçük, baharatlı bir dokunuşla sıcak kırmızı meyveler."
+      },
+      "peach-cloud": {
+        "name": "Şeftali Bulutu",
+        "tagline": "Olgun şeftali, bulut kadar yumuşak."
       }
+    },
+    "shelf": {
+      "prev": "Önceki ürünleri göster",
+      "next": "Daha fazla ürün göster",
+      "count": "{{n}} ürün"
     }
   },
   "gate": {
@@ -238,5 +302,121 @@
     "deniedTitle": "Üzgünüz!",
     "denied": "Bu site yalnızca 21 yaş ve üzeri yetişkinler içindir.",
     "back": "Yanlışlıkla bastım"
+  },
+  "common": {
+    "newTab": "(yeni sekmede açılır)"
+  },
+  "footer": {
+    "tagline": "Kedi onaylı zevke sahip küçük bir vitrin dükkânı.",
+    "pages": "Sayfalar",
+    "contact": "İletişim",
+    "home": "Ana sayfa",
+    "location": "Eskişehir, Türkiye",
+    "rights": "© {{year}} Mohammad Baharlou",
+    "made": "Eskişehir'de React ve biraz dumanla yapıldı."
+  },
+  "me": {
+    "eyebrow": "Hakkımda",
+    "intro": "Temiz yapıya, özenli harekete ve modern kullanıcı deneyimine odaklanan zarif arayüzler geliştiriyorum. Odağım React ile frontend ve arayüz.",
+    "ctaContact": "İletişime geç",
+    "ctaGithub": "GitHub'ıma göz at",
+    "card": {
+      "title": "Profil",
+      "based": "Konum",
+      "born": "Doğum",
+      "works": "Çalıştığım yer",
+      "worksTeam": "Tasarım ve Geliştirme ekibi",
+      "studies": "Eğitim",
+      "studiesValue": "Anadolu Üniversitesi",
+      "studiesField": "Halkla İlişkiler ve Reklamcılık",
+      "speaks": "Konuştuğum diller",
+      "localTime": "Eskişehir'de saat"
+    },
+    "stats": {
+      "years": "yıllık programlama",
+      "languages": "konuştuğum dil",
+      "repos": "GitHub'da açık proje",
+      "strongest": "en güçlü becerim"
+    },
+    "story": {
+      "title": "Hikâyem",
+      "who": {
+        "title": "Ben kimim",
+        "text": "Ben Mohammad Baharlou; şık, rafine, sezgisel ve modern hissettiren dijital deneyimler yaratmayı seven bir geliştiriciyim."
+      },
+      "journey": {
+        "title": "Yolculuğum",
+        "text": "Son 5 yıldır frontend teknolojilerine, tasarım sistemlerine ve etkileşim detaylarına büyük bir ilgiyle programlama becerilerimi geliştiriyorum."
+      },
+      "education": {
+        "title": "Eğitim",
+        "text": "Eskişehir'deki Anadolu Üniversitesi'nde Halkla İlişkiler ve Reklamcılık okuyorum; bu da bana iletişime ve sunuma farklı bir bakış açısı kazandırıyor."
+      },
+      "work": {
+        "title": "İş",
+        "text": "Coalition Technologies'de Tasarım ve Geliştirme ekibinde çalışıyorum."
+      },
+      "home": {
+        "title": "Yaşadığım yer",
+        "text": "Eskişehir'de yaşıyorum; burada okumaya ve bir geliştirici ve yaratıcı biri olarak büyümeye devam ediyorum."
+      },
+      "languages": {
+        "title": "Diller",
+        "text": "İngilizce, Türkçe ve Farsça konuşuyorum; bu da farklı kitlelerle ve topluluklarla bağ kurmama yardımcı oluyor."
+      }
+    },
+    "skills": {
+      "title": "Neler kullanıyorum",
+      "line": "Fikirleri arayüze dönüştürmek için kullandığım araçlar ve beceriler.",
+      "strongest": "En güçlü",
+      "groups": {
+        "frontend": "Frontend geliştirme",
+        "design": "Tasarım",
+        "tools": "Araçlar",
+        "mobile": "Mobil geliştirme",
+        "animation": "Animasyon"
+      },
+      "names": {
+        "uiDesign": "Arayüz tasarımı",
+        "layouts": "Modern yerleşim sistemleri",
+        "components": "Bileşen mimarisi",
+        "responsive": "Duyarlı sistemler",
+        "native": "Native"
+      }
+    },
+    "work": {
+      "title": "Seçilmiş işler",
+      "line": "Geliştirdiğim birkaç şey, hepsi GitHub'da.",
+      "view": "GitHub'da gör",
+      "items": {
+        "vibe1-future": "Bu web sitesi: React, TypeScript, Tailwind CSS ve Framer Motion ile, üç dilde.",
+        "my-portfolio": "Sıkıldığınızda oynamak için bir XOX sayfası da olan önceki portfolyo sitem.",
+        "my-weather-calc-app": "Next.js ve TypeScript ile yapılmış bir hava durumu ve hesap makinesi uygulaması.",
+        "shop-react-web": "React ile yapılmış bir mağaza arayüzü.",
+        "bhCrypto-web": "Kripto hakkında bir web sitesi.",
+        "crypto-app": "JavaScript ile yazılmış bir kripto uygulaması."
+      }
+    },
+    "cta": {
+      "title": "Bir fikrin mi var?",
+      "line": "Onu insanların kullanmaktan keyif aldığı bir şeye dönüştürelim.",
+      "button": "Konuşalım"
+    }
+  },
+  "contactPage": {
+    "eyebrow": "İletişim",
+    "headline": "Konuşalım",
+    "line": "Sorular, projeler ya da bir iş birliği fikri: size en kolay geleni seçin. Her mesajı okurum.",
+    "email": "E-posta",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı!",
+    "copyLabel": "E-posta adresini kopyala",
+    "phone": "Telefon",
+    "call": "Ara",
+    "github": "GitHub",
+    "githubAction": "Profili aç",
+    "location": "Konum",
+    "localTime": "Burada saat şu an {{time}}",
+    "languages": "Bana English, Türkçe ya da فارسی yazabilirsiniz."
   }
 }

@@ -1,11 +1,12 @@
 // Every tunable value for the shop pages (/joint, /vapes) lives here.
 import sizes from "../data/shop-image-sizes.json";
+import { OWNER } from "./home";
 
 /** Prices are in this currency, formatted for the current language (Intl.NumberFormat). */
 export const CURRENCY = "USD";
 
-/** The "Email me" section at the bottom of the shop pages. */
-export const CONTACT_EMAIL = "mmdbaharlou@gmail.com";
+/** The contact form's "email me directly" fallback (Contact page). */
+export const CONTACT_EMAIL = OWNER.email;
 
 /** Product photos (made by scripts/shop-images.mjs). */
 export const PRODUCT_IMAGES = {
@@ -31,10 +32,10 @@ export const SHOP = {
   /** Fly-to-cart thumbnail. */
   flyMs: 600,
   popVolume: 0.2,
-  /** Grid breakpoints (px): 1 column below the first, then 2, 3, 4. */
-  columnsFrom: [520, 820, 1100] as const,
+  /** The product shelf: this many rows, scrolling sideways; card width and the gap between cards. */
+  shelf: { rows: 2, cardWidth: "clamp(150px, 14vw, 188px)", gap: "clamp(12px, 1.4vw, 18px)" },
   storageKey: "shop-cart",
-  /** Bottom hero cat height; on tablets the width cap keeps room for the email and back-to-top beside it. */
+  /** Bottom hero cat height (it stands on the footer). */
   heroHeight: "max(320px, min(66vh, 760px, 46vw))",
   heroHeightMobile: "min(56vh, 520px)",
   /** Contact form (the server checks the same limits, api/_lib/contact.ts). */

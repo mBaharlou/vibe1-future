@@ -14,7 +14,7 @@
   "pages": {
     "me": {
       "title": "Me",
-      "description": "Placeholder: a short line about me."
+      "description": "Frontend developer & UI-focused creator"
     },
     "products": {
       "title": "Joint",
@@ -26,13 +26,8 @@
     },
     "contact": {
       "title": "Contact",
-      "description": "Placeholder: how to get in touch."
+      "description": "Questions, projects, collabs: write to me."
     }
-  },
-  "page": {
-    "body1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
-    "body2": "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra.",
-    "body3": "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis."
   },
   "joint": {
     "ariaLabel": "Open {{title}}"
@@ -108,7 +103,7 @@
       "vapes": "A tabby cat in a bucket hat on red velvet, with clouds and a sun"
     },
     "contact": {
-      "title": "Email me",
+      "title": "Send a message",
       "line": "Questions, orders, collabs. Drop me a line.",
       "name": "Name",
       "email": "Email",
@@ -222,7 +217,76 @@
       "velvet-sunset": {
         "name": "Velvet Sunset",
         "tagline": "Warm sunset reds, smooth and mellow."
+      },
+      "wild-clover": {
+        "name": "Wild Clover",
+        "tagline": "Fresh meadow green with a soft herbal edge."
+      },
+      "pine-whisper": {
+        "name": "Pine Whisper",
+        "tagline": "Cool pine needles and a quiet, woody finish."
+      },
+      "lime-lantern": {
+        "name": "Lime Lantern",
+        "tagline": "Bright, zesty lime that lights up slowly."
+      },
+      "olive-dusk": {
+        "name": "Olive Dusk",
+        "tagline": "Mellow olive green for slow evenings."
+      },
+      "forest-ember": {
+        "name": "Forest Ember",
+        "tagline": "Smoky forest floor with a warm glow."
+      },
+      "basil-breeze": {
+        "name": "Basil Breeze",
+        "tagline": "Light, peppery basil on a summer breeze."
+      },
+      "cedar-mist": {
+        "name": "Cedar Mist",
+        "tagline": "Soft cedar wood wrapped in a gentle haze."
+      },
+      "kiwi-cloud": {
+        "name": "Kiwi Cloud",
+        "tagline": "Tangy green kiwi on a fluffy cloud."
+      },
+      "raspberry-rain": {
+        "name": "Raspberry Rain",
+        "tagline": "Juicy raspberries in a cool summer shower."
+      },
+      "coral-crush": {
+        "name": "Coral Crush",
+        "tagline": "Pink grapefruit and coral-bright citrus."
+      },
+      "blush-mirage": {
+        "name": "Blush Mirage",
+        "tagline": "Rose petals and lychee, light as air."
+      },
+      "cranberry-chill": {
+        "name": "Cranberry Chill",
+        "tagline": "Tart cranberry with an icy finish."
+      },
+      "sunset-soda": {
+        "name": "Sunset Soda",
+        "tagline": "Orange and cherry soda at golden hour."
+      },
+      "pink-lemon": {
+        "name": "Pink Lemon",
+        "tagline": "Sparkling pink lemonade, sweet and sharp."
+      },
+      "lava-berry": {
+        "name": "Lava Berry",
+        "tagline": "Hot red berries with a spicy little kick."
+      },
+      "peach-cloud": {
+        "name": "Peach Cloud",
+        "tagline": "Ripe peach, smooth and soft as a cloud."
       }
+    },
+    "shelf": {
+      "prev": "Show previous products",
+      "next": "Show more products",
+      "count": "{{n}} products"
     }
   },
   "gate": {
@@ -238,5 +302,121 @@
     "deniedTitle": "Sorry!",
     "denied": "This site is only for adults 21 and over.",
     "back": "I clicked by mistake"
+  },
+  "common": {
+    "newTab": "(opens in a new tab)"
+  },
+  "footer": {
+    "tagline": "A small showcase shop with a cat-approved taste.",
+    "pages": "Pages",
+    "contact": "Get in touch",
+    "home": "Home",
+    "location": "Eskişehir, Turkey",
+    "rights": "© {{year}} Mohammad Baharlou",
+    "made": "Made in Eskişehir with React and a little smoke."
+  },
+  "me": {
+    "eyebrow": "About me",
+    "intro": "I build elegant interfaces with clean structure, thoughtful motion and a strong focus on modern user experience. My focus is front-end and UI with React.",
+    "ctaContact": "Get in touch",
+    "ctaGithub": "See my GitHub",
+    "card": {
+      "title": "Profile",
+      "based": "Based in",
+      "born": "Born",
+      "works": "Works at",
+      "worksTeam": "Design & Development team",
+      "studies": "Studies",
+      "studiesValue": "Anadolu University",
+      "studiesField": "Public Relations & Advertising",
+      "speaks": "Speaks",
+      "localTime": "Local time in Eskişehir"
+    },
+    "stats": {
+      "years": "years of programming",
+      "languages": "languages spoken",
+      "repos": "public projects on GitHub",
+      "strongest": "strongest skill"
+    },
+    "story": {
+      "title": "My story",
+      "who": {
+        "title": "Who I am",
+        "text": "I'm Mohammad Baharlou, a developer who enjoys creating sleek digital experiences that feel refined, intuitive and modern."
+      },
+      "journey": {
+        "title": "My journey",
+        "text": "For the last 5 years I've been sharpening my programming skills, with a strong interest in front-end technologies, design systems and interaction details."
+      },
+      "education": {
+        "title": "Education",
+        "text": "I study Public Relations and Advertising at Anadolu University in Eskişehir, which gives me a different perspective on communication and presentation."
+      },
+      "work": {
+        "title": "Work",
+        "text": "I work in the Design & Development team at Coalition Technologies."
+      },
+      "home": {
+        "title": "Where I live",
+        "text": "I live in Eskişehir, Turkey, where I keep studying and growing as a developer and creative thinker."
+      },
+      "languages": {
+        "title": "Languages",
+        "text": "I speak English, Turkish and Persian, which helps me connect with different audiences and communities."
+      }
+    },
+    "skills": {
+      "title": "What I work with",
+      "line": "The tools and skills I use to turn ideas into interfaces.",
+      "strongest": "Strongest",
+      "groups": {
+        "frontend": "Frontend development",
+        "design": "Design",
+        "tools": "Tools",
+        "mobile": "Mobile development",
+        "animation": "Animation"
+      },
+      "names": {
+        "uiDesign": "UI design",
+        "layouts": "Modern layout systems",
+        "components": "Component architecture",
+        "responsive": "Responsive systems",
+        "native": "Native"
+      }
+    },
+    "work": {
+      "title": "Selected work",
+      "line": "A few things I've built, all on GitHub.",
+      "view": "View on GitHub",
+      "items": {
+        "vibe1-future": "This website: React, TypeScript, Tailwind CSS and Framer Motion, in three languages.",
+        "my-portfolio": "My earlier portfolio site, with a tic-tac-toe page for when you're bored.",
+        "my-weather-calc-app": "A weather and calculator app built with Next.js and TypeScript.",
+        "shop-react-web": "A shop front-end built with React.",
+        "bhCrypto-web": "A website about crypto.",
+        "crypto-app": "A crypto app written in JavaScript."
+      }
+    },
+    "cta": {
+      "title": "Have an idea?",
+      "line": "Let's turn it into something people enjoy using.",
+      "button": "Let's talk"
+    }
+  },
+  "contactPage": {
+    "eyebrow": "Contact",
+    "headline": "Let's talk",
+    "line": "Questions, projects or a collab idea: pick whatever's easiest for you. I read every message.",
+    "email": "Email",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copyLabel": "Copy email address",
+    "phone": "Phone",
+    "call": "Call",
+    "github": "GitHub",
+    "githubAction": "Open profile",
+    "location": "Location",
+    "localTime": "It's {{time}} here right now",
+    "languages": "You can write to me in English, Türkçe or فارسی."
   }
 }

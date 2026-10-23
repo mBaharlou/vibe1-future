@@ -85,14 +85,42 @@ export const THEMES = {
     barText: "#2a1312",
     reveal: "radial-gradient(ellipse at 50% 55%, #ffffff 0%, #f6eeea 55%, #ead9d3 100%)",
   },
+  // /me and /contact: the site's own pastel backdrop (lilac, sky, blush, mint) with the denim blue
+  // sampled from the home cat's sky as the accent, and a warm honey for highlights.
+  studio: {
+    scheme: "light",
+    bg: "#f1f1fb",
+    bgGradient:
+      "radial-gradient(60% 50% at 10% 8%, rgba(167, 139, 250, 0.42) 0%, transparent 62%), " +
+      "radial-gradient(50% 45% at 92% 6%, rgba(125, 211, 252, 0.48) 0%, transparent 62%), " +
+      "radial-gradient(55% 50% at 88% 92%, rgba(251, 207, 232, 0.55) 0%, transparent 62%), " +
+      "radial-gradient(55% 50% at 6% 94%, rgba(167, 243, 208, 0.45) 0%, transparent 62%), " +
+      "linear-gradient(160deg, #eef0ff 0%, #f6f1ff 45%, #eefaf8 100%)",
+    surface: "rgba(255, 255, 255, 0.62)",
+    text: "#151a2c",
+    textMuted: "#4c5571",
+    accent: "#2d6280",
+    accent2: "#e7a93c",
+    onAccent: "#ffffff",
+    onAccent2: "#2a1c05",
+    glow: "rgba(45, 98, 128, 0.28)",
+    danger: "#b3261e",
+    smoke: "#9aa0b2",
+    border: "rgba(21, 26, 44, 0.1)",
+    bar: "rgba(255, 255, 255, 0.45)",
+    barText: "#151a2c",
+    reveal: "radial-gradient(ellipse at 50% 55%, #ffffff 0%, #eeeefb 55%, #dcdcf0 100%)",
+  },
 } satisfies Record<string, Theme>;
 
 export type ThemeName = keyof typeof THEMES;
 
-/** Which route uses which theme. Home, /me, /contact and 404 have none yet. */
+/** Which route uses which theme. Home and 404 have none. */
 export const ROUTES: Record<string, ThemeName> = {
   "/joint": "products",
   "/vapes": "vapes",
+  "/me": "studio",
+  "/contact": "studio",
 };
 
 export const themeFor = (pathname: string): ThemeName | null => ROUTES[pathname.replace(/\/+$/, "") || "/"] ?? null;

@@ -21,4 +21,8 @@ npm run build    # production build in dist/
 - `src/assets/joint-pattern.svg`: the flower-power tile inside the "JOINT" letters.
 - `scripts/cutout-joint.mjs`: rebuilds `public/photo/joint-cutout.webp/.png` from `photos/joint1.jpg` (`node scripts/cutout-joint.mjs`).
 - `src/components/TopBar.tsx`: the top bar: sound toggle, language switcher, name/GitHub link and menu.
-- `src/components/PageLayout.tsx`: the shared layout for `/me`, `/products`, `/vapes` and `/contact`.
+- `src/components/shop/ShopPage.tsx`: `/joint` and `/vapes`: 20 products on a two-row shelf that scrolls sideways, the page's cat, the footer. Shelf size in `SHOP.shelf` (`src/config/shop.ts`).
+- `src/components/MePage.tsx` + `src/data/me.ts`: `/me`, built from my portfolio (story, skills, GitHub projects).
+- `src/components/ContactPage.tsx`: `/contact`: email (copy), phone, GitHub, location and the message form. Contact details live in `OWNER` (`src/config/home.ts`).
+- `src/components/SiteFooter.tsx`: the footer on every sub-page.
+- `scripts/translations-table.mjs`: rebuilds the "All keys" table in `TRANSLATIONS.md` from the locale files.

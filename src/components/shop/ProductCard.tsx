@@ -9,7 +9,7 @@ import { playPop } from "../../lib/sound";
 
 type Props = {
   product: Product;
-  /** Position in the grid and its row length: the entrance staggers within each row. */
+  /** Position on the shelf and its row length: the entrance staggers within each row. */
   index: number;
   columns: number;
 };
@@ -120,7 +120,7 @@ function GlowCard({ product, index, columns }: Props) {
   return (
     <Entrance index={index} columns={columns}>
       <motion.article
-        className="shop-card group relative flex h-full flex-col rounded-[22px]"
+        className="shop-card group relative flex h-full flex-col rounded-[18px]"
         style={{ rotateX: reduce ? 0 : rotateX, rotateY: reduce ? 0 : rotateY, y: reduce ? 0 : lift, transformStyle: "preserve-3d" }}
         onPointerMove={onMove}
         onPointerLeave={onLeave}
@@ -130,22 +130,22 @@ function GlowCard({ product, index, columns }: Props) {
             their opacity animates. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 rounded-[22px]"
+          className="pointer-events-none absolute inset-0 rounded-[18px]"
           style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.12), 0 10px 30px -14px var(--t-glow)" }}
         />
         <span
           aria-hidden="true"
-          className="shop-card-shadow pointer-events-none absolute inset-0 rounded-[22px]"
+          className="shop-card-shadow pointer-events-none absolute inset-0 rounded-[18px]"
           style={{ boxShadow: "0 28px 60px -20px rgba(0,0,0,0.45), 0 18px 44px -18px var(--t-glow)" }}
         />
         <span
           aria-hidden="true"
-          className="shop-card-glow pointer-events-none absolute -inset-px rounded-[23px]"
+          className="shop-card-glow pointer-events-none absolute -inset-px rounded-[19px]"
           style={{ boxShadow: `0 0 0 1.5px ${accent2 ? "var(--t-accent2)" : "var(--t-accent)"}, 0 0 34px -4px var(--t-glow)` }}
         />
 
-        <div className="glass relative flex h-full flex-col overflow-hidden rounded-[22px] border" style={{ background: "var(--t-surface)", borderColor: "var(--t-border)" }}>
-          <div className="relative aspect-[4/5] overflow-hidden">
+        <div className="glass relative flex h-full flex-col overflow-hidden rounded-[18px] border" style={{ background: "var(--t-surface)", borderColor: "var(--t-border)" }}>
+          <div className="relative aspect-square overflow-hidden">
             <div
               aria-hidden="true"
               className="absolute left-1/2 top-1/2 size-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
@@ -154,7 +154,7 @@ function GlowCard({ product, index, columns }: Props) {
             <Photo product={product} imgRef={imgRef} className="shop-card-img" />
             {product.tag && (
               <span
-                className="absolute start-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide shadow-sm rtl:tracking-normal"
+                className="absolute start-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide shadow-sm rtl:tracking-normal"
                 style={accent2 ? { background: "var(--t-accent2)", color: "var(--t-on-accent2)" } : { background: "var(--t-accent)", color: "var(--t-on-accent)" }}
               >
                 {t(`shop.tags.${product.tag}`)}
@@ -173,16 +173,16 @@ function GlowCard({ product, index, columns }: Props) {
             )}
           </div>
 
-          <div className="flex flex-1 flex-col gap-1.5 px-5 pb-5 pt-4">
-            <h3 className="text-lg font-extrabold leading-tight" style={{ color: "var(--t-text)" }}>
+          <div className="flex flex-1 flex-col gap-1 px-3 pb-3 pt-2.5">
+            <h3 className="truncate text-[15px] font-extrabold leading-tight" title={name} style={{ color: "var(--t-text)" }}>
               {name}
             </h3>
-            <p className="line-clamp-2 min-h-[2lh] text-sm leading-snug" style={{ color: "var(--t-text-muted)" }}>
+            <p className="line-clamp-2 min-h-[2lh] text-xs leading-snug" style={{ color: "var(--t-text-muted)" }}>
               {t(product.taglineKey)}
             </p>
-            <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-              <Price amount={product.price} />
-              <AddControl name={name} qty={qty} onAdd={add} onSet={setQty} />
+            <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+              <Price amount={product.price} size="sm" />
+              <AddControl name={name} qty={qty} onAdd={add} onSet={setQty} compact />
             </div>
           </div>
         </div>
