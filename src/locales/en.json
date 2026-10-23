@@ -12,10 +12,22 @@
     "catAlt": "Tabby cat in a sunny field"
   },
   "pages": {
-    "me": { "title": "Me", "description": "Placeholder: a short line about me." },
-    "products": { "title": "Products", "description": "Joints & cigarettes" },
-    "vapes": { "title": "Vapes", "description": "Devices & flavors" },
-    "contact": { "title": "Contact", "description": "Placeholder: how to get in touch." }
+    "me": {
+      "title": "Me",
+      "description": "Placeholder: a short line about me."
+    },
+    "products": {
+      "title": "Joint",
+      "description": "Joints & cigarettes"
+    },
+    "vapes": {
+      "title": "Vapes",
+      "description": "Devices & flavors"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Placeholder: how to get in touch."
+    }
   },
   "page": {
     "body1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
@@ -31,8 +43,6 @@
     "enable": "Tap to enable sound"
   },
   "menu": {
-    "open": "Open menu",
-    "close": "Close menu",
     "navLabel": "Pages"
   },
   "home": {

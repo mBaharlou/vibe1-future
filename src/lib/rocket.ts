@@ -69,7 +69,7 @@ export function launchRocket(button: HTMLElement, onTop: () => void) {
   Object.assign(canvas.style, { position: "fixed", inset: "0", width: "100%", height: "100%", zIndex: "80", pointerEvents: "none" });
   document.body.appendChild(canvas);
   const ctx = canvas.getContext("2d")!;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   canvas.width = Math.round(window.innerWidth * dpr);
   canvas.height = Math.round(window.innerHeight * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

@@ -1,28 +1,32 @@
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router";
 import { BAR, OWNER } from "../config/home";
 import { useLocale } from "../i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { Menu } from "./Menu";
 import { MuteToggle } from "./MuteToggle";
+import { Nav } from "./Nav";
 
-// --bar-h: the bar's height, also used to keep page content clear of it.
-const barCss = `:root{--bar-h:${BAR.mobileHeightPx}px}@media (min-width:${BAR.desktopFromPx}px){:root{--bar-h:${BAR.heightPx}px}}`;
+// --bar-row-h: the bar's main row. --bar-h: the whole bar, which on narrow screens includes the
+// page links' own row; page content uses it to stay clear of the bar.
+const { heightPx, mobileHeightPx, desktopFromPx, navRowPx, navInlineFromPx } = BAR;
+const barCss =
+  `:root{--bar-row-h:${mobileHeightPx}px;--bar-h:${mobileHeightPx + navRowPx}px}` +
+  `@media (min-width:${desktopFromPx}px){:root{--bar-row-h:${heightPx}px;--bar-h:${heightPx + navRowPx}px}}` +
+  `@media (min-width:${navInlineFromPx}px){:root{--bar-h:${heightPx}px}}` +
+  `.bar-nav-inline{display:none}@media (min-width:${navInlineFromPx}px){.bar-nav-inline{display:flex}.bar-nav-row{display:none}}`;
 
 /**
  * Full-width strip fixed at the very top: sound toggle and language switcher at the start, the
- * owner's GitHub link centred in the viewport, the menu at the end. A 1fr/auto/1fr grid keeps the
- * link centred. The bar is LTR in every language (Persian included): only the text inside it,
- * not its layout, follows the language.
+ * owner's GitHub link centred in the viewport, the page links at the end (or on a row of their own
+ * under it on narrow screens). A 1fr/auto/1fr grid keeps the link centred. The bar is LTR in every
+ * language (Persian included): only the text inside it, not its layout, follows the language.
  */
 export function TopBar({ home = false }: { home?: boolean }) {
   const { t } = useLocale();
   const labelRef = useRef<HTMLAnchorElement>(null);
   const switcherRef = useRef<HTMLButtonElement>(null);
-  const [crowdedBy, setCrowdedBy] = useState({ menu: false, language: false });
-  const onMenuCrowd = useCallback((menu: boolean) => setCrowdedBy((c) => (c.menu === menu ? c : { ...c, menu })), []);
-  const onLanguageCrowd = useCallback((language: boolean) => setCrowdedBy((c) => (c.language === language ? c : { ...c, language })), []);
-  const labelHidden = crowdedBy.menu || crowdedBy.language;
+  // The open language switcher can need the label's space on narrow screens.
+  const [labelHidden, setLabelHidden] = useState(false);
 
   return (
     <>
@@ -30,18 +34,18 @@ export function TopBar({ home = false }: { home?: boolean }) {
       <div
         data-topbar=""
         dir="ltr"
-        className="fixed inset-x-0 top-0 z-[60] grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-1.5 sm:px-5"
+        className="fixed inset-x-0 top-0 z-[60]"
         style={{
-          height: "var(--bar-h)",
           background: BAR.background,
           backdropFilter: `blur(${BAR.blurPx}px)`,
           WebkitBackdropFilter: `blur(${BAR.blurPx}px)`,
           borderBottom: `1px solid ${BAR.border}`,
         }}
       >
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-1.5 sm:px-5" style={{ height: "var(--bar-row-h)" }}>
         <div className="flex min-w-0 items-center justify-start">
           <MuteToggle />
-          <LanguageSwitcher buttonRef={switcherRef} labelRef={labelRef} onCrowd={onLanguageCrowd} />
+          <LanguageSwitcher buttonRef={switcherRef} labelRef={labelRef} onCrowd={setLabelHidden} />
         </div>
         {/* The name is a Latin proper noun: kept LTR (icon first) in every language. */}
         <a
@@ -66,8 +70,10 @@ export function TopBar({ home = false }: { home?: boolean }) {
           <span className="owner-link-text relative">{OWNER.name.toLocaleUpperCase("en")}</span>
         </a>
         <div className="flex min-w-0 justify-end">
-          <Menu labelRef={labelRef} switcherRef={switcherRef} onCrowd={onMenuCrowd} />
+          <Nav className="bar-nav-inline" />
         </div>
+      </div>
+      <Nav className="bar-nav-row flex h-9 justify-center overflow-x-auto px-2" />
       </div>
       {home && <HomeButton />}
     </>

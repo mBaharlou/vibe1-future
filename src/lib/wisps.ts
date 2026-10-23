@@ -43,7 +43,7 @@ export function createWisps(canvas: HTMLCanvasElement) {
   let raf = 0;
 
   const resize = () => {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.round(window.innerWidth * dpr);
     canvas.height = Math.round(CANVAS_HEIGHT * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

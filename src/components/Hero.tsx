@@ -231,6 +231,8 @@ export function Hero() {
         style={{ background: "radial-gradient(ellipse at 50% 42%, #f4f4f4 0%, #f4f4f4 38%, #e9e9e9 100%)" }}
       >
         <header className="relative shrink-0 px-4 pt-10 text-center sm:pt-12" style={{ paddingBottom: "clamp(16px, 2.2vw, 24px)" }}>
+          {/* On narrow screens the page links take a row of their own under the bar: make room for it. */}
+          <div aria-hidden="true" style={{ height: "calc(var(--bar-h) - var(--bar-row-h))" }} />
           {/* Holds the space the old label pill took, so the wordmark sits where it always has. */}
           <div
             aria-hidden="true"
@@ -247,7 +249,8 @@ export function Hero() {
                 className="wordmark font-brand mx-auto mt-2 w-fit font-black leading-[0.82] tracking-[-0.045em]"
                 style={
                   {
-                    fontSize: "clamp(3.5rem, min(20.5vw, 30svh), 24rem)",
+                    // WELCOME is about 1.6× as wide as the old JOINT, so its size scales down to match.
+                    fontSize: "clamp(2.5rem, min(13vw, 26svh), 16rem)",
                     "--wm-pattern": patternUrl,
                     "--wm-scale": `${WORDMARK.patternScale}em`,
                     "--wm-drift-s": `${WORDMARK.driftS}s`,
@@ -255,7 +258,7 @@ export function Hero() {
                   } as CSSProperties
                 }
               >
-                <span ref={wordmarkFillRef} className="wordmark-fill">JOINT</span>
+                <span ref={wordmarkFillRef} className="wordmark-fill">WELCOME</span>
               </h1>
               {/* Smoke in the O's hole: a canvas over the letter, clipped to the hole only. */}
               <OSmoke wrapRef={wordmarkRef} fillRef={wordmarkFillRef} measureKey={`${lang}-${dir}`} />

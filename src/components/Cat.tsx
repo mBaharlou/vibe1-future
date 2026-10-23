@@ -14,7 +14,7 @@ type Props = {
 
 /** The hero cat, cropped into a soft arch so the photo sits inside the poster. */
 export function Cat({ ref, placement, alt, photo, onHoverChange, onTap }: Props) {
-  const { src, zoom, focus } = photo ?? CAT;
+  const { src, webp, zoom, focus } = photo ?? CAT;
   const img = (
     <img
       src={src}
@@ -45,9 +45,9 @@ export function Cat({ ref, placement, alt, photo, onHoverChange, onTap }: Props)
       onPointerLeave={(e) => e.pointerType !== "touch" && onHoverChange?.(false)}
       onPointerDown={(e) => e.pointerType === "touch" && onTap?.()}
     >
-      {photo?.webp ? (
+      {webp ? (
         <picture className="block h-full w-full">
-          <source srcSet={photo.webp} type="image/webp" />
+          <source srcSet={webp} type="image/webp" />
           {img}
         </picture>
       ) : (

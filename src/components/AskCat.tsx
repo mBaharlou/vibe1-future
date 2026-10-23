@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { ASK_CAT, CAT } from "../config/home";
 import { useLocale } from "../i18n";
 import { useChat } from "../lib/chat";
-import { ChatPanel } from "./ChatPanel";
+
+// The chat only loads when someone opens it.
+const ChatPanel = lazy(() => import("./ChatPanel").then((m) => ({ default: m.ChatPanel })));
 
 /** The cat's face, cropped from the hero photo into a circle. */
 export function CatAvatar({ className = "" }: { className?: string }) {
@@ -25,11 +27,11 @@ export function CatAvatar({ className = "" }: { className?: string }) {
   );
 }
 
-// Under the hamburger, at the right in every language (the top bar never mirrors); the offset centres it on the hamburger.
+// Under the top bar at the right, in every language (the top bar never mirrors).
 const sizeCss = `:root{--ask-size:${ASK_CAT.mobileSize}px}@media (min-width:640px){:root{--ask-size:${ASK_CAT.size}px}}`;
 
 /**
- * "Ask the cat": a round cat avatar under the hamburger on every page, opening a chat panel that
+ * "Ask the cat": a round cat avatar under the top bar on every page, opening a chat panel that
  * grows out of it. Mounted once at the app level, so it and the open chat persist across navigation.
  */
 export function AskCat() {
@@ -89,7 +91,9 @@ export function AskCat() {
         </button>
       </div>
 
-      <AnimatePresence>{open && <ChatPanel key="panel" chat={chat} onClose={close} />}</AnimatePresence>
+      <Suspense>
+        <AnimatePresence>{open && <ChatPanel key="panel" chat={chat} onClose={close} />}</AnimatePresence>
+      </Suspense>
     </>
   );
 }

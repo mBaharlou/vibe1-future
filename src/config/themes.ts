@@ -78,7 +78,7 @@ export type ThemeName = keyof typeof THEMES;
 
 /** Which route uses which theme. Home, /me, /contact and 404 have none yet. */
 export const ROUTES: Record<string, ThemeName> = {
-  "/products": "products",
+  "/joint": "products",
   "/vapes": "vapes",
 };
 

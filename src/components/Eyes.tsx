@@ -324,7 +324,7 @@ export function Eyes() {
     const tctx = tearCanvas?.getContext("2d") ?? null;
     const sizeTears = () => {
       if (!tearCanvas || !tctx) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       tearCanvas.width = Math.round(window.innerWidth * dpr);
       tearCanvas.height = Math.round(window.innerHeight * dpr);
       tctx.setTransform(dpr, 0, 0, dpr, 0, 0);

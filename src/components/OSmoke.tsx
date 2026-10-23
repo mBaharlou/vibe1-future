@@ -111,7 +111,7 @@ function measureHole(wrap: HTMLElement, fill: HTMLElement): Hole | null {
   const top = Math.floor(inkTop - PAD);
   const width = Math.ceil(inkRight + PAD) - left;
   const height = Math.ceil(inkBottom + PAD) - top;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   const w = Math.ceil(width * dpr);
   const h = Math.ceil(height * dpr);
 
@@ -246,7 +246,7 @@ export function OSmoke({ wrapRef, fillRef, measureKey }: Props) {
     };
 
     const sizeOverlay = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       overlay.width = Math.round(window.innerWidth * dpr);
       overlay.height = Math.round(window.innerHeight * dpr);
       octx.setTransform(dpr, 0, 0, dpr, 0, 0);

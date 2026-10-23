@@ -8,15 +8,15 @@ export type PageData = {
   id: number;
   key: PageKey;
   path: string;
-  /** Old URL that redirects here. */
-  legacyPath: string;
+  /** Old URLs that redirect here. */
+  legacyPaths: string[];
   /** Shop pages: which products they show (src/components/shop/ShopPage.tsx). */
   shop?: ProductCategory;
 };
 
 export const pages: PageData[] = [
-  { id: 1, key: "me", path: "/me", legacyPath: "/page-1" },
-  { id: 2, key: "products", path: "/products", legacyPath: "/page-2", shop: "joints" },
-  { id: 3, key: "vapes", path: "/vapes", legacyPath: "/page-3", shop: "vapes" },
-  { id: 4, key: "contact", path: "/contact", legacyPath: "/page-4" },
+  { id: 1, key: "me", path: "/me", legacyPaths: ["/page-1"] },
+  { id: 2, key: "products", path: "/joint", legacyPaths: ["/page-2", "/products"], shop: "joints" },
+  { id: 3, key: "vapes", path: "/vapes", legacyPaths: ["/page-3"], shop: "vapes" },
+  { id: 4, key: "contact", path: "/contact", legacyPaths: ["/page-4"] },
 ];

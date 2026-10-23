@@ -62,7 +62,7 @@ export function SmokeCanvas({ hovering, burstAt, catRef }: Props) {
     let height = 0;
 
     const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       width = canvas.clientWidth;
       height = canvas.clientHeight;
       canvas.width = Math.round(width * dpr);

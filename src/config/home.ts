@@ -3,6 +3,7 @@
 // ── Cat ──────────────────────────────────────────────────────────────
 export const CAT = {
   src: "/photo/main-cat.jpg",
+  webp: "/photo/main-cat.webp",
   /** Arch frame width / height. */
   aspect: 3 / 4,
   /** Zoom into the photo, anchored at `focus` (% of the frame). */
@@ -141,9 +142,9 @@ export const SOUND = {
 
 // ── Eyes (every page) ────────────────────────────────────────────────
 export const EYES = {
-  count: 6,
-  /** Under 640px wide: fewer, a bit smaller. */
-  mobileCount: 5,
+  count: 3,
+  /** Under 640px wide: the same three, a bit smaller. */
+  mobileCount: 3,
   mobileScale: 0.82,
   /** Width variants in px, cycled through the eyes. */
   sizes: [36, 44, 54] as const,
@@ -206,7 +207,7 @@ export const EYE_CRY = {
   calmFloor: 0.15,
 };
 
-// ── "JOINT" wordmark fill ─────────────────────────────────────────────
+// ── Home wordmark (WELCOME) fill ─────────────────────────────────────────────
 /** Rainbow + flower-power pattern clipped to the letters. Pattern scale is in em (follows the
  *  font size, so the look is the same at every screen size). */
 export const WORDMARK = {
@@ -239,6 +240,9 @@ export const BAR = {
   mobileHeightPx: 48,
   /** Breakpoint (px) where the bar switches to its desktop height. */
   desktopFromPx: 640,
+  /** Below navInlineFromPx the page links get their own row of this height under the bar. */
+  navRowPx: 36,
+  navInlineFromPx: 900,
   /** Bar tint (denim at ~6%), blur and hairline border. */
   background: `${DENIM.base}0f`,
   blurPx: 8,
@@ -255,33 +259,6 @@ export const HEADER = {
   shift: "clamp(24px, calc(2.5vw + 16px), 56px)",
   /** The shift shrinks so the subtitle keeps at least this much room above the cat. */
   catClearancePx: 12,
-};
-
-export const MENU = {
-  /** Space between the hamburger and the menu track. */
-  buttonGapPx: 4,
-  /** Minimum space kept between the menu and the centred label. */
-  labelGapPx: 24,
-  /** Minimum space kept between the menu and the language switcher (label hidden). */
-  switcherGapPx: 8,
-  openMs: 450,
-  closeMs: 350,
-  /** Pointer has left both button and menu for this long before it closes. */
-  closeDelayMs: 200,
-  itemStaggerMs: 50,
-  ease: [0.22, 1, 0.36, 1] as const,
-};
-
-export const HAMBURGER = {
-  hitPx: 44,
-  perspectivePx: 400,
-  /** Max magnetic tilt toward the cursor, in degrees, and the radius (px) it reacts within. */
-  tiltDeg: 14,
-  tiltRadiusPx: 160,
-  /** 0–1 per frame; lower is smoother. */
-  tiltSmoothing: 0.14,
-  /** Delay between the slats flipping. */
-  flipStaggerMs: 70,
 };
 
 export const LANG_SWITCH = {
@@ -304,7 +281,7 @@ export const LANG_SWITCH = {
 
 // ── "Ask the cat" (every page) ───────────────────────────────────────
 export const ASK_CAT = {
-  /** Round avatar under the hamburger, in px. */
+  /** Round avatar under the top bar, in px. */
   size: 52,
   mobileSize: 44,
   /** The cat's face cropped from CAT.src: object-position (%), then a zoom around `origin` (% of the avatar). */

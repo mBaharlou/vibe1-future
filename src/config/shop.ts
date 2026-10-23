@@ -1,4 +1,4 @@
-// Every tunable value for the shop pages (/products, /vapes) lives here.
+// Every tunable value for the shop pages (/joint, /vapes) lives here.
 import sizes from "../data/shop-image-sizes.json";
 
 /** Prices are in this currency, formatted for the current language (Intl.NumberFormat). */

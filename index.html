@@ -22,6 +22,8 @@
         document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
       })();
     </script>
+    <!-- The home cat is the biggest thing on the first screen: start fetching it right away. -->
+    <link rel="preload" as="image" href="/photo/main-cat.webp" type="image/webp" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

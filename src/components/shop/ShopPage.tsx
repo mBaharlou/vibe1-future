@@ -26,7 +26,7 @@ function useColumns() {
 }
 
 /**
- * /products and /vapes: the page header, a grid of 12 product cards, and the bottom hero with the
+ * /joint and /vapes: the page header, a grid of 12 product cards, and the bottom hero with the
  * page's cat, "Email me" and "Back to top". Colours come from the route's theme (ThemeRoot).
  */
 export function ShopPage({ page, category }: { page: PageData; category: ProductCategory }) {
@@ -57,17 +57,20 @@ export function ShopPage({ page, category }: { page: PageData; category: Product
         className="relative min-h-svh overflow-x-clip"
         style={{ background: "var(--t-bg-gradient)", color: "var(--t-text)" }}
       >
-        <header className="relative mx-auto max-w-[1400px] px-5 pb-10 sm:px-10 sm:pb-14" style={{ paddingTop: "calc(var(--bar-h) + 84px)" }}>
+        <header
+          className="relative mx-auto flex max-w-[1400px] flex-col items-center px-5 pb-10 text-center sm:px-10 sm:pb-14"
+          style={{ paddingTop: "calc(var(--bar-h) + 72px)" }}
+        >
           <h1
             ref={titleRef}
             tabIndex={-1}
             data-eyes-avoid=""
             className="w-fit font-black leading-[0.85] tracking-[-0.045em] outline-none focus-visible:outline-[3px] focus-visible:outline-offset-8 rtl:leading-[1.15] rtl:tracking-normal"
-            style={{ fontSize: "clamp(3rem, 14vw, 9rem)", color: "var(--t-text)", outlineColor: "var(--t-accent)" }}
+            style={{ fontSize: "clamp(2.5rem, 9vw, 6rem)", color: "var(--t-text)", outlineColor: "var(--t-accent)" }}
           >
             {upper(title)}
           </h1>
-          <p data-eyes-avoid="" className="mt-5 w-fit max-w-xl text-lg" style={{ color: "var(--t-text-muted)" }}>
+          <p data-eyes-avoid="" className="mt-4 w-fit max-w-xl text-lg" style={{ color: "var(--t-text-muted)" }}>
             {t(`pages.${page.key}.description`)}
           </p>
           <p
