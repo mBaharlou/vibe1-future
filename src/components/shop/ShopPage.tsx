@@ -82,9 +82,7 @@ export function ShopPage({ page, category }: { page: PageData; category: Product
         <ul
           aria-label={t("shop.gridLabel", { title })}
           // 4 columns from 1100px, 3 from 820px, 2 from 520px: 12 cards always fill whole rows.
-          className={`mx-auto grid max-w-[1400px] grid-cols-1 px-5 min-[520px]:grid-cols-2 min-[820px]:grid-cols-3 min-[1100px]:grid-cols-4 sm:px-10 ${
-            category === "joints" ? "gap-x-8 gap-y-14" : "gap-6 sm:gap-7"
-          }`}
+          className="mx-auto grid max-w-[1400px] grid-cols-1 gap-6 px-5 min-[520px]:grid-cols-2 min-[820px]:grid-cols-3 min-[1100px]:grid-cols-4 sm:gap-7 sm:px-10"
         >
           {items.map((product, i) => (
             <ProductCard key={product.id} product={product} index={i} columns={columns} />

@@ -16,9 +16,9 @@ type Props = {
 
 const spring = { stiffness: 220, damping: 24, mass: 0.6 };
 
-/** Products gets the minimal editorial card; Vapes keeps the lit, tilting card. */
+/** Every shop card: the tilting card with a glare and a glow on hover, coloured by the page theme. */
 export function ProductCard(props: Props) {
-  return props.product.category === "joints" ? <EditorialCard {...props} /> : <GlowCard {...props} />;
+  return <GlowCard {...props} />;
 }
 
 /** "+" → stepper, and the fly-to-cart from the card's photo (the pop and badge bump on landing). */
@@ -84,57 +84,8 @@ function Photo({ product, imgRef, className = "" }: { product: Product; imgRef: 
 }
 
 /**
- * Products: no card box and no light. The photo sits on the page in a thin offset frame (a print
- * with a shifted mat) that slides into line on hover while the photo zooms; under it an index, the
- * tag, the name (underlined on hover), the tagline, a hairline, then price and "+".
- */
-function EditorialCard({ product, index, columns }: Props) {
-  const { t, price, num } = useLocale();
-  const { imgRef, qty, add, setQty } = useAddToCart(product);
-  const name = t(product.nameKey);
-  const number = num(index + 1).padStart(2, num(0));
-  return (
-    <Entrance index={index} columns={columns}>
-      <article className="ed-card group relative">
-        <div className="relative">
-          <span aria-hidden="true" className="ed-frame pointer-events-none absolute inset-0 rounded-2xl border" style={{ borderColor: "var(--t-accent)" }} />
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl" style={{ background: "var(--t-bg)" }}>
-            <Photo product={product} imgRef={imgRef} className="ed-img" />
-          </div>
-        </div>
-        <div className="mt-6">
-          <div className="flex items-baseline gap-3 text-xs">
-            <span className="font-mono tabular-nums" style={{ color: "var(--t-text-muted)" }}>
-              {number}
-            </span>
-            {product.tag && (
-              <span className="font-bold uppercase tracking-[0.14em] rtl:tracking-normal" style={{ color: "var(--t-accent)" }}>
-                {t(`shop.tags.${product.tag}`)}
-              </span>
-            )}
-          </div>
-          <h3 className="mt-1.5 text-lg font-extrabold leading-tight" style={{ color: "var(--t-text)" }}>
-            <span className="ed-name relative">{name}</span>
-          </h3>
-          <p className="mt-1.5 line-clamp-2 min-h-[2lh] text-sm leading-snug" style={{ color: "var(--t-text-muted)" }}>
-            {t(product.taglineKey)}
-          </p>
-          <hr className="my-4 border-0 border-t" style={{ borderColor: "var(--t-border)" }} />
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-lg font-bold tabular-nums" style={{ color: "var(--t-text)" }}>
-              {price(product.price)}
-            </span>
-            <AddControl name={name} qty={qty} onAdd={add} onSet={setQty} />
-          </div>
-        </div>
-      </article>
-    </Entrance>
-  );
-}
-
-/**
- * Vapes: a card that tilts toward the cursor with a glare and a glow on hover. Every colour comes
- * from the page theme.
+ * A card that tilts toward the cursor with a glare and a glow on hover. Every colour comes from the
+ * page theme.
  */
 function GlowCard({ product, index, columns }: Props) {
   const { t, price } = useLocale();

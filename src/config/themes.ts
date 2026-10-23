@@ -30,26 +30,26 @@ export type Theme = {
 };
 
 export const THEMES = {
-  // products-hero: a black cat in glowing green leaves. Near-black with a green tint, the photo's
-  // leaf green as the accent, the cat's neon eye green as the second.
+  // products-hero: a black cat in glowing green leaves. A bright leaf green (#6CD247) that darkens
+  // a little toward the bottom, near-white cards, a deep leaf green accent and the cat's black second.
   products: {
-    scheme: "dark",
-    bg: "#06100a",
-    bgGradient: "radial-gradient(ellipse 120% 70% at 50% 0%, #10301a 0%, #0a1a0f 42%, #06100a 100%)",
-    surface: "#0c1a10",
-    text: "#e9f5e6",
-    textMuted: "#a3c4a0",
-    accent: "#4ba347",
-    accent2: "#6dc840",
-    onAccent: "#04100a",
-    onAccent2: "#04100a",
-    glow: "rgba(75, 163, 71, 0.5)",
-    danger: "#ff8f7d",
-    smoke: "#d6e2d4",
-    border: "rgba(109, 200, 64, 0.22)",
-    bar: "rgba(6, 16, 10, 0.82)",
-    barText: "#e9f5e6",
-    reveal: "radial-gradient(ellipse at 50% 55%, #1b3a22 0%, #0b1a0f 55%, #06100a 100%)",
+    scheme: "light",
+    bg: "#6cd247",
+    bgGradient: "linear-gradient(180deg, #6cd247 0%, #63c440 45%, #52ab35 100%)",
+    surface: "#f6fcf2",
+    text: "#0d2208",
+    textMuted: "#163a10",
+    accent: "#1f5f16",
+    accent2: "#0e1a0c",
+    onAccent: "#ffffff",
+    onAccent2: "#e9f8e2",
+    glow: "rgba(14, 50, 10, 0.32)",
+    danger: "#8a1c12",
+    smoke: "#eef6ea",
+    border: "rgba(14, 40, 10, 0.14)",
+    bar: "rgba(108, 210, 71, 0.86)",
+    barText: "#0d2208",
+    reveal: "radial-gradient(ellipse at 50% 55%, #9be27d 0%, #6cd247 55%, #52ab35 100%)",
   },
   // vapes-hero: a cat in a bucket hat on wine-red velvet, a gold sun, white clouds. Clean warm
   // white, the velvet's red (a touch brighter so it reads as red) as the accent, the sun's gold second.

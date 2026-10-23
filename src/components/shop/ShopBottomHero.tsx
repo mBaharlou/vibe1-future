@@ -17,32 +17,37 @@ type Props = {
 const heroCss = `:root{--shop-hero-h:${SHOP.heroHeightMobile}}@media (min-width:768px){:root{--shop-hero-h:${SHOP.heroHeight}}}`;
 
 /**
- * The end of a shop page, everything on the bottom edge: the page's cat in the home cat's arch
- * frame, centred; the "Email me" form at the bottom start corner; "Back to top" at the bottom end
- * corner (mirrored in RTL). Under 768px: the form, then the cat, with "Back to top" in the corner
- * beside it.
+ * The end of a shop page: the "Email me" form on a card that floats a little above the ground,
+ * centred, and right under it the page's cat in the home cat's arch frame, standing on the bottom
+ * edge. "Back to top" sits in the bottom end corner (mirrored in RTL).
  */
 export function ShopBottomHero({ category, titleRef }: Props) {
   const { t } = useLocale();
   const reduce = useReducedMotion();
   const appear = reduce
     ? { initial: { opacity: 0 }, whileInView: { opacity: 1 }, transition: { duration: 0.3 } }
-    : { initial: { opacity: 0, y: 24 }, whileInView: { opacity: 1, y: 0 }, transition: { type: "spring" as const, bounce: 0, duration: 0.9 } };
+    : { initial: { opacity: 0, y: 40 }, whileInView: { opacity: 1, y: 0 }, transition: { type: "spring" as const, bounce: 0, duration: 0.9 } };
 
   return (
-    <section
-      aria-labelledby="contact-title"
-      className="relative mt-24 flex w-full flex-col items-center sm:mt-32 md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-end"
-    >
+    <section aria-labelledby="contact-title" className="relative mt-24 flex w-full flex-col items-center sm:mt-32">
       <style>{heroCss}</style>
-      <motion.div
-        {...appear}
-        viewport={{ once: true, amount: 0.3 }}
-        data-eyes-avoid=""
-        data-cart-avoid=""
-        className="relative mb-10 w-full max-w-sm px-6 md:mb-0 md:max-w-[360px] md:justify-self-start md:pb-8 md:ps-8 md:pe-6"
-      >
-        <ContactForm />
+      <motion.div {...appear} viewport={{ once: true, amount: 0.3 }} className="relative z-10 mb-12 w-full max-w-[440px] px-5 sm:mb-16">
+        {/* Hovering just off the ground: a slow bob, with the shadow below it breathing along. */}
+        <div className={reduce ? "" : "contact-float"}>
+          <div
+            data-eyes-avoid=""
+            data-cart-avoid=""
+            className="contact-card relative rounded-[26px] border px-6 pb-7 pt-6 sm:px-8 sm:pb-8 sm:pt-7"
+            style={{
+              background: "var(--t-surface)",
+              borderColor: "var(--t-border)",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.06), 0 22px 48px -20px rgba(0,0,0,0.35), 0 36px 70px -36px var(--t-glow)",
+            }}
+          >
+            <ContactForm />
+          </div>
+        </div>
+        <span aria-hidden="true" className={`contact-ground pointer-events-none absolute inset-x-12 -bottom-6 h-5 rounded-[50%] ${reduce ? "" : "contact-ground-anim"}`} />
       </motion.div>
 
       {/* The cat stands on the bottom edge: nothing follows this section. */}
@@ -50,7 +55,7 @@ export function ShopBottomHero({ category, titleRef }: Props) {
         <Cat placement={{ height: 100, bottom: 0 }} photo={SHOP_HEROES[category]} alt={t(`shop.heroAlt.${category}`)} />
       </div>
 
-      <div className="absolute bottom-4 end-4 z-30 md:static md:justify-self-end md:pb-6 md:pe-6">
+      <div className="absolute bottom-4 end-4 z-30 sm:bottom-6 sm:end-6">
         <BackToTop titleRef={titleRef} />
       </div>
     </section>

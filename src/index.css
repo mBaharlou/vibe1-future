@@ -737,50 +737,29 @@ html[data-scheme="dark"] .wander-eye svg {
 }
 
 
-/* Products cards: no box and no light. The photo sits in a thin frame offset toward the end side
-   (a print on a shifted mat) that slides into line on hover while the photo zooms. */
-.ed-frame {
-  translate: 8px 8px;
-  transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+/* "Email me" card: it floats a few px above the ground and its shadow on the ground shrinks and
+   fades as it rises. */
+.contact-ground {
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.28), transparent);
+  filter: blur(4px);
 }
 
-.ed-frame:dir(rtl) {
-  translate: -8px 8px;
+.contact-float {
+  animation: contact-float 6s ease-in-out infinite;
 }
 
-.ed-card:hover .ed-frame,
-.ed-card:focus-within .ed-frame {
-  translate: 0 0;
+.contact-ground-anim {
+  animation: contact-ground 6s ease-in-out infinite;
 }
 
-.ed-img {
-  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+@keyframes contact-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-.ed-card:hover .ed-img,
-.ed-card:focus-within .ed-img {
-  transform: scale(1.05);
-}
-
-.ed-name::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  bottom: -3px;
-  height: 1.5px;
-  background: var(--t-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ed-name:dir(rtl)::after {
-  transform-origin: right;
-}
-
-.ed-card:hover .ed-name::after,
-.ed-card:focus-within .ed-name::after {
-  transform: scaleX(1);
+@keyframes contact-ground {
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  50% { transform: scaleX(0.86); opacity: 0.7; }
 }
 
 /* "Email me": underline fields straight on the page; the accent on focus. */
@@ -861,16 +840,11 @@ html[data-scheme="dark"] .wander-eye svg {
 
 @media (prefers-reduced-motion: reduce) {
   .shop-card-img,
-  .ed-img,
-  .ed-frame,
-  .ed-name::after,
   .top-btn svg {
     transition: none;
   }
   .shop-card:hover .shop-card-img,
   .shop-card:focus-within .shop-card-img,
-  .ed-card:hover .ed-img,
-  .ed-card:focus-within .ed-img,
   .top-btn:hover svg {
     transform: none;
   }

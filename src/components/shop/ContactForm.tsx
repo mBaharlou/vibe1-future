@@ -3,8 +3,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CONTACT_EMAIL, SHOP } from "../../config/shop";
 import { useLocale } from "../../i18n";
 
-// "Email me": a real contact form, sent by POST /api/contact (Resend, api/_lib/contact.ts). No
-// panel: underline fields straight on the page, in the theme's colours. Falls back to mailto.
+// "Email me": a real contact form, sent by POST /api/contact (Resend, api/_lib/contact.ts), with
+// underline fields in the theme's colours. ShopBottomHero puts it on a floating card. Falls back to mailto.
 
 type Field = "name" | "email" | "message";
 type Status = "idle" | "sending" | "sent" | "error" | "rate_limited";
