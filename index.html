@@ -22,8 +22,19 @@
         document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
       })();
     </script>
-    <!-- The home cat is the biggest thing on the first screen: start fetching it right away. -->
-    <link rel="preload" as="image" href="/photo/main-cat.webp" type="image/webp" fetchpriority="high" />
+    <script>
+      // On home the cat is the biggest thing on the first screen: start fetching it right away.
+      // Other pages don't show it, so they skip the download.
+      if (location.pathname === "/") {
+        var preload = document.createElement("link");
+        preload.rel = "preload";
+        preload.as = "image";
+        preload.type = "image/webp";
+        preload.href = "/photo/main-cat.webp";
+        preload.fetchPriority = "high";
+        document.head.appendChild(preload);
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
