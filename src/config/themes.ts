@@ -111,6 +111,33 @@ export const THEMES = {
     barText: "#151a2c",
     reveal: "radial-gradient(ellipse at 50% 55%, #ffffff 0%, #eeeefb 55%, #dcdcf0 100%)",
   },
+  // /contact: the studio palette after dark. Deep night navy with the denim and a little violet
+  // glowing in the corners, frosted cards, the denim brightened into a sky blue so it reads on dark,
+  // and the honey kept as the second accent.
+  night: {
+    scheme: "dark",
+    bg: "#0a0f1d",
+    bgGradient:
+      "radial-gradient(60% 50% at 8% 6%, rgba(45, 98, 128, 0.6) 0%, transparent 62%), " +
+      "radial-gradient(50% 45% at 94% 8%, rgba(124, 58, 237, 0.3) 0%, transparent 62%), " +
+      "radial-gradient(55% 50% at 90% 94%, rgba(20, 184, 166, 0.2) 0%, transparent 62%), " +
+      "radial-gradient(55% 50% at 6% 96%, rgba(59, 130, 246, 0.22) 0%, transparent 62%), " +
+      "linear-gradient(160deg, #0b1122 0%, #0a0f1d 50%, #0d0b1f 100%)",
+    surface: "rgba(255, 255, 255, 0.06)",
+    text: "#eaf0fb",
+    textMuted: "#9aa6c2",
+    accent: "#7cc4e8",
+    accent2: "#f4b860",
+    onAccent: "#08131f",
+    onAccent2: "#241603",
+    glow: "rgba(124, 196, 232, 0.22)",
+    danger: "#ff8a80",
+    smoke: "#5f6a86",
+    border: "rgba(255, 255, 255, 0.1)",
+    bar: "rgba(10, 15, 29, 0.55)",
+    barText: "#eaf0fb",
+    reveal: "radial-gradient(ellipse at 50% 55%, #1b2440 0%, #0f1528 55%, #080c18 100%)",
+  },
 } satisfies Record<string, Theme>;
 
 export type ThemeName = keyof typeof THEMES;
@@ -120,7 +147,7 @@ export const ROUTES: Record<string, ThemeName> = {
   "/joint": "products",
   "/vapes": "vapes",
   "/me": "studio",
-  "/contact": "studio",
+  "/contact": "night",
 };
 
 export const themeFor = (pathname: string): ThemeName | null => ROUTES[pathname.replace(/\/+$/, "") || "/"] ?? null;

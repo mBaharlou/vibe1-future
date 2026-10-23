@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { OWNER } from "../config/home";
 import type { PageData } from "../data/pages";
 import { useLocale } from "../i18n";
-import { DENIM_FILL, Eyebrow, Icon, useLocalTime } from "./profile";
+import { Eyebrow, Icon, NIGHT_FILL, useLocalTime } from "./profile";
 import { ContactForm } from "./shop/ContactForm";
 import { SiteFooter } from "./SiteFooter";
 import { SmokeReveal } from "./SmokeReveal";
@@ -51,7 +51,7 @@ export function ContactPage({ page }: { page: PageData }) {
               tabIndex={-1}
               data-eyes-avoid=""
               className="title-fill mt-5 w-fit font-black leading-[0.86] tracking-[-0.045em] outline-none focus-visible:outline-[3px] focus-visible:outline-offset-8 rtl:leading-[1.15] rtl:tracking-normal"
-              style={{ fontSize: "clamp(3rem, 10vw, 7.5rem)", outlineColor: "var(--t-accent)", ...DENIM_FILL }}
+              style={{ fontSize: "clamp(3rem, 10vw, 7.5rem)", outlineColor: "var(--t-accent)", ...NIGHT_FILL }}
             >
               {upper(t("contactPage.headline"))}
             </h1>

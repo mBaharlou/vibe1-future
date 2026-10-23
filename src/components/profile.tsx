@@ -12,6 +12,14 @@ export const DENIM_FILL = {
   "--title-solid": "#2d6280",
 } as CSSProperties;
 
+/** The same fill for a dark page: a bright sky, from ice blue into lilac. */
+export const NIGHT_FILL = {
+  "--title-pattern": `url("data:image/svg+xml,${encodeURIComponent(skySvg)}")`,
+  "--title-base": "linear-gradient(180deg, #e0f2fe 0%, #7cc4e8 50%, #a78bfa 100%)",
+  "--title-scale": "1.1em",
+  "--title-solid": "#7cc4e8",
+} as CSSProperties;
+
 /** A small pill label above a title. */
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (

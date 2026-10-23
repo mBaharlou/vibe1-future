@@ -845,3 +845,8 @@ html[data-scheme="dark"] .wander-eye svg {
     animation: none;
   }
 }
+
+/* Frosted glass on a dark page: a faint top highlight instead of the bright one. */
+html[data-scheme="dark"] .glass {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}

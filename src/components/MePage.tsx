@@ -251,7 +251,12 @@ function Stat({ value, label, delay }: { value: string; label: string; delay: nu
       className="glass rounded-[22px] border p-5 sm:p-6"
       style={{ background: "var(--t-surface)", borderColor: "var(--t-border)" }}
     >
-      <p dir="auto" className="footer-mark w-fit font-black leading-none tracking-[-0.04em]" style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)" }}>
+      {/* A word like "JavaScript" gets a smaller size than a number so it stays inside the tile. */}
+      <p
+        dir="auto"
+        className="footer-mark w-fit max-w-full break-words font-black leading-none tracking-[-0.04em]"
+        style={{ fontSize: value.length > 4 ? "clamp(1.25rem, 2.3vw, 2rem)" : "clamp(1.9rem, 4vw, 3rem)", lineHeight: 1.1 }}
+      >
         {value}
       </p>
       <p className="mt-2 text-sm font-medium" style={{ color: "var(--t-text-muted)" }}>
