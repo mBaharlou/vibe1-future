@@ -78,7 +78,7 @@
     }
   },
   "shop": {
-    "note": "Showcase only · 18+",
+    "note": "Showcase only · 21+",
     "gridLabel": "{{title}}: all products",
     "add": "Add {{name}} to cart",
     "increase": "One more {{name}}",
@@ -98,7 +98,9 @@
       "clear": "Clear cart",
       "remove": "Remove {{name}}",
       "close": "Close cart",
-      "each": "{{price}} each"
+      "discount": "21+ discount ({{pct}})",
+      "total": "Total",
+      "was": "Was {{price}}"
     },
     "top": "Back to top",
     "heroAlt": {
@@ -222,5 +224,19 @@
         "tagline": "Warm sunset reds, smooth and mellow."
       }
     }
+  },
+  "gate": {
+    "label": "Age check",
+    "title": "Scratch to reveal your gift",
+    "scratchHere": "Scratch me",
+    "reveal": "Can't scratch? Reveal it",
+    "won": "You won {{pct}} off!",
+    "wonNote": "It's applied to everything in your cart.",
+    "ask": "Are you 21 or older?",
+    "yes": "Yes, I'm 21+",
+    "no": "No",
+    "deniedTitle": "Sorry!",
+    "denied": "This site is only for adults 21 and over.",
+    "back": "I clicked by mistake"
   }
 }

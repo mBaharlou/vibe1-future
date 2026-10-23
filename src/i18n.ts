@@ -84,6 +84,7 @@ export function useLocale() {
   const tag = lang === "fa" ? "fa-IR" : lang;
   const numbers = new Intl.NumberFormat(tag, { useGrouping: false });
   const money = new Intl.NumberFormat(tag, { style: "currency", currency: CURRENCY });
+  const percents = new Intl.NumberFormat(tag, { style: "percent" });
   return {
     t,
     lang,
@@ -91,6 +92,8 @@ export function useLocale() {
     upper: (text: string) => text.toLocaleUpperCase(lang),
     num: (n: number) => numbers.format(n),
     price: (n: number) => money.format(n),
+    /** 0.1 → "10%" (Persian digits and sign in fa). */
+    percent: (n: number) => percents.format(n),
   };
 }
 

@@ -78,7 +78,7 @@
     }
   },
   "shop": {
-    "note": "Yalnızca vitrin · 18+",
+    "note": "Yalnızca vitrin · 21+",
     "gridLabel": "{{title}}: tüm ürünler",
     "add": "{{name}} ürününü sepete ekle",
     "increase": "Bir {{name}} daha",
@@ -98,7 +98,9 @@
       "clear": "Sepeti boşalt",
       "remove": "{{name}} ürününü çıkar",
       "close": "Sepeti kapat",
-      "each": "Tanesi {{price}}"
+      "discount": "21+ indirimi ({{pct}})",
+      "total": "Toplam",
+      "was": "Önceki fiyat {{price}}"
     },
     "top": "Başa dön",
     "heroAlt": {
@@ -222,5 +224,19 @@
         "tagline": "Sıcak gün batımı kırmızıları, yumuşak ve dingin."
       }
     }
+  },
+  "gate": {
+    "label": "Yaş kontrolü",
+    "title": "Hediyeni görmek için kazı",
+    "scratchHere": "Silin lütfen",
+    "reveal": "Kazıyamıyor musun? Göster",
+    "won": "{{pct}} indirim kazandın!",
+    "wonNote": "Sepetindeki her şeye uygulanır.",
+    "ask": "21 yaşında veya daha büyük müsün?",
+    "yes": "Evet, 21+ yaşındayım",
+    "no": "Hayır",
+    "deniedTitle": "Üzgünüz!",
+    "denied": "Bu site yalnızca 21 yaş ve üzeri yetişkinler içindir.",
+    "back": "Yanlışlıkla bastım"
   }
 }

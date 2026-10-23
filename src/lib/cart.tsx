@@ -1,9 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { SHOP } from "../config/shop";
 import { productById, type Product } from "../data/products";
+import { useGate } from "./gate";
 
 // The showcase cart: product id → quantity, kept in localStorage (so it survives a refresh) and
-// shared live with the other tabs through the "storage" event. No payments, no backend.
+// shared live with the other tabs through the "storage" event. Passing the age gate adds a discount
+// (src/lib/gate.ts) on every product. No payments, no backend.
 
 type Quantities = Record<string, number>;
 export type CartLine = { product: Product; qty: number };
@@ -11,7 +13,12 @@ export type CartLine = { product: Product; qty: number };
 type Cart = {
   lines: CartLine[];
   count: number;
+  /** Before the discount. */
   subtotal: number;
+  /** 0.1 for 10% off once the age gate is passed, else 0. */
+  rate: number;
+  discount: number;
+  total: number;
   qtyOf: (id: string) => number;
   add: (id: string) => void;
   setQty: (id: string, qty: number) => void;
@@ -44,6 +51,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [quantities, setQuantities] = useState<Quantities>(load);
   const [bump, setBump] = useState(0);
   const targetRef = useRef<HTMLButtonElement>(null);
+  const rate = useGate().discount;
   // Changes that came from another tab aren't written back.
   const external = useRef(false);
 
@@ -88,10 +96,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const product = productById(id);
       return product ? [{ product, qty }] : [];
     });
+    const subtotal = lines.reduce((s, l) => s + l.qty * l.product.price, 0);
+    const discount = Math.round(subtotal * rate * 100) / 100;
     return {
       lines,
       count: lines.reduce((s, l) => s + l.qty, 0),
-      subtotal: lines.reduce((s, l) => s + l.qty * l.product.price, 0),
+      subtotal,
+      rate,
+      discount,
+      total: subtotal - discount,
       qtyOf: (id) => quantities[id] ?? 0,
       add,
       setQty,
@@ -101,7 +114,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       ping,
       targetRef,
     };
-  }, [quantities, add, setQty, bump, ping]);
+  }, [quantities, add, setQty, bump, ping, rate]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

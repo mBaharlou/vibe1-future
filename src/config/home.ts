@@ -216,25 +216,7 @@ export const WORDMARK = {
   hueS: 26,
 };
 
-/** Gray smoke that collects in the O's hole from the bottom up, packs it, then bursts out and drifts
- *  off the top of the page, on a loop. ?smokeFast=1 in the URL squeezes the whole cycle into `fast`
- *  (≈20s) for testing. */
-export const O_SMOKE = {
-  fillMs: 210000,
-  fullMs: 1500,
-  releaseMs: 3500,
-  pauseMs: 2000,
-  fast: { fillMs: 13500, fullMs: 1500, releaseMs: 3200, pauseMs: 1800 },
-  /** Puffs inside the O when it is full, and the most the release can have in flight. */
-  maxParticles: 70,
-  /** Real smoke grays (they must contrast with the off-white page showing through the hole):
-   *  mid, dark (the bottom of the body), light (the top of the body and the wisps). */
-  colors: ["#9a9590", "#7d7873", "#b8b3ad"],
-  /** Reduced motion: a faint, still haze in the hole instead of the cycle. */
-  staticHaze: 0.35,
-};
-
-// ── Top bar, menu and language switcher ─────────────────────────────
+// ── Top bar, page links and language switcher ─────────────────────────────
 export const BAR = {
   heightPx: 56,
   mobileHeightPx: 48,

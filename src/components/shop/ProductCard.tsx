@@ -88,7 +88,7 @@ function Photo({ product, imgRef, className = "" }: { product: Product; imgRef: 
  * page theme.
  */
 function GlowCard({ product, index, columns }: Props) {
-  const { t, price } = useLocale();
+  const { t } = useLocale();
   const reduce = useReducedMotion();
   const { imgRef, qty, add, setQty } = useAddToCart(product);
   const name = t(product.nameKey);
@@ -181,15 +181,37 @@ function GlowCard({ product, index, columns }: Props) {
               {t(product.taglineKey)}
             </p>
             <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-              <span className="text-lg font-bold tabular-nums" style={{ color: "var(--t-accent)" }}>
-                {price(product.price)}
-              </span>
+              <Price amount={product.price} />
               <AddControl name={name} qty={qty} onAdd={add} onSet={setQty} />
             </div>
           </div>
         </div>
       </motion.article>
     </Entrance>
+  );
+}
+
+/** A price; with the age-gate discount, the sale price in the accent and the normal one struck through. */
+export function Price({ amount, size = "lg" }: { amount: number; size?: "lg" | "sm" }) {
+  const { t, price } = useLocale();
+  const { rate } = useCart();
+  const big = size === "lg" ? "text-lg" : "text-sm";
+  if (!rate) {
+    return (
+      <span className={`${big} font-bold tabular-nums`} style={{ color: "var(--t-accent)" }}>
+        {price(amount)}
+      </span>
+    );
+  }
+  return (
+    <span className="flex flex-wrap items-baseline gap-x-2">
+      <span className={`${big} font-bold tabular-nums`} style={{ color: "var(--t-accent)" }}>
+        {price(Math.round(amount * (1 - rate) * 100) / 100)}
+      </span>
+      <s className="text-xs tabular-nums" style={{ color: "var(--t-text-muted)" }} aria-label={t("shop.cart.was", { price: price(amount) })}>
+        {price(amount)}
+      </s>
+    </span>
   );
 }
 

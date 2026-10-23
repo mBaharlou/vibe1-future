@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { PRODUCT_IMAGES } from "../../config/shop";
 import { useLocale } from "../../i18n";
 import { useCart } from "../../lib/cart";
-import { AddControl } from "./ProductCard";
+import { AddControl, Price } from "./ProductCard";
 
 const MOBILE = "(max-width: 639px)";
 const FOCUSABLE = 'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
@@ -21,7 +21,7 @@ function useMobile() {
 
 /** The cart: a themed drawer from the end side (a bottom sheet on phones). Showcase only. */
 export function CartDrawer({ onClose }: { onClose: () => void }) {
-  const { t, price, dir } = useLocale();
+  const { t, price, percent, dir } = useLocale();
   const reduce = useReducedMotion();
   const mobile = useMobile();
   const cart = useCart();
@@ -118,9 +118,7 @@ export function CartDrawer({ onClose }: { onClose: () => void }) {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-bold">{name}</p>
-                      <p className="text-sm" style={{ color: "var(--t-text-muted)" }}>
-                        {t("shop.cart.each", { price: price(product.price) })}
-                      </p>
+                      <Price amount={product.price} size="sm" />
                     </div>
                     <AddControl compact name={name} qty={qty} onAdd={() => cart.add(product.id)} onSet={(n) => cart.setQty(product.id, n)} />
                     <button
@@ -142,12 +140,29 @@ export function CartDrawer({ onClose }: { onClose: () => void }) {
         </div>
 
         <footer className="shrink-0 space-y-3 border-t px-5 py-4" style={{ borderColor: "var(--t-border)", paddingBottom: mobile ? "max(16px, env(safe-area-inset-bottom))" : undefined }}>
-          <div className="flex items-center justify-between text-base font-bold">
-            <span>{t("shop.cart.subtotal")}</span>
-            <span className="tabular-nums" aria-live="polite">
-              {price(cart.subtotal)}
-            </span>
-          </div>
+          {cart.rate > 0 ? (
+            <div className="space-y-1.5" aria-live="polite">
+              <div className="flex items-center justify-between text-sm" style={{ color: "var(--t-text-muted)" }}>
+                <span>{t("shop.cart.subtotal")}</span>
+                <s className="tabular-nums">{price(cart.subtotal)}</s>
+              </div>
+              <div className="flex items-center justify-between text-sm font-semibold" style={{ color: "var(--t-accent)" }}>
+                <span>{t("shop.cart.discount", { pct: percent(cart.rate) })}</span>
+                <span className="tabular-nums">−{price(cart.discount)}</span>
+              </div>
+              <div className="flex items-center justify-between text-base font-bold">
+                <span>{t("shop.cart.total")}</span>
+                <span className="tabular-nums">{price(cart.total)}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between text-base font-bold">
+              <span>{t("shop.cart.subtotal")}</span>
+              <span className="tabular-nums" aria-live="polite">
+                {price(cart.subtotal)}
+              </span>
+            </div>
+          )}
           <button
             type="button"
             disabled

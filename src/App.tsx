@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { pages } from "./data/pages";
+import { AgeGate } from "./components/AgeGate";
 import { AskCat } from "./components/AskCat";
 import { Eyes } from "./components/Eyes";
 import { Hero } from "./components/Hero";
@@ -40,6 +41,8 @@ export default function App() {
       {/* Outside the routes, so the eyes and the chat carry on across in-tab navigation. */}
       <Eyes />
       <AskCat />
+      {/* 21+ check with a scratch-off discount, until the visitor passes it once. */}
+      <AgeGate />
     </CartProvider>
   );
 }
